@@ -12,7 +12,7 @@ signal died
 
 @export_group("Combat")
 @export var damage: int = 1
-@export var attack_range: float = 48.0
+@export var attack_range: float = 24.0  # Reducido para que no se frene tan lejos
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var veil_component: VeilComponent = $VeilComponent
@@ -77,15 +77,12 @@ func _behavior_revealed(_delta: float) -> void:
 	# Perseguir si está lejos
 	var distance_to_player = global_position.distance_to(player_ref.global_position)
 
-	if distance_to_player > attack_range:
-		velocity.x = direction_to_player * chase_speed
+	# Perseguir siempre, no frenar
+	velocity.x = direction_to_player * chase_speed
 
-		# Saltar si hay pared adelante
-		if is_on_wall() and is_on_floor():
-			velocity.y = -300.0
-	else:
-		# Cerca del jugador, reducir velocidad para "atacar"
-		velocity.x = move_toward(velocity.x, 0, chase_speed * 0.5)
+	# Saltar si hay pared adelante
+	if is_on_wall() and is_on_floor():
+		velocity.y = -300.0
 
 	# Voltear sprite
 	sprite.flip_h = direction_to_player < 0
