@@ -1,5 +1,7 @@
 # Godot 4+ specific ignores
 .godot/
+*.import
+.import/
 
 # Godot-specific ignores
 *.translation
@@ -23,3 +25,10 @@ Thumbs.db
 
 # Build
 build/
+builds/
+*.zip
+*.pck
+*.exe
+*.x86_64
+*.app
+*.dmg
