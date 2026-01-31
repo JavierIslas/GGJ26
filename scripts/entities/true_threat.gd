@@ -64,7 +64,7 @@ func _on_veil_torn() -> void:
 	print("True Threat revealed! Now firing projectiles...")
 
 func _on_fire_timer_timeout() -> void:
-	"""Dispara un proyectil hacia el jugador"""
+	"""Dispara un proyectil hacia el jugador con predicción de movimiento"""
 	if not is_revealed or not player_ref or not is_instance_valid(player_ref):
 		return
 
@@ -74,8 +74,11 @@ func _on_fire_timer_timeout() -> void:
 	# Posicionar en la posición del enemigo
 	projectile.global_position = global_position
 
-	# Calcular dirección hacia el jugador
-	var direction = (player_ref.global_position - global_position).normalized()
+	# Calcular posición predicha del jugador
+	var target_position = _predict_player_position()
+
+	# Calcular dirección hacia la posición predicha
+	var direction = (target_position - global_position).normalized()
 	projectile.set_direction(direction)
 	projectile.speed = projectile_speed
 
@@ -84,6 +87,30 @@ func _on_fire_timer_timeout() -> void:
 
 	# Efecto visual de disparo (pulso)
 	_fire_effect()
+
+func _predict_player_position() -> Vector2:
+	"""Predice dónde estará el jugador basándose en su velocidad actual"""
+	if not player_ref:
+		return global_position
+
+	# Posición actual del jugador
+	var player_pos = player_ref.global_position
+
+	# Obtener velocidad del jugador (si tiene CharacterBody2D)
+	var player_velocity = Vector2.ZERO
+	if player_ref is CharacterBody2D:
+		player_velocity = player_ref.velocity
+
+	# Calcular distancia actual
+	var distance = global_position.distance_to(player_pos)
+
+	# Calcular tiempo estimado que tardará el proyectil en llegar
+	var time_to_hit = distance / projectile_speed
+
+	# Predecir posición futura
+	var predicted_position = player_pos + player_velocity * time_to_hit
+
+	return predicted_position
 
 func _fire_effect() -> void:
 	"""Efecto visual al disparar"""
