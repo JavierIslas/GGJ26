@@ -7,7 +7,7 @@ extends CanvasLayer
 @onready var hp_container: HBoxContainer = $MarginContainer/VBoxContainer/HPContainer
 
 ## Sprites de corazones (se crearán dinámicamente)
-var heart_sprites: Array[TextureRect] = []
+var heart_sprites: Array[ColorRect] = []
 
 func _ready() -> void:
 	# Conectar señales del GameManager
@@ -25,16 +25,12 @@ func _setup_hearts() -> void:
 		child.queue_free()
 	heart_sprites.clear()
 
-	# Crear corazones
+	# Crear corazones (usando ColorRect como placeholder)
 	for i in GameManager.max_hp:
-		var heart = TextureRect.new()
-		heart.custom_minimum_size = Vector2(32, 32)
-		heart.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-
-		# Por ahora, usar un placeholder (cuadrado blanco)
-		# TODO: Reemplazar con sprite de corazón cuando tengamos arte
-		heart.modulate = Color.WHITE
+		var heart = ColorRect.new()
+		heart.custom_minimum_size = Vector2(24, 24)
+		heart.size = Vector2(24, 24)
+		heart.color = Color(1.0, 0.3, 0.3)  # Rojo por defecto
 
 		hp_container.add_child(heart)
 		heart_sprites.append(heart)
@@ -58,10 +54,10 @@ func _update_hearts_display() -> void:
 	for i in heart_sprites.size():
 		if i < current_hp:
 			# Corazón lleno
-			heart_sprites[i].modulate = Color(1.0, 0.3, 0.3)  # Rojo
+			heart_sprites[i].color = Color(1.0, 0.3, 0.3)  # Rojo
 		else:
 			# Corazón vacío
-			heart_sprites[i].modulate = Color(0.3, 0.3, 0.3)  # Gris oscuro
+			heart_sprites[i].color = Color(0.3, 0.3, 0.3)  # Gris oscuro
 
 func _on_truth_revealed(_total: int) -> void:
 	"""Callback cuando se revela una verdad"""
