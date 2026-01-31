@@ -30,6 +30,9 @@ func _ready() -> void:
 	if veil_component:
 		veil_component.veil_torn.connect(_on_veil_torn)
 
+	# Feedback visual: Es atravesable (semi-transparente)
+	sprite.modulate.a = 0.7  # 70% opacidad = efecto fantasma
+
 func _physics_process(delta: float) -> void:
 	# Aplicar gravedad
 	if not is_on_floor():
@@ -97,7 +100,7 @@ func _on_veil_torn() -> void:
 	is_revealed = true
 
 	# Cambiar color del sprite (placeholder hasta tener arte real)
-	sprite.modulate = Color(0.6, 0.6, 1.0)  # Azul pálido
+	sprite.modulate = Color(0.6, 0.6, 1.0, 1.0)  # Azul pálido, opaco
 
 	# Cambiar animación si existe
 	if animation_player and animation_player.has_animation("revealed"):

@@ -13,8 +13,8 @@ signal died
 @export_group("Combat")
 @export var damage: int = 1
 @export var attack_range: float = 24.0  # Reducido para que no se frene tan lejos
-@export var knockback_force: float = 200.0  # Fuerza de rebote al golpear
-@export var knockback_duration: float = 0.3  # Tiempo de aturdimiento después de golpear
+@export var knockback_force: float = 1500.0  # Fuerza de rebote al golpear
+@export var knockback_duration: float = 0.6  # Tiempo de aturdimiento después de golpear
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var veil_component: VeilComponent = $VeilComponent
@@ -38,6 +38,9 @@ func _ready() -> void:
 	if hurtbox:
 		hurtbox.monitoring = false  # Desactivado mientras está enmascarado
 		hurtbox.body_entered.connect(_on_hurtbox_body_entered)
+
+	# Feedback visual: Es sólido (opaco completo)
+	sprite.modulate.a = 1.0  # 100% opacidad = sólido
 
 func _physics_process(delta: float) -> void:
 	# Aplicar gravedad
