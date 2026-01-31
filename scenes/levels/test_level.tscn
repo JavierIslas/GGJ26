@@ -1,21 +1,23 @@
-[gd_scene load_steps=4 format=3 uid="uid://test_level_001"]
+[gd_scene load_steps=6 format=3 uid="uid://dqsr6fw1kla1v"]
 
-[ext_resource type="PackedScene" uid="uid://player_001" path="res://scenes/characters/player.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1"]
-texture_region_size = Vector2i(32, 32)
-
-[sub_resource type="TileSet" id="TileSet_1"]
+[sub_resource type="TileSet" id="TileSet_jbqir"]
 tile_size = Vector2i(32, 32)
-physics_layer_0/collision_layer = 1
-physics_layer_0/collision_mask = 0
-sources/0 = SubResource("TileSetAtlasSource_1")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jbqir"]
+size = Vector2(1500, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yautc"]
+size = Vector2(150, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fr1um"]
+size = Vector2(150, 20)
 
 [node name="TestLevel" type="Node2D"]
 
-[node name="TileMap" type="TileMap" parent="."]
-tile_set = SubResource("TileSet_1")
-format = 2
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_jbqir")
 
 [node name="Player" parent="." instance=ExtResource("1")]
 position = Vector2(100, 400)
@@ -27,13 +29,16 @@ position = Vector2(100, 400)
 
 [node name="Floor" type="CollisionShape2D" parent="WorldBounds"]
 position = Vector2(750, 580)
+shape = SubResource("RectangleShape2D_jbqir")
 
 [node name="Platform1" type="StaticBody2D" parent="."]
 position = Vector2(400, 400)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
+shape = SubResource("RectangleShape2D_yautc")
 
 [node name="Platform2" type="StaticBody2D" parent="."]
 position = Vector2(700, 300)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
+shape = SubResource("RectangleShape2D_fr1um")
