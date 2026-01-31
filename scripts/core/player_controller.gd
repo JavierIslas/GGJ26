@@ -1,9 +1,13 @@
 class_name PlayerController
 extends CharacterBody2D
-## Controlador del jugador para VEIL
+## LA REVELADORA - "The Wolf"
 ##
-## Incluye movimiento, salto, coyote time, jump buffer.
-## La mecánica de "tear the veil" se maneja en un sistema separado.
+## NARRATIVA: Ex-víctima transformada en cazadora. Posee el poder de "Arrancar Velos"
+##           para revelar la verdadera naturaleza de las personas enmascaradas.
+##           "I'm not your victim anymore. I'm the big bad wolf now."
+##
+## Incluye movimiento fluido, salto, coyote time, jump buffer.
+## La mecánica de "tear the veil" se maneja en RevealSystem (sistema separado).
 
 # === SEÑALES ===
 signal jumped
@@ -33,6 +37,18 @@ const JUMP_BUFFER = 0.1       # Responsivo
 @export var invincibility_duration: float = 1.0  # Segundos de iFrames después de recibir daño
 @export var flash_frequency: float = 0.1  # Frecuencia del parpadeo durante iFrames
 
+# === PARÁMETROS DE VEIL SHARDS ===
+@export_group("Veil Shards")
+@export var max_shards: int = 3  # Máximo de shards que puede almacenar
+@export var shard_orbit_radius: float = 32.0  # Radio de órbita de shards
+@export var shard_orbit_speed: float = 2.0  # Velocidad de rotación de órbita
+
+# === PARÁMETROS DE MOONLIGHT DASH ===
+@export_group("Moonlight Dash")
+@export var dash_distance: float = 80.0  # Distancia del dash en píxeles
+@export var dash_duration: float = 0.2  # Duración del dash en segundos
+@export var dash_cooldown: float = 3.0  # Cooldown entre dashes
+
 # === REFERENCIAS ===
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -46,6 +62,20 @@ var was_on_floor: bool = false
 var is_dead: bool = false
 var is_tearing_veil: bool = false  # Bloqueado durante animación de tear
 var is_invincible: bool = false  # Invencibilidad temporal después de daño
+
+# === VEIL SHARDS STATE ===
+var veil_shards: int = 0
+var shard_visuals: Array[Sprite2D] = []  # Sprites de shards orbitando
+var shard_orbit_angle: float = 0.0  # Ángulo actual de órbita
+var shard_scene = preload("res://scenes/components/veil_shard.tscn")
+
+# === MOONLIGHT DASH STATE ===
+var is_dashing: bool = false
+var dash_timer: float = 0.0
+var dash_direction: Vector2 = Vector2.ZERO
+var is_dash_on_cooldown: bool = false
+var dash_cooldown_timer: Timer = null
+var enemies_hit_during_dash: Array[Node2D] = []  # Para evitar contar el mismo enemigo dos veces
 
 func _ready() -> void:
 	_setup_timers()
@@ -89,13 +119,33 @@ func _setup_timers() -> void:
 		flash_timer = $FlashTimer
 		flash_timer.timeout.connect(_on_flash_timeout)
 
+	# Timer de cooldown del dash
+	if not has_node("DashCooldownTimer"):
+		dash_cooldown_timer = Timer.new()
+		dash_cooldown_timer.name = "DashCooldownTimer"
+		dash_cooldown_timer.one_shot = true
+		dash_cooldown_timer.wait_time = dash_cooldown
+		dash_cooldown_timer.timeout.connect(_on_dash_cooldown_timeout)
+		add_child(dash_cooldown_timer)
+	else:
+		dash_cooldown_timer = $DashCooldownTimer
+		dash_cooldown_timer.timeout.connect(_on_dash_cooldown_timeout)
+
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 
-	_apply_gravity(delta)
-	_handle_jump()
-	_handle_movement(delta)
+	# Dash tiene prioridad sobre movimiento normal
+	if is_dashing:
+		_process_dash(delta)
+	else:
+		_apply_gravity(delta)
+		_handle_jump()
+		_handle_movement(delta)
+		_handle_dash_input()
+
+	_handle_shard_launch()
+	_update_shard_orbit(delta)
 	_update_animations()
 
 	was_on_floor = is_on_floor()
@@ -169,6 +219,8 @@ func _check_landed() -> void:
 		landed.emit()
 		# Squash & stretch al aterrizar
 		_land_squash()
+		# === POLISH: Dust particles al aterrizar ===
+		_spawn_landing_dust()
 
 func _update_animations() -> void:
 	if is_tearing_veil:
@@ -231,26 +283,26 @@ func bounce(bounce_velocity: float = -300.0) -> void:
 	jumped.emit()
 
 func _jump_squash() -> void:
-	"""Efecto de squash & stretch al saltar"""
+	"""Efecto de squash & stretch al saltar (muy sutil)"""
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.set_ease(Tween.EASE_OUT)
-	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_trans(Tween.TRANS_CUBIC)  # Más suave que BACK
 
-	# Squash horizontal, stretch vertical
-	sprite.scale = Vector2(0.8, 1.2)
-	tween.tween_property(sprite, "scale", Vector2.ONE, 0.2)
+	# Squash horizontal, stretch vertical (muy reducido)
+	sprite.scale = Vector2(0.95, 1.05)  # Solo 5% de deformación
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.15)
 
 func _land_squash() -> void:
-	"""Efecto de squash & stretch al aterrizar"""
+	"""Efecto de squash & stretch al aterrizar (muy sutil)"""
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.set_ease(Tween.EASE_OUT)
-	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_trans(Tween.TRANS_CUBIC)  # Más suave que BACK
 
-	# Stretch horizontal, squash vertical
-	sprite.scale = Vector2(1.2, 0.8)
-	tween.tween_property(sprite, "scale", Vector2.ONE, 0.25)
+	# Stretch horizontal, squash vertical (muy reducido)
+	sprite.scale = Vector2(1.05, 0.95)  # Solo 5% de deformación
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.2)
 
 ## === SISTEMA DE IFRAMES ===
 
@@ -260,6 +312,21 @@ func take_damage(amount: int) -> void:
 	if is_invincible:
 		print("Player is invincible, damage ignored")
 		return
+
+	# === POLISH: Freeze frame ===
+	_apply_freeze_frame(0.05)
+
+	# === POLISH: Gamepad vibration ===
+	_apply_gamepad_vibration(0.4, 0.4, 0.25)
+
+	# === POLISH: Camera shake (muy sutil) ===
+	_apply_camera_shake(0.15)
+
+	# === POLISH: Hit flash ===
+	_apply_hit_flash()
+
+	# === POLISH: Knockback ===
+	_apply_knockback(amount)
 
 	# Aplicar daño
 	GameManager.change_health(-amount)
@@ -306,3 +373,582 @@ func _on_flash_timeout() -> void:
 func is_player_invincible() -> bool:
 	"""Retorna true si el jugador está en iFrames"""
 	return is_invincible
+
+# === VEIL SHARDS SYSTEM ===
+
+func add_veil_shard() -> void:
+	"""Agrega un shard al inventario del jugador"""
+	if veil_shards >= max_shards:
+		print("Max shards reached (%d)" % max_shards)
+		return
+
+	veil_shards += 1
+	_update_shard_visuals()
+
+	# SFX
+	AudioManager.play_sfx("shard_collect", -8.0)
+
+	# Feedback visual sutil
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_BACK)
+	sprite.scale = Vector2(1.1, 1.1)
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.2)
+
+	print("Veil Shard collected! Total: %d/%d" % [veil_shards, max_shards])
+
+func _handle_shard_launch() -> void:
+	"""Detecta input para lanzar shards"""
+	# No lanzar durante tear veil animation
+	if is_tearing_veil or is_dead:
+		return
+
+	# Input: Click derecho del mouse o botón R (gamepad)
+	if Input.is_action_just_pressed("launch_shard"):
+		_launch_shard()
+
+func _launch_shard() -> void:
+	"""Lanza un shard hacia el cursor/dirección"""
+	if veil_shards <= 0:
+		print("No shards to launch")
+		return
+
+	# Reducir contador
+	veil_shards -= 1
+	_update_shard_visuals()
+
+	# Crear proyectil
+	var shard = shard_scene.instantiate()
+
+	# Posicionar en el jugador
+	shard.global_position = global_position
+
+	# Determinar dirección
+	var launch_direction: Vector2
+
+	# Detectar si se usó gamepad para lanzar
+	var used_gamepad = Input.is_action_just_pressed("launch_shard") and Input.get_connected_joypads().size() > 0
+
+	# Si usó gamepad o teclado: lanzar horizontal
+	if used_gamepad or Input.mouse_mode != Input.MOUSE_MODE_VISIBLE:
+		# Gamepad o teclado: lanzar en la dirección que mira el sprite
+		launch_direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
+	else:
+		# Mouse: apuntar hacia el cursor
+		var mouse_pos = get_global_mouse_position()
+		launch_direction = (mouse_pos - global_position).normalized()
+
+	# Lanzar
+	shard.launch(launch_direction)
+
+	# Añadir al ProjectileManager
+	ProjectileManager.add_projectile(shard)
+
+	# SFX
+	AudioManager.play_sfx("shard_launch", -6.0)
+
+	# Feedback visual de lanzamiento
+	_shard_launch_feedback()
+
+	print("Shard launched in direction: %v | Remaining: %d" % [launch_direction, veil_shards])
+
+func _update_shard_visuals() -> void:
+	"""Actualiza los sprites de shards orbitando"""
+	# Limpiar visuales existentes
+	for visual in shard_visuals:
+		if is_instance_valid(visual):
+			visual.queue_free()
+	shard_visuals.clear()
+
+	# Crear nuevos visuales
+	for i in veil_shards:
+		var shard_sprite = Sprite2D.new()
+
+		# Configurar sprite (usar el mismo que el proyectil o un placeholder)
+		# Por ahora usaremos un ColorRect simple
+		var rect = ColorRect.new()
+		rect.size = Vector2(6, 6)
+		rect.position = Vector2(-3, -3)  # Centrar
+		rect.color = Color(1.0, 1.0, 1.0, 0.8)
+
+		shard_sprite.add_child(rect)
+		add_child(shard_sprite)
+		shard_visuals.append(shard_sprite)
+
+		# Efecto de aparición
+		shard_sprite.modulate.a = 0.0
+		shard_sprite.scale = Vector2.ZERO
+		var tween = create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(shard_sprite, "modulate:a", 1.0, 0.3)
+		tween.tween_property(shard_sprite, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK)
+
+func _update_shard_orbit(delta: float) -> void:
+	"""Actualiza la posición orbital de los shards visuales"""
+	if shard_visuals.is_empty():
+		return
+
+	# Incrementar ángulo
+	shard_orbit_angle += shard_orbit_speed * delta
+
+	# Posicionar cada shard en órbita
+	var angle_step = TAU / shard_visuals.size()
+
+	for i in shard_visuals.size():
+		if not is_instance_valid(shard_visuals[i]):
+			continue
+
+		var angle = shard_orbit_angle + (angle_step * i)
+		var offset = Vector2(
+			cos(angle) * shard_orbit_radius,
+			sin(angle) * shard_orbit_radius
+		)
+
+		shard_visuals[i].position = offset
+
+		# Rotar el shard para que apunte hacia afuera
+		shard_visuals[i].rotation = angle + PI/2
+
+func _shard_launch_feedback() -> void:
+	"""Feedback visual al lanzar un shard"""
+	# Pequeño recoil
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	var recoil = Vector2(0.95, 1.05)
+	sprite.scale = recoil
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.1)
+
+	# Partículas de lanzamiento
+	_spawn_shard_launch_particles()
+
+func _spawn_shard_launch_particles() -> void:
+	"""Partículas al lanzar un shard"""
+	var particles = GPUParticles2D.new()
+
+	# Configuración básica
+	particles.global_position = global_position
+	particles.emitting = true
+	particles.one_shot = true
+	particles.amount = 8
+	particles.lifetime = 0.3
+	particles.explosiveness = 1.0
+
+	# Material de partícula
+	var material = ParticleProcessMaterial.new()
+
+	# Emisión en punto
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_POINT
+
+	# Dirección hacia atrás (recoil)
+	material.direction = Vector3(0, 0, 0)
+	material.spread = 30.0
+	material.initial_velocity_min = 20.0
+	material.initial_velocity_max = 40.0
+
+	# Gravedad ligera
+	material.gravity = Vector3(0, 50, 0)
+
+	# Escala pequeña
+	material.scale_min = 2.0
+	material.scale_max = 4.0
+
+	# Color blanco brillante
+	material.color = Color(1.2, 1.2, 1.2, 0.8)
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, Color(1.2, 1.2, 1.2, 0.8))
+	gradient.add_point(1.0, Color(1.0, 1.0, 1.0, 0.0))
+	var gradient_texture = GradientTexture1D.new()
+	gradient_texture.gradient = gradient
+	material.color_ramp = gradient_texture
+
+	particles.process_material = material
+
+	# Añadir al árbol
+	get_tree().root.add_child(particles)
+
+	# Auto-destruir
+	var cleanup_timer = Timer.new()
+	cleanup_timer.wait_time = particles.lifetime + 0.1
+	cleanup_timer.one_shot = true
+	cleanup_timer.autostart = true
+	cleanup_timer.timeout.connect(func():
+		if is_instance_valid(particles):
+			particles.queue_free()
+		cleanup_timer.queue_free()
+	)
+	get_tree().root.add_child(cleanup_timer)
+
+# === MOONLIGHT DASH SYSTEM ===
+
+func _handle_dash_input() -> void:
+	"""Detecta input para iniciar dash"""
+	# No dash durante tear veil o si está en cooldown
+	if is_tearing_veil or is_dash_on_cooldown or is_dead:
+		return
+
+	# Input: Shift / Botón B (gamepad) / Doble tap (opcional)
+	if Input.is_action_just_pressed("dash"):
+		_start_dash()
+
+func _start_dash() -> void:
+	"""Inicia el dash"""
+	# Determinar dirección del dash
+	var input_direction = Input.get_axis("move_left", "move_right")
+
+	# Si no hay input, dash en la dirección que mira el sprite
+	if input_direction == 0:
+		dash_direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
+	else:
+		dash_direction = Vector2.RIGHT if input_direction > 0 else Vector2.LEFT
+
+	# Activar estado de dash
+	is_dashing = true
+	dash_timer = dash_duration
+	enemies_hit_during_dash.clear()
+
+	# Activar cooldown
+	is_dash_on_cooldown = true
+	dash_cooldown_timer.start()
+
+	# Feedback visual de inicio
+	_dash_start_feedback()
+
+	# SFX
+	AudioManager.play_sfx("dash", -6.0)
+
+	print("Moonlight Dash started! Direction: %v" % dash_direction)
+
+func _process_dash(delta: float) -> void:
+	"""Procesa el movimiento durante el dash"""
+	dash_timer -= delta
+
+	if dash_timer <= 0:
+		_end_dash()
+		return
+
+	# Calcular velocidad del dash
+	var dash_speed = dash_distance / dash_duration
+	velocity.x = dash_direction.x * dash_speed
+	velocity.y = 0  # Dash horizontal puro (no afectado por gravedad)
+
+	# Detectar enemigos atravesados
+	_check_dash_collisions()
+
+	# Feedback visual continuo (after-images)
+	_spawn_dash_afterimage()
+
+func _end_dash() -> void:
+	"""Termina el dash"""
+	is_dashing = false
+	dash_timer = 0.0
+
+	# Restaurar velocidad (pequeño momentum)
+	velocity.x *= 0.5
+
+	print("Moonlight Dash ended! Shards: %d" % veil_shards)
+
+func _check_dash_collisions() -> void:
+	"""Detecta colisiones con enemigos durante el dash"""
+	# Buscar enemigos cercanos
+	for body in get_tree().get_nodes_in_group("entities"):
+		if not is_instance_valid(body):
+			continue
+
+		# Evitar contar el mismo enemigo dos veces
+		if body in enemies_hit_during_dash:
+			continue
+
+		# Verificar distancia
+		var distance = global_position.distance_to(body.global_position)
+		if distance > 32.0:  # Radio de detección durante dash
+			continue
+
+		# Verificar si está revelado
+		if not body.has_node("VeilComponent"):
+			continue
+
+		var veil = body.get_node("VeilComponent")
+		if not veil.is_revealed:
+			continue
+
+		# Atravesado! Generar shard extra
+		_on_enemy_dashed_through(body)
+
+func _on_enemy_dashed_through(enemy: Node2D) -> void:
+	"""Callback cuando atraviesas un enemigo durante dash"""
+	# Marcar como golpeado
+	enemies_hit_during_dash.append(enemy)
+
+	# Generar shard extra
+	add_veil_shard()
+
+	# Efecto visual de atravesar
+	_spawn_dash_pierce_particles(enemy.global_position)
+
+	# Aplicar micro-stun al enemigo (0.3s)
+	if enemy.has_method("stun"):
+		enemy.stun(0.3)
+
+	# Determinar tipo para feedback específico
+	var is_false_enemy = enemy.is_class("FalseEnemy") or "FalseEnemy" in enemy.name
+
+	if is_false_enemy:
+		# False Enemies entran en pánico
+		print("Dashed through False Enemy (victim) - they panic!")
+	else:
+		print("Dashed through %s - shard generated!" % enemy.name)
+
+func _on_dash_cooldown_timeout() -> void:
+	"""Callback cuando termina el cooldown del dash"""
+	is_dash_on_cooldown = false
+	print("Moonlight Dash ready!")
+
+func _dash_start_feedback() -> void:
+	"""Feedback visual al iniciar dash"""
+	# Pequeño squash horizontal
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	sprite.scale = Vector2(1.2, 0.9)  # Comprimido verticalmente
+	tween.tween_property(sprite, "scale", Vector2.ONE, dash_duration)
+
+	# Partículas de inicio
+	_spawn_dash_start_particles()
+
+func _spawn_dash_afterimage() -> void:
+	"""Crea after-image durante el dash"""
+	# Crear sprite duplicado
+	var afterimage = Sprite2D.new()
+	afterimage.texture = sprite.texture
+	afterimage.flip_h = sprite.flip_h
+	afterimage.global_position = global_position
+	afterimage.modulate = Color(0.7, 0.9, 1.0, 0.6)  # Azul/blanco fantasmal
+	afterimage.z_index = -1  # Detrás del jugador
+
+	# Añadir al árbol
+	get_tree().root.add_child(afterimage)
+
+	# Fade out rápido
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(afterimage, "modulate:a", 0.0, 0.3)
+	tween.tween_property(afterimage, "scale", Vector2(0.8, 0.8), 0.3)
+	tween.finished.connect(func(): afterimage.queue_free())
+
+func _spawn_dash_start_particles() -> void:
+	"""Partículas al iniciar el dash"""
+	var particles = GPUParticles2D.new()
+
+	# Configuración básica
+	particles.global_position = global_position
+	particles.emitting = true
+	particles.one_shot = true
+	particles.amount = 15
+	particles.lifetime = 0.4
+	particles.explosiveness = 1.0
+
+	# Material
+	var material = ParticleProcessMaterial.new()
+
+	# Emisión radial
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = 16.0
+
+	# Dirección opuesta al dash
+	material.direction = Vector3(-dash_direction.x, 0, 0)
+	material.spread = 45.0
+	material.initial_velocity_min = 60.0
+	material.initial_velocity_max = 100.0
+
+	# Gravedad ligera
+	material.gravity = Vector3(0, 150, 0)
+
+	# Escala
+	material.scale_min = 3.0
+	material.scale_max = 6.0
+
+	# Color plateado/blanco
+	material.color = Color(0.8, 0.9, 1.0, 0.9)
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, Color(1.0, 1.0, 1.2, 1.0))
+	gradient.add_point(1.0, Color(0.7, 0.8, 1.0, 0.0))
+	var gradient_texture = GradientTexture1D.new()
+	gradient_texture.gradient = gradient
+	material.color_ramp = gradient_texture
+
+	particles.process_material = material
+
+	# Añadir al árbol
+	get_tree().root.add_child(particles)
+
+	# Auto-destruir
+	var cleanup_timer = Timer.new()
+	cleanup_timer.wait_time = particles.lifetime + 0.1
+	cleanup_timer.one_shot = true
+	cleanup_timer.autostart = true
+	cleanup_timer.timeout.connect(func():
+		if is_instance_valid(particles):
+			particles.queue_free()
+		cleanup_timer.queue_free()
+	)
+	get_tree().root.add_child(cleanup_timer)
+
+func _spawn_dash_pierce_particles(position: Vector2) -> void:
+	"""Partículas al atravesar un enemigo"""
+	var particles = GPUParticles2D.new()
+
+	# Configuración básica
+	particles.global_position = position
+	particles.emitting = true
+	particles.one_shot = true
+	particles.amount = 20
+	particles.lifetime = 0.5
+	particles.explosiveness = 1.0
+
+	# Material
+	var material = ParticleProcessMaterial.new()
+
+	# Emisión radial
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = 8.0
+
+	# Explosión radial
+	material.direction = Vector3(0, 0, 0)
+	material.spread = 180.0
+	material.initial_velocity_min = 80.0
+	material.initial_velocity_max = 150.0
+
+	# Gravedad
+	material.gravity = Vector3(0, 200, 0)
+
+	# Escala
+	material.scale_min = 3.0
+	material.scale_max = 6.0
+
+	# Rotación
+	material.angular_velocity_min = -540.0
+	material.angular_velocity_max = 540.0
+
+	# Color blanco brillante (atravesar)
+	material.color = Color(1.5, 1.5, 1.5, 1.0)
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, Color(1.5, 1.5, 1.5, 1.0))
+	gradient.add_point(0.6, Color(1.2, 1.2, 1.2, 0.7))
+	gradient.add_point(1.0, Color(1.0, 1.0, 1.0, 0.0))
+	var gradient_texture = GradientTexture1D.new()
+	gradient_texture.gradient = gradient
+	material.color_ramp = gradient_texture
+
+	particles.process_material = material
+
+	# Añadir al árbol
+	get_tree().root.add_child(particles)
+
+	# Auto-destruir
+	var cleanup_timer = Timer.new()
+	cleanup_timer.wait_time = particles.lifetime + 0.1
+	cleanup_timer.one_shot = true
+	cleanup_timer.autostart = true
+	cleanup_timer.timeout.connect(func():
+		if is_instance_valid(particles):
+			particles.queue_free()
+		cleanup_timer.queue_free()
+	)
+	get_tree().root.add_child(cleanup_timer)
+
+# === POLISH & JUICE METHODS ===
+
+func _apply_freeze_frame(duration: float) -> void:
+	"""Congela el tiempo brevemente para impacto dramático"""
+	Engine.time_scale = 0.0
+	await get_tree().create_timer(duration, true, false, true).timeout
+	Engine.time_scale = 1.0
+
+func _apply_gamepad_vibration(weak_magnitude: float, strong_magnitude: float, duration: float) -> void:
+	"""Vibración de gamepad para feedback táctil"""
+	# Detectar todos los joysticks conectados
+	var joy_list = Input.get_connected_joypads()
+	for joy_id in joy_list:
+		Input.start_joy_vibration(joy_id, weak_magnitude, strong_magnitude, duration)
+
+func _apply_camera_shake(trauma_amount: float) -> void:
+	"""Aplica screen shake a través de la cámara"""
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("add_trauma"):
+		camera.add_trauma(trauma_amount)
+
+func _apply_hit_flash() -> void:
+	"""Flash rojo al recibir daño"""
+	var tween = create_tween()
+	sprite.modulate = Color(2.0, 0.5, 0.5)  # Rojo intenso
+	tween.tween_property(sprite, "modulate", Color.WHITE, 0.15)
+
+func _apply_knockback(damage_amount: int) -> void:
+	"""Knockback basado en el daño recibido"""
+	# Determinar dirección del knockback (opuesto a la velocidad actual o aleatorio)
+	var knockback_direction = -sign(velocity.x) if velocity.x != 0 else (1 if randf() > 0.5 else -1)
+	var knockback_force = 150.0 + (damage_amount * 50.0)
+
+	velocity.x = knockback_direction * knockback_force
+	velocity.y = -200.0  # Empuje hacia arriba
+
+func _spawn_landing_dust() -> void:
+	"""Crea partículas de polvo al aterrizar"""
+	var particles = GPUParticles2D.new()
+
+	# Configuración básica
+	particles.global_position = global_position + Vector2(0, 16)  # A los pies del jugador
+	particles.emitting = true
+	particles.one_shot = true
+	particles.amount = 12
+	particles.lifetime = 0.5
+	particles.explosiveness = 1.0
+
+	# Material de partícula
+	var material = ParticleProcessMaterial.new()
+
+	# Emisión horizontal (a los lados)
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = 8.0
+
+	# Dirección horizontal con un poco de altura
+	material.direction = Vector3(0, -0.5, 0)  # Ligeramente hacia arriba
+	material.spread = 60.0  # Solo a los lados
+	material.initial_velocity_min = 30.0
+	material.initial_velocity_max = 80.0
+
+	# Gravedad ligera
+	material.gravity = Vector3(0, 150, 0)
+
+	# Escala pequeña (partículas de polvo)
+	material.scale_min = 2.0
+	material.scale_max = 4.0
+
+	# Rotación
+	material.angular_velocity_min = -90.0
+	material.angular_velocity_max = 90.0
+
+	# Color gris/blanco (polvo)
+	material.color = Color(0.8, 0.8, 0.8, 0.8)
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, Color(0.9, 0.9, 0.9, 0.8))
+	gradient.add_point(1.0, Color(0.8, 0.8, 0.8, 0.0))
+	var gradient_texture = GradientTexture1D.new()
+	gradient_texture.gradient = gradient
+	material.color_ramp = gradient_texture
+
+	particles.process_material = material
+
+	# Añadir al árbol root (NO como hijo del jugador para mantener posición global)
+	get_tree().root.add_child(particles)
+
+	# Auto-destruir usando Timer (evita memory leak del await)
+	var cleanup_timer = Timer.new()
+	cleanup_timer.wait_time = particles.lifetime + 0.1
+	cleanup_timer.one_shot = true
+	cleanup_timer.autostart = true
+	cleanup_timer.timeout.connect(func():
+		if is_instance_valid(particles):
+			particles.queue_free()
+		cleanup_timer.queue_free()
+	)
+	get_tree().root.add_child(cleanup_timer)

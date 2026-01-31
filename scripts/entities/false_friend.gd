@@ -1,9 +1,15 @@
 class_name FalseFriend
 extends CharacterBody2D
-## Falso Aliado (Tipo 2)
+## FALSE FRIEND - "Los Depredadores" (Tipo 2)
 ##
-## ENMASCARADO: Parece amigable, estático, hace señas
-## REVELADO: Se transforma en monstruo agresivo que persigue
+## NARRATIVA: Manipuladores que usan máscaras de amabilidad para cazar.
+##           "Confía en mí... no te haría daño..." (mentira)
+##
+## ENMASCARADO: Brazos abiertos, sonrisa perfecta, hace señas "ven aquí"
+## REVELADO: Monstruo con garras, persigue agresivamente, daña por contacto
+##
+## PREGUNTA: "¿Cuántos 'aliados' están esperando el momento de atacar?"
+## CONEXIÓN: Estos victimizaron a la protagonista antes. Revelarlos es justicia y peligro.
 
 signal died
 
@@ -15,6 +21,10 @@ signal died
 @export var attack_range: float = 24.0  # Reducido para que no se frene tan lejos
 @export var knockback_force: float = 1500.0  # Fuerza de rebote al golpear
 @export var knockback_duration: float = 0.6  # Tiempo de aturdimiento después de golpear
+
+@export_group("Health")
+@export var max_hp: int = 3  # Requiere 3 hits de shard para eliminar
+var current_hp: int = max_hp
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var veil_component: VeilComponent = $VeilComponent
@@ -165,3 +175,105 @@ func _apply_knockback(player: Node2D) -> void:
 	# Remover aturdimiento después del tiempo
 	await get_tree().create_timer(knockback_duration).timeout
 	is_stunned = false
+
+func take_damage(amount: int) -> void:
+	"""Recibe daño de shards del jugador"""
+	# Solo puede ser dañado si está revelado
+	if not is_revealed:
+		print("False Friend: Cannot be damaged while masked")
+		return
+
+	current_hp -= amount
+	print("False Friend damaged: -%d HP (Remaining: %d/%d)" % [amount, current_hp, max_hp])
+
+	# Feedback visual de daño
+	_damage_flash()
+
+	# Verificar si murió
+	if current_hp <= 0:
+		_die()
+
+func _damage_flash() -> void:
+	"""Flash blanco al recibir daño"""
+	var original_color = sprite.modulate
+	sprite.modulate = Color(2.0, 2.0, 2.0)  # Flash blanco
+
+	var tween = create_tween()
+	tween.tween_property(sprite, "modulate", original_color, 0.15)
+
+func _die() -> void:
+	"""Muerte del False Friend"""
+	print("False Friend eliminated!")
+
+	# Partículas de muerte
+	var death_color = Color(1.0, 0.3, 0.3)  # Rojo (depredador)
+	ParticleEffects.spawn_death_particles(global_position, death_color, 30)
+
+	# SFX
+	AudioManager.play_sfx("enemy_destroyed", -3.0)
+
+	# Emitir señal
+	died.emit()
+
+	# Destruir
+	queue_free()
+
+func stun(duration: float) -> void:
+	"""Aturde al False Friend (Wolf's Howl)"""
+	if not is_revealed:
+		return
+
+	print("False Friend stunned for %.1fs" % duration)
+
+	# Activar estado de aturdimiento
+	is_stunned = true
+	can_attack = false
+
+	# Feedback visual de stun
+	_stun_visual_feedback()
+
+	# Remover stun después del tiempo
+	await get_tree().create_timer(duration).timeout
+	is_stunned = false
+	can_attack = true
+
+	print("False Friend stun ended")
+
+func _stun_visual_feedback() -> void:
+	"""Feedback visual de aturdimiento"""
+	# Partículas de estrellas arriba de la cabeza
+	var particles = GPUParticles2D.new()
+
+	particles.global_position = global_position + Vector2(0, -24)  # Arriba de la cabeza
+	particles.emitting = true
+	particles.one_shot = false  # Continuo durante stun
+	particles.amount = 3
+	particles.lifetime = 0.8
+
+	var material = ParticleProcessMaterial.new()
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = 8.0
+	material.direction = Vector3(0, -1, 0)
+	material.spread = 30.0
+	material.initial_velocity_min = 10.0
+	material.initial_velocity_max = 20.0
+	material.gravity = Vector3(0, -20, 0)
+	material.scale_min = 3.0
+	material.scale_max = 5.0
+	material.color = Color(1.0, 1.0, 0.3, 0.9)  # Amarillo (mareado)
+
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, Color(1.0, 1.0, 0.5, 1.0))
+	gradient.add_point(1.0, Color(1.0, 1.0, 0.0, 0.0))
+	var gradient_texture = GradientTexture1D.new()
+	gradient_texture.gradient = gradient
+	material.color_ramp = gradient_texture
+
+	particles.process_material = material
+
+	add_child(particles)
+
+	# Destruir partículas después de stun
+	await get_tree().create_timer(is_stunned and 2.0 or 0.1).timeout
+	if is_instance_valid(particles):
+		particles.queue_free()

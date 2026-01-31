@@ -107,6 +107,20 @@ func _break_shield() -> void:
 	shield_active = false
 	current_shield_health = 0
 
+	# === POLISH: Freeze frame para máximo impacto ===
+	Engine.time_scale = 0.0
+	await get_tree().create_timer(0.08, true, false, true).timeout
+	Engine.time_scale = 1.0
+
+	# === POLISH: Vibración fuerte al romper escudo ===
+	_apply_gamepad_vibration(0.8, 0.8, 0.4)
+
+	# === POLISH: Camera shake fuerte ===
+	_apply_camera_shake(0.7)
+
+	# === POLISH: Partículas de escudo roto ===
+	_spawn_shield_break_particles()
+
 	# Ocultar escudo con animación
 	if shield_sprite:
 		var tween = create_tween()
@@ -142,6 +156,18 @@ func _destroy_turret() -> void:
 	"""Destruye la torreta completamente"""
 
 	# NOTA: VeilComponent ya contó la segunda verdad automáticamente
+
+	# === POLISH: Partículas de muerte ===
+	var death_color = Color(0.6, 0.2, 0.8, 1.0)  # Púrpura (True Threat)
+	ParticleEffects.spawn_death_particles(global_position, death_color, 40)
+
+	# === POLISH: Freeze frame en muerte ===
+	Engine.time_scale = 0.0
+	await get_tree().create_timer(0.05, true, false, true).timeout
+	Engine.time_scale = 1.0
+
+	# === POLISH: Camera shake en muerte ===
+	_apply_camera_shake(0.5)
 
 	# Detener disparos
 	shoot_timer.stop()
@@ -225,3 +251,104 @@ func _process(_delta: float) -> void:
 	# This is handled by _animate_shield() now, so this function can be removed
 	# Keeping it minimal for compatibility
 	pass
+
+func stun(duration: float) -> void:
+	"""Aturde al True Threat Shield - deja de disparar temporalmente"""
+	if not is_revealed:
+		return
+
+	print("True Threat Shield stunned for %.1fs" % duration)
+
+	# Detener disparo
+	shoot_timer.stop()
+
+	# Feedback visual de stun (oscurecer)
+	var original_color = sprite.modulate
+	sprite.modulate = Color(0.3, 0.1, 0.4, 0.6)  # Púrpura oscuro
+
+	# Restaurar después del tiempo
+	await get_tree().create_timer(duration).timeout
+	sprite.modulate = original_color
+
+	# Reiniciar timer de disparo (solo si el escudo está roto)
+	if is_revealed and not shield_active:
+		shoot_timer.start()
+
+	print("True Threat Shield stun ended")
+
+# === POLISH & JUICE METHODS ===
+
+func _apply_camera_shake(trauma_amount: float) -> void:
+	"""Aplica screen shake a través de la cámara"""
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("add_trauma"):
+		camera.add_trauma(trauma_amount)
+
+func _apply_gamepad_vibration(weak_magnitude: float, strong_magnitude: float, duration: float) -> void:
+	"""Vibración de gamepad para feedback táctil"""
+	var joy_list = Input.get_connected_joypads()
+	for joy_id in joy_list:
+		Input.start_joy_vibration(joy_id, weak_magnitude, strong_magnitude, duration)
+
+func _spawn_shield_break_particles() -> void:
+	"""Partículas de escudo rompiéndose"""
+	var particles = GPUParticles2D.new()
+
+	# Configuración básica
+	particles.global_position = global_position
+	particles.emitting = true
+	particles.one_shot = true
+	particles.amount = 40  # Muchas partículas para impacto
+	particles.lifetime = 1.2
+	particles.explosiveness = 1.0
+
+	# Material de partícula
+	var material = ParticleProcessMaterial.new()
+
+	# Emisión en explosión radial
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = 16.0
+
+	# Dirección explosiva en todas direcciones
+	material.direction = Vector3(0, 0, 0)
+	material.spread = 180.0
+	material.initial_velocity_min = 100.0
+	material.initial_velocity_max = 250.0
+
+	# Gravedad moderada
+	material.gravity = Vector3(0, 200, 0)
+
+	# Escala variable (fragmentos de escudo)
+	material.scale_min = 3.0
+	material.scale_max = 7.0
+
+	# Rotación rápida
+	material.angular_velocity_min = -540.0
+	material.angular_velocity_max = 540.0
+
+	# Color del escudo (azul brillante)
+	material.color = shield_color * 1.5  # Overbright
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, shield_color * 1.5)
+	gradient.add_point(0.6, shield_color)
+	gradient.add_point(1.0, Color(shield_color.r, shield_color.g, shield_color.b, 0.0))
+	var gradient_texture = GradientTexture1D.new()
+	gradient_texture.gradient = gradient
+	material.color_ramp = gradient_texture
+
+	particles.process_material = material
+
+	# Añadir al árbol
+	get_tree().root.add_child(particles)
+
+	# Auto-destruir usando Timer (evita memory leak del await)
+	var cleanup_timer = Timer.new()
+	cleanup_timer.wait_time = particles.lifetime + 0.1
+	cleanup_timer.one_shot = true
+	cleanup_timer.autostart = true
+	cleanup_timer.timeout.connect(func():
+		if is_instance_valid(particles):
+			particles.queue_free()
+		cleanup_timer.queue_free()
+	)
+	get_tree().root.add_child(cleanup_timer)

@@ -30,13 +30,13 @@ func _update_label() -> void:
 	if required_truths > 0:
 		var current = GameManager.current_level_truths
 		if current >= required_truths:
-			label.text = "GOAL!"
+			label.text = "ESCAPE"
 			label.modulate = Color(0.2, 1.0, 0.2, 1.0)
 		else:
-			label.text = "Need %d truths" % (required_truths - current)
+			label.text = "Tear %d veils" % (required_truths - current)
 			label.modulate = Color(1.0, 1.0, 0.2, 1.0)
 	else:
-		label.text = "GOAL!"
+		label.text = "ESCAPE"
 		label.modulate = Color(0.2, 1.0, 0.2, 1.0)
 
 func _on_body_entered(body: Node2D) -> void:

@@ -1,9 +1,15 @@
 class_name TrueThreat
 extends StaticBody2D
-## Verdadero Enemigo (Tipo 3)
+## TRUE THREAT - "El Sistema" (Tipo 3)
 ##
-## ENMASCARADO: Parece estatua/objeto inanimado, completamente estático
-## REVELADO: Torreta biológica que dispara proyectiles hacia el jugador
+## NARRATIVA: Estructuras e instituciones que perpetúan las mentiras.
+##           "Siempre estuvieron ahí, solo que no los veías como amenaza."
+##
+## ENMASCARADO: Estatua/objeto inanimado (gris piedra), completamente estático
+## REVELADO: Horror eldritch, torreta biológica que dispara proyectiles (daño: 2 HP)
+##
+## PREGUNTA: "¿Qué pasa cuando revelas las estructuras de poder que te ignoran?"
+## FUNCIÓN: El juego FUERZA a revelarlos (puertas requieren verdades) - no puedes ignorar el sistema.
 
 signal died
 
@@ -48,8 +54,16 @@ func _on_veil_torn() -> void:
 	"""Llamado cuando se revela el velo"""
 	is_revealed = true
 
+	# === POLISH: Partículas de revelación (True Threat = rojo/púrpura) ===
+	ParticleEffects.spawn_reveal_particles_typed(global_position, true)
+
+	# === POLISH: Partículas de transformación ===
+	var old_color = Color(0.5, 0.5, 0.5, 0.8)  # Gris enmascarado
+	var new_color = Color(0.6, 0.2, 0.8, 1.0)  # Púrpura revelado
+	ParticleEffects.spawn_transform_particles(global_position, old_color, new_color)
+
 	# Cambiar apariencia (placeholder: púrpura oscuro)
-	sprite.modulate = Color(0.6, 0.2, 0.8, 1.0)  # Púrpura oscuro
+	sprite.modulate = new_color
 
 	# Buscar al jugador
 	player_ref = get_tree().get_first_node_in_group("player")
@@ -129,3 +143,27 @@ func _fire_effect() -> void:
 
 	# TODO: SFX de disparo
 	# AudioManager.play_sfx("projectile_fire")
+
+func stun(duration: float) -> void:
+	"""Aturde al True Threat - deja de disparar temporalmente"""
+	if not is_revealed:
+		return
+
+	print("True Threat stunned for %.1fs" % duration)
+
+	# Detener disparo
+	fire_timer.stop()
+
+	# Feedback visual de stun (apagar temporalmente)
+	var original_color = sprite.modulate
+	sprite.modulate = Color(0.4, 0.2, 0.5, 0.6)  # Oscurecer
+
+	# Restaurar después del tiempo
+	await get_tree().create_timer(duration).timeout
+	sprite.modulate = original_color
+
+	# Reiniciar timer de disparo
+	if is_revealed:
+		fire_timer.start()
+
+	print("True Threat stun ended")

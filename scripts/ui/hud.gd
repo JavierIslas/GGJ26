@@ -5,9 +5,11 @@ extends CanvasLayer
 
 @onready var truth_label: Label = $MarginContainer/VBoxContainer/TruthCounter
 @onready var hp_container: HBoxContainer = $MarginContainer/VBoxContainer/HPContainer
+@onready var shard_label: Label = null  # Se creará dinámicamente si no existe
 
 ## Sprites de corazones (se crearán dinámicamente)
 var heart_sprites: Array[ColorRect] = []
+var player_ref: Node2D = null
 
 func _ready() -> void:
 	# Conectar señales del GameManager
@@ -20,6 +22,14 @@ func _ready() -> void:
 	# Inicializar display
 	_update_truth_display()
 	_setup_hearts()
+	_setup_shard_display()
+
+	# Cachear referencia al jugador
+	player_ref = get_tree().get_first_node_in_group("player")
+
+func _process(_delta: float) -> void:
+	"""Actualizar contador de shards cada frame"""
+	_update_shard_display()
 
 func _setup_hearts() -> void:
 	"""Crea los sprites de corazones según max_hp"""
@@ -46,9 +56,9 @@ func _update_truth_display() -> void:
 	var total = GameManager.total_truths_possible - GameManager.total_truths_revealed + current
 
 	if total > 0:
-		truth_label.text = "Verdades: %d / %d" % [current, total]
+		truth_label.text = "Velos: %d / %d" % [current, total]
 	else:
-		truth_label.text = "Verdades: %d" % current
+		truth_label.text = "Velos: %d" % current
 
 func _update_hearts_display() -> void:
 	"""Actualiza el display de corazones según HP actual"""
@@ -88,3 +98,33 @@ func _on_health_changed(_current_hp: int, _max_hp: int) -> void:
 			tween.tween_property(heart, "rotation", deg_to_rad(15), 0.1)
 			tween.tween_property(heart, "rotation", deg_to_rad(-15), 0.1)
 			tween.tween_property(heart, "rotation", original_rotation, 0.1)
+
+func _setup_shard_display() -> void:
+	"""Crea el label de contador de shards"""
+	# Crear label si no existe
+	if not has_node("MarginContainer/VBoxContainer/ShardCounter"):
+		shard_label = Label.new()
+		shard_label.name = "ShardCounter"
+		shard_label.text = "Shards: 0/3"
+
+		# Obtener el VBoxContainer
+		var vbox = $MarginContainer/VBoxContainer
+		vbox.add_child(shard_label)
+	else:
+		shard_label = $MarginContainer/VBoxContainer/ShardCounter
+
+func _update_shard_display() -> void:
+	"""Actualiza el contador de shards desde el jugador"""
+	if not shard_label or not is_instance_valid(player_ref):
+		return
+
+	# Obtener shards del jugador
+	var current_shards = 0
+	var max_shards_val = 3
+
+	if player_ref and "veil_shards" in player_ref:
+		current_shards = player_ref.veil_shards
+	if player_ref and "max_shards" in player_ref:
+		max_shards_val = player_ref.max_shards
+
+	shard_label.text = "Shards: %d/%d" % [current_shards, max_shards_val]

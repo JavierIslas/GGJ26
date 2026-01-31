@@ -37,11 +37,12 @@ func show_victory(truths_revealed: int, truths_possible: int, next_level: String
 
 	# Calcular ranking
 	var rank = _calculate_rank(percentage)
+	var rank_desc = _get_rank_description(rank)
 
 	# Actualizar labels
-	truths_label.text = "Truths Revealed: %d / %d" % [truths_revealed, truths_possible]
-	percentage_label.text = "Completion: %.0f%%" % percentage
-	rank_label.text = "Rank: %s" % rank
+	truths_label.text = "Veils Torn: %d / %d" % [truths_revealed, truths_possible]
+	percentage_label.text = "Truth Rate: %.0f%%" % percentage
+	rank_label.text = "%s - %s" % [rank, rank_desc]
 
 	# Colorear rank
 	_color_rank_label(rank)
@@ -60,15 +61,31 @@ func show_victory(truths_revealed: int, truths_possible: int, next_level: String
 func _calculate_rank(percentage: float) -> String:
 	"""Calcula el ranking según el porcentaje"""
 	if percentage >= 100.0:
-		return "S"  # Perfect
+		return "S"  # Perfect - The Wolf
 	elif percentage >= 80.0:
-		return "A"  # Great
+		return "A"  # Great - Revelator
 	elif percentage >= 60.0:
-		return "B"  # Good
+		return "B"  # Good - Awakening
 	elif percentage >= 40.0:
-		return "C"  # Average
+		return "C"  # Average - Hesitant
 	else:
-		return "D"  # Poor
+		return "D"  # Poor - Blinded
+
+func _get_rank_description(rank: String) -> String:
+	"""Retorna descripción narrativa del rank"""
+	match rank:
+		"S":
+			return "The Wolf"
+		"A":
+			return "Revelator"
+		"B":
+			return "Awakening"
+		"C":
+			return "Hesitant"
+		"D":
+			return "Blinded"
+		_:
+			return ""
 
 func _color_rank_label(rank: String) -> void:
 	"""Colorea el label del rank según su valor"""

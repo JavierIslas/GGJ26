@@ -29,9 +29,9 @@ func _update_stats() -> void:
 
 	if possible > 0:
 		var percentage = (float(truths) / float(possible)) * 100.0
-		truths_label.text = "Verdades reveladas: %d / %d (%.0f%%)" % [truths, possible, percentage]
+		truths_label.text = "Velos Arrancados: %d / %d (%.0f%%)" % [truths, possible, percentage]
 	else:
-		truths_label.text = "Verdades reveladas: %d" % truths
+		truths_label.text = "Velos Arrancados: %d" % truths
 
 func _on_restart_button_pressed() -> void:
 	# Despausar si estaba pausado

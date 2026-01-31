@@ -1,9 +1,14 @@
 class_name FalseEnemy
 extends CharacterBody2D
-## Falso Enemigo (Tipo 1)
+## FALSE ENEMY - "Las Víctimas" (Tipo 1)
 ##
-## ENMASCARADO: Parece amenazante, patrulla lentamente
-## REVELADO: Es una víctima asustada, huye del jugador
+## NARRATIVA: Víctimas que adoptaron máscaras agresivas para protegerse.
+##           "Parezco peligroso para que me dejen en paz."
+##
+## ENMASCARADO: Postura amenazante, patrulla defensivamente (50 px/s)
+## REVELADO: Encogido, asustado, huye llorando (100 px/s)
+##
+## PREGUNTA: "¿Cuántos 'enemigos' son realmente víctimas disfrazadas?"
 
 signal died
 
@@ -99,11 +104,86 @@ func _on_veil_torn() -> void:
 	"""Llamado cuando se revela el velo"""
 	is_revealed = true
 
+	# === POLISH: Partículas de revelación (False Enemy = azul) ===
+	ParticleEffects.spawn_reveal_particles_typed(global_position, false)
+
+	# === POLISH: Partículas de transformación ===
+	var old_color = Color(0.5, 0.5, 0.5, 0.8)  # Gris enmascarado
+	var new_color = Color(0.6, 0.6, 1.0, 1.0)  # Azul revelado
+	ParticleEffects.spawn_transform_particles(global_position, old_color, new_color)
+
 	# Cambiar color del sprite (placeholder hasta tener arte real)
-	sprite.modulate = Color(0.6, 0.6, 1.0, 1.0)  # Azul pálido, opaco
+	sprite.modulate = new_color
 
 	# Cambiar animación si existe
 	if animation_player and animation_player.has_animation("revealed"):
 		animation_player.play("revealed")
 
 	print("False Enemy revealed! Now fleeing...")
+
+func stun(duration: float) -> void:
+	"""Aturde al False Enemy - huye el doble de rápido (terror extremo)"""
+	if not is_revealed:
+		return
+
+	print("False Enemy stunned (terrified) for %.1fs" % duration)
+
+	# False Enemies no se paralizan - entran en pánico y huyen más rápido
+	var original_flee_speed = flee_speed
+	flee_speed = original_flee_speed * 2.0  # El doble de velocidad
+
+	# Feedback visual de terror
+	_terror_visual_feedback()
+
+	# Restaurar velocidad después del tiempo
+	await get_tree().create_timer(duration).timeout
+	flee_speed = original_flee_speed
+
+	print("False Enemy terror ended")
+
+func _terror_visual_feedback() -> void:
+	"""Feedback visual de terror (huida acelerada)"""
+	# Temblar sprite (más rápido que stun normal)
+	var original_pos = sprite.position
+	var shake_tween = create_tween()
+	shake_tween.set_loops(6)  # Varias sacudidas
+	shake_tween.tween_property(sprite, "position", original_pos + Vector2(3, 0), 0.05)
+	shake_tween.tween_property(sprite, "position", original_pos + Vector2(-3, 0), 0.05)
+	shake_tween.tween_property(sprite, "position", original_pos, 0.05)
+
+	# Partículas de pánico (gotas de sudor)
+	var particles = GPUParticles2D.new()
+
+	particles.global_position = global_position + Vector2(0, -16)
+	particles.emitting = true
+	particles.one_shot = false
+	particles.amount = 4
+	particles.lifetime = 0.6
+
+	var material = ParticleProcessMaterial.new()
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = 8.0
+	material.direction = Vector3(0, 1, 0)  # Caen hacia abajo
+	material.spread = 20.0
+	material.initial_velocity_min = 30.0
+	material.initial_velocity_max = 50.0
+	material.gravity = Vector3(0, 200, 0)
+	material.scale_min = 2.0
+	material.scale_max = 4.0
+	material.color = Color(0.6, 0.8, 1.0, 0.7)  # Azul (lágrimas/sudor)
+
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, Color(0.7, 0.9, 1.0, 0.8))
+	gradient.add_point(1.0, Color(0.5, 0.7, 1.0, 0.0))
+	var gradient_texture = GradientTexture1D.new()
+	gradient_texture.gradient = gradient
+	material.color_ramp = gradient_texture
+
+	particles.process_material = material
+
+	add_child(particles)
+
+	# Destruir partículas después de stun
+	await get_tree().create_timer(2.0).timeout
+	if is_instance_valid(particles):
+		particles.queue_free()
