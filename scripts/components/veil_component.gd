@@ -38,9 +38,8 @@ func tear_veil() -> void:
 	# Señal final de revelación completa
 	veil_torn.emit()
 
-	# Notificar a la entidad padre que fue revelada
-	if parent_entity.has_method("_on_veil_torn"):
-		parent_entity._on_veil_torn()
+	# NOTA: No llamar _on_veil_torn() directamente aquí
+	# Las entidades deben conectarse a la señal veil_torn
 
 ## Reinicia el componente (útil para testing)
 func reset() -> void:

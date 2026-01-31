@@ -14,6 +14,9 @@ func _ready() -> void:
 	GameManager.truth_revealed.connect(_on_truth_revealed)
 	GameManager.health_changed.connect(_on_health_changed)
 
+	# Esperar un frame para que LevelManager inicialice
+	await get_tree().process_frame
+
 	# Inicializar display
 	_update_truth_display()
 	_setup_hearts()
@@ -38,9 +41,9 @@ func _setup_hearts() -> void:
 	_update_hearts_display()
 
 func _update_truth_display() -> void:
-	"""Actualiza el contador de verdades"""
-	var current = GameManager.total_truths_revealed
-	var total = GameManager.total_truths_possible
+	"""Actualiza el contador de verdades del nivel actual"""
+	var current = GameManager.current_level_truths
+	var total = GameManager.total_truths_possible - GameManager.total_truths_revealed + current
 
 	if total > 0:
 		truth_label.text = "Verdades: %d / %d" % [current, total]

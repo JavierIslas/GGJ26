@@ -1,0 +1,283 @@
+[gd_scene load_steps=17 format=3 uid="uid://dr0c2rqeklns3"]
+
+[ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/false_enemy_fast.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/false_friend_jumper.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_tracking.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/level/truth_door.tscn" id="9"]
+[ext_resource type="Script" uid="uid://btqr6wm500ph6" path="res://scripts/level/level_manager.gd" id="10"]
+[ext_resource type="PackedScene" path="res://scenes/level/level_goal.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://scenes/ui/victory_screen.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_laser.tscn" id="13"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_burst.tscn" id="14"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_shield.tscn" id="15"]
+
+[sub_resource type="RectangleShape2D" id="floor_shape"]
+size = Vector2(1500, 50)
+
+[node name="Level2" type="Node2D"]
+
+[node name="LevelManager" type="Node" parent="."]
+script = ExtResource("10")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 5500.0
+offset_bottom = 1180.0
+color = Color(0.08, 0.08, 0.12, 1)
+
+[node name="Player" parent="." instance=ExtResource("1")]
+position = Vector2(150, 500)
+
+[node name="SpawnPoint" type="Marker2D" parent="." groups=["spawn_point"]]
+position = Vector2(150, 500)
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="Platforms"]
+position = Vector2(2500, 580)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Floor"]
+scale = Vector2(3.5, 1)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/Floor"]
+modulate = Color(0.25, 0.25, 0.3, 1)
+scale = Vector2(164, 1.5625)
+texture = ExtResource("2")
+
+[node name="WallLeft" type="StaticBody2D" parent="Platforms"]
+position = Vector2(50, 300)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/WallLeft"]
+rotation = 1.5708
+scale = Vector2(0.2, 0.1)
+shape = SubResource("floor_shape")
+
+[node name="WallRight" type="StaticBody2D" parent="Platforms"]
+position = Vector2(5200, 300)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/WallRight"]
+rotation = 1.5708
+scale = Vector2(0.2, 0.1)
+shape = SubResource("floor_shape")
+
+[node name="Platform1_Area2" type="StaticBody2D" parent="Platforms"]
+position = Vector2(800, 450)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform1_Area2"]
+scale = Vector2(0.15, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform1_Area2"]
+modulate = Color(0.35, 0.35, 0.4, 1)
+scale = Vector2(7, 0.9)
+texture = ExtResource("2")
+
+[node name="Platform2_Area2" type="StaticBody2D" parent="Platforms"]
+position = Vector2(1000, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform2_Area2"]
+scale = Vector2(0.15, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform2_Area2"]
+modulate = Color(0.35, 0.35, 0.4, 1)
+scale = Vector2(7, 0.9)
+texture = ExtResource("2")
+
+[node name="Platform3_Area3" type="StaticBody2D" parent="Platforms"]
+position = Vector2(1600, 400)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform3_Area3"]
+scale = Vector2(0.2, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform3_Area3"]
+modulate = Color(0.35, 0.35, 0.4, 1)
+scale = Vector2(9, 0.9)
+texture = ExtResource("2")
+
+[node name="Platform4_Area4" type="StaticBody2D" parent="Platforms"]
+position = Vector2(2400, 450)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform4_Area4"]
+scale = Vector2(0.2, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform4_Area4"]
+modulate = Color(0.35, 0.35, 0.4, 1)
+scale = Vector2(9, 0.9)
+texture = ExtResource("2")
+
+[node name="Platform5_Area5" type="StaticBody2D" parent="Platforms"]
+position = Vector2(3200, 400)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform5_Area5"]
+scale = Vector2(0.2, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform5_Area5"]
+modulate = Color(0.35, 0.35, 0.4, 1)
+scale = Vector2(9, 0.9)
+texture = ExtResource("2")
+
+[node name="Platform6_BossUpper1" type="StaticBody2D" parent="Platforms"]
+position = Vector2(4333, 395)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform6_BossUpper1"]
+scale = Vector2(0.12, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform6_BossUpper1"]
+modulate = Color(0.35, 0.35, 0.4, 1)
+scale = Vector2(5.5, 0.9)
+texture = ExtResource("2")
+
+[node name="Platform7_BossUpper2" type="StaticBody2D" parent="Platforms"]
+position = Vector2(4757, 379)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform7_BossUpper2"]
+scale = Vector2(0.12, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform7_BossUpper2"]
+modulate = Color(0.35, 0.35, 0.4, 1)
+scale = Vector2(5.5, 0.9)
+texture = ExtResource("2")
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="Area2_Tracking1" parent="Entities" instance=ExtResource("6")]
+position = Vector2(900, 540)
+
+[node name="Area3_Laser1" parent="Entities" instance=ExtResource("13")]
+position = Vector2(1600, 360)
+
+[node name="Area4_FastEnemy1" parent="Entities" instance=ExtResource("3")]
+position = Vector2(2200, 540)
+
+[node name="Area4_FastEnemy2" parent="Entities" instance=ExtResource("3")]
+position = Vector2(2600, 540)
+
+[node name="Area4_Burst1" parent="Entities" instance=ExtResource("14")]
+position = Vector2(2400, 410)
+
+[node name="Area5_Shield1" parent="Entities" instance=ExtResource("15")]
+position = Vector2(3200, 360)
+
+[node name="Area5_Jumper1" parent="Entities" instance=ExtResource("4")]
+position = Vector2(3350, 540)
+
+[node name="Boss_Shield_Center" parent="Entities" instance=ExtResource("15")]
+position = Vector2(4500, 540)
+
+[node name="Boss_Tracking_Left" parent="Entities" instance=ExtResource("6")]
+position = Vector2(4333, 365)
+
+[node name="Boss_Tracking_Right" parent="Entities" instance=ExtResource("6")]
+position = Vector2(4757, 349)
+
+[node name="Boss_Laser_Side" parent="Entities" instance=ExtResource("13")]
+position = Vector2(4050, 540)
+
+[node name="Doors" type="Node2D" parent="."]
+
+[node name="Door1_Area2" parent="Doors" instance=ExtResource("9")]
+position = Vector2(650, 530)
+door_color = Color(1, 0.2, 0.2, 1)
+
+[node name="Door2_Area4" parent="Doors" instance=ExtResource("9")]
+position = Vector2(1900, 530)
+truths_required = 3
+door_color = Color(1, 0.4, 0.1, 1)
+
+[node name="Door3_Area5" parent="Doors" instance=ExtResource("9")]
+position = Vector2(2900, 530)
+truths_required = 6
+
+[node name="Door4_Boss" parent="Doors" instance=ExtResource("9")]
+position = Vector2(3800, 530)
+truths_required = 8
+door_color = Color(0.8, 0.1, 0.8, 1)
+
+[node name="DoorFinal" parent="Doors" instance=ExtResource("9")]
+position = Vector2(5000, 530)
+truths_required = 12
+door_color = Color(0.8, 0.6, 0.1, 1)
+
+[node name="LevelGoal" parent="." instance=ExtResource("11")]
+position = Vector2(5100, 530)
+required_truths = 12
+
+[node name="UI" type="Node2D" parent="."]
+
+[node name="HUD" parent="UI" instance=ExtResource("5")]
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("7")]
+
+[node name="GameOver" parent="UI" instance=ExtResource("8")]
+
+[node name="VictoryScreen" parent="UI" instance=ExtResource("12")]
+
+[node name="Instructions" type="Node2D" parent="."]
+
+[node name="IntroText" type="Label" parent="Instructions"]
+offset_left = 100.0
+offset_top = 400.0
+offset_right = 350.0
+offset_bottom = 470.0
+theme_override_font_sizes/font_size = 16
+text = "LEVEL 2: ADVANCED THREATS
+Nuevas torretas avanzadas
+¡Ten cuidado!"
+horizontal_alignment = 1
+
+[node name="TrackingHint" type="Label" parent="Instructions"]
+offset_left = 750.0
+offset_top = 450.0
+offset_right = 950.0
+offset_bottom = 490.0
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "TRACKING TURRET
+Rota para seguirte"
+horizontal_alignment = 1
+
+[node name="LaserHint" type="Label" parent="Instructions"]
+offset_left = 1450.0
+offset_top = 300.0
+offset_right = 1750.0
+offset_bottom = 340.0
+theme_override_colors/font_color = Color(0.2, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "LASER TURRET
+Telegraph → Láser continuo"
+horizontal_alignment = 1
+
+[node name="ShieldHint" type="Label" parent="Instructions"]
+offset_left = 3050.0
+offset_top = 300.0
+offset_right = 3350.0
+offset_bottom = 340.0
+theme_override_colors/font_color = Color(0.2, 0.6, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "SHIELDED TURRET
+Requiere 2 revelaciones"
+horizontal_alignment = 1
+
+[node name="BossHint" type="Label" parent="Instructions"]
+offset_left = 3650.0
+offset_top = 450.0
+offset_right = 3950.0
+offset_bottom = 500.0
+theme_override_colors/font_color = Color(0.8, 0.1, 0.8, 1)
+theme_override_font_sizes/font_size = 16
+text = "¡¡¡ BOSS ROOM !!!
+Múltiples torretas"
+horizontal_alignment = 1

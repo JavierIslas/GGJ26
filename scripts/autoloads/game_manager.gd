@@ -39,15 +39,32 @@ func change_health(amount: int) -> void:
 	player_hp = clamp(player_hp + amount, 0, max_hp)
 	health_changed.emit(player_hp, max_hp)
 
+	# SFX de daño
+	if amount < 0:
+		AudioManager.play_sfx("damage", -3.0)
+
 	if player_hp <= 0:
 		player_died()
 
 ## Maneja la muerte del jugador
 func player_died() -> void:
-	print("Player died! Restarting level...")
-	# TODO: Implementar restart de nivel
-	await get_tree().create_timer(1.0).timeout
-	get_tree().reload_current_scene()
+	print("Player died!")
+
+	# SFX de muerte
+	AudioManager.play_sfx("death", 0.0)
+
+	# Pausar el juego
+	get_tree().paused = true
+
+	# Buscar el GameOver en la escena actual
+	var game_over = get_tree().get_first_node_in_group("game_over")
+	if game_over and game_over.has_method("show_game_over"):
+		game_over.show_game_over()
+	else:
+		# Fallback: solo pausar y recargar después de un tiempo
+		await get_tree().create_timer(1.0).timeout
+		get_tree().paused = false
+		get_tree().reload_current_scene()
 
 ## Completa el nivel actual
 func complete_level() -> void:
@@ -58,6 +75,10 @@ func complete_level() -> void:
 	current_level += 1
 	current_level_truths = 0
 
+	# Restaurar HP completo para el siguiente nivel
+	player_hp = max_hp
+	health_changed.emit(player_hp, max_hp)
+
 ## Reinicia el juego completo
 func reset_game() -> void:
 	total_truths_revealed = 0
@@ -66,6 +87,22 @@ func reset_game() -> void:
 	current_level_truths = 0
 	player_hp = max_hp
 	print("Game reset")
+
+## Reinicia el nivel actual (para restart)
+func reset_current_level() -> void:
+	# Buscar LevelManager en la escena
+	var level_manager = get_tree().get_first_node_in_group("level_manager")
+	if level_manager and level_manager.has_method("get_level_start_truths"):
+		# Resetear total_truths_revealed al inicio del nivel
+		total_truths_revealed = level_manager.get_level_start_truths()
+
+	# Resetear verdades del nivel actual
+	current_level_truths = 0
+
+	# Resetear HP
+	player_hp = max_hp
+
+	print("Level reset - Total truths: %d" % total_truths_revealed)
 
 ## Calcula el porcentaje de verdades reveladas (para endings)
 func get_truth_percentage() -> float:
