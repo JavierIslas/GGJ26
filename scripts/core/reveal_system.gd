@@ -18,14 +18,22 @@ signal entity_revealed(entity: Node2D)
 @onready var detection_area: Area2D = $DetectionArea
 @onready var cooldown_timer: Timer = $CooldownTimer
 
+## Cache de nodos
+var camera: Node2D = null
+
 ## Estado
 var entities_in_range: Array[Node2D] = []
 var is_on_cooldown: bool = false
 var current_target: Node2D = null
+var needs_target_update: bool = false
 
 func _ready() -> void:
 	_setup_detection_area()
 	_setup_cooldown_timer()
+
+	# Cachear referencia a cámara
+	if player and player.has_node("Camera2D"):
+		camera = player.get_node("Camera2D")
 
 func _setup_detection_area() -> void:
 	if not has_node("DetectionArea"):
@@ -59,8 +67,10 @@ func _setup_cooldown_timer() -> void:
 	cooldown_timer.timeout.connect(_on_cooldown_finished)
 
 func _process(_delta: float) -> void:
-	# Actualizar indicador visual de entidad más cercana
-	_update_closest_target()
+	# Solo actualizar target si hay cambios en entities_in_range
+	if needs_target_update:
+		_update_closest_target()
+		needs_target_update = false
 
 	# Detectar input de revelación
 	if Input.is_action_just_pressed("reveal") and not is_on_cooldown:
@@ -71,10 +81,12 @@ func _on_entity_entered_range(body: Node2D) -> void:
 		var veil = body.get_node("VeilComponent") as VeilComponent
 		if not veil.is_revealed:
 			entities_in_range.append(body)
+			needs_target_update = true
 
 func _on_entity_exited_range(body: Node2D) -> void:
 	if body in entities_in_range:
 		entities_in_range.erase(body)
+		needs_target_update = true
 
 	if body == current_target:
 		current_target = null
@@ -164,20 +176,20 @@ func _flash_screen() -> void:
 	tween.finished.connect(func(): canvas.queue_free())
 
 func _shake_camera(trauma_amount: float) -> void:
-	# Buscar la cámara del jugador
-	if player.has_node("Camera2D"):
-		var camera = player.get_node("Camera2D")
+	# Usar cámara cacheada
+	if not camera:
+		return
 
-		# Si la cámara tiene el método add_trauma (script camera_shake.gd)
-		if camera.has_method("add_trauma"):
-			camera.add_trauma(trauma_amount)
-		else:
-			# Fallback: shake simple
-			var original_offset = camera.offset
-			camera.offset = Vector2(randf_range(-3, 3), randf_range(-3, 3))
+	# Si la cámara tiene el método add_trauma (script camera_shake.gd)
+	if camera.has_method("add_trauma"):
+		camera.add_trauma(trauma_amount)
+	else:
+		# Fallback: shake simple
+		var original_offset = camera.offset
+		camera.offset = Vector2(randf_range(-3, 3), randf_range(-3, 3))
 
-			var tween = create_tween()
-			tween.tween_property(camera, "offset", original_offset, 0.2)
+		var tween = create_tween()
+		tween.tween_property(camera, "offset", original_offset, 0.2)
 
 func _spawn_reveal_particles(pos: Vector2) -> void:
 	"""Crea partículas de fragmentos de velo cayendo"""

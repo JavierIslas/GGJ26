@@ -1,11 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://test_level_simple"]
+[gd_scene load_steps=10 format=3 uid="uid://bd855bj55a8xu"]
 
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
-[ext_resource type="PackedScene" uid="uid://false_enemy_001" path="res://scenes/characters/entities/false_enemy.tscn" id="3"]
-[ext_resource type="PackedScene" uid="uid://false_friend_001" path="res://scenes/characters/entities/false_friend.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://hud_001" path="res://scenes/ui/hud.tscn" id="5"]
-[ext_resource type="PackedScene" uid="uid://true_threat_001" path="res://scenes/characters/entities/true_threat.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/false_enemy.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/false_friend.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_over.tscn" id="8"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1500, 50)
@@ -42,53 +44,53 @@ texture = ExtResource("2")
 position = Vector2(400, 450)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform1"]
-shape = SubResource("floor_shape")
 scale = Vector2(0.15, 0.6)
+shape = SubResource("floor_shape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform1"]
 modulate = Color(0.5, 0.5, 0.5, 1)
-scale = Vector2(7.0, 0.9)
+scale = Vector2(7, 0.9)
 texture = ExtResource("2")
 
 [node name="Platform2" type="StaticBody2D" parent="Platforms"]
 position = Vector2(650, 350)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform2"]
-shape = SubResource("floor_shape")
 scale = Vector2(0.15, 0.6)
+shape = SubResource("floor_shape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform2"]
 modulate = Color(0.5, 0.5, 0.5, 1)
-scale = Vector2(7.0, 0.9)
+scale = Vector2(7, 0.9)
 texture = ExtResource("2")
 
 [node name="Platform3" type="StaticBody2D" parent="Platforms"]
 position = Vector2(900, 250)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform3"]
-shape = SubResource("floor_shape")
 scale = Vector2(0.15, 0.6)
+shape = SubResource("floor_shape")
 
 [node name="Sprite2D" type="Sprite2D" parent="Platforms/Platform3"]
 modulate = Color(0.5, 0.5, 0.5, 1)
-scale = Vector2(7.0, 0.9)
+scale = Vector2(7, 0.9)
 texture = ExtResource("2")
 
 [node name="WallLeft" type="StaticBody2D" parent="Platforms"]
 position = Vector2(50, 300)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/WallLeft"]
-shape = SubResource("floor_shape")
 rotation = 1.5708
 scale = Vector2(0.2, 0.1)
+shape = SubResource("floor_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="Platforms"]
 position = Vector2(1450, 300)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/WallRight"]
-shape = SubResource("floor_shape")
 rotation = 1.5708
 scale = Vector2(0.2, 0.1)
+shape = SubResource("floor_shape")
 
 [node name="Entities" type="Node2D" parent="."]
 
@@ -105,3 +107,7 @@ position = Vector2(650, 320)
 position = Vector2(1100, 540)
 
 [node name="HUD" parent="." instance=ExtResource("5")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("7")]
+
+[node name="GameOver" parent="." instance=ExtResource("8")]

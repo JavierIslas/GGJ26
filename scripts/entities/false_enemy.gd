@@ -33,6 +33,10 @@ func _ready() -> void:
 	# Feedback visual: Es atravesable (semi-transparente)
 	sprite.modulate.a = 0.7  # 70% opacidad = efecto fantasma
 
+	# Cachear referencia al jugador
+	await get_tree().process_frame
+	player_ref = get_tree().get_first_node_in_group("player")
+
 func _physics_process(delta: float) -> void:
 	# Aplicar gravedad
 	if not is_on_floor():
@@ -61,11 +65,7 @@ func _behavior_masked(_delta: float) -> void:
 func _behavior_revealed(_delta: float) -> void:
 	"""Comportamiento revelado: huir del jugador"""
 
-	# Buscar al jugador si no lo tenemos
-	if not player_ref:
-		player_ref = get_tree().get_first_node_in_group("player")
-
-	if not player_ref:
+	if not player_ref or not is_instance_valid(player_ref):
 		# No hay jugador, quedarse quieto
 		velocity.x = move_toward(velocity.x, 0, patrol_speed)
 		return

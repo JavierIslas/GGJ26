@@ -127,12 +127,16 @@ func _handle_jump() -> void:
 func _perform_jump() -> void:
 	velocity.y = JUMP_VELOCITY
 	jumped.emit()
-	# SFX se manejará mediante señal
+	AudioManager.play_sfx("jump", -5.0)
+
+	# Squash & stretch en salto
+	_jump_squash()
 
 func _check_landed() -> void:
 	if is_on_floor() and not was_on_floor:
 		landed.emit()
-		# SFX se manejará mediante señal
+		# Squash & stretch al aterrizar
+		_land_squash()
 
 func _update_animations() -> void:
 	if is_tearing_veil:
@@ -193,3 +197,25 @@ func bounce(bounce_velocity: float = -300.0) -> void:
 	"""Hace que el jugador rebote (útil para stomp en enemigos)"""
 	velocity.y = bounce_velocity
 	jumped.emit()
+
+func _jump_squash() -> void:
+	"""Efecto de squash & stretch al saltar"""
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_BACK)
+
+	# Squash horizontal, stretch vertical
+	sprite.scale = Vector2(0.8, 1.2)
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.2)
+
+func _land_squash() -> void:
+	"""Efecto de squash & stretch al aterrizar"""
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_BACK)
+
+	# Stretch horizontal, squash vertical
+	sprite.scale = Vector2(1.2, 0.8)
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.25)
