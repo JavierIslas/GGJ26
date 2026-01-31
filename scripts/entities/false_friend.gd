@@ -13,6 +13,8 @@ signal died
 @export_group("Combat")
 @export var damage: int = 1
 @export var attack_range: float = 24.0  # Reducido para que no se frene tan lejos
+@export var knockback_force: float = 200.0  # Fuerza de rebote al golpear
+@export var knockback_duration: float = 0.3  # Tiempo de aturdimiento después de golpear
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var veil_component: VeilComponent = $VeilComponent
@@ -23,6 +25,7 @@ var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var is_revealed: bool = false
 var player_ref: Node2D = null
 var can_attack: bool = true
+var is_stunned: bool = false  # Aturdido después de golpear (knockback)
 
 func _ready() -> void:
 	add_to_group("entities")
@@ -62,6 +65,11 @@ func _behavior_masked(_delta: float) -> void:
 func _behavior_revealed(_delta: float) -> void:
 	"""Comportamiento revelado: perseguir al jugador agresivamente"""
 
+	# Si está aturdido (knockback), solo aplicar fricción
+	if is_stunned:
+		velocity.x = move_toward(velocity.x, 0, chase_speed * 2.0)
+		return
+
 	# Buscar al jugador si no lo tenemos
 	if not player_ref:
 		player_ref = get_tree().get_first_node_in_group("player")
@@ -73,9 +81,6 @@ func _behavior_revealed(_delta: float) -> void:
 
 	# Calcular dirección hacia el jugador
 	var direction_to_player = sign(player_ref.global_position.x - global_position.x)
-
-	# Perseguir si está lejos
-	var distance_to_player = global_position.distance_to(player_ref.global_position)
 
 	# Perseguir siempre, no frenar
 	velocity.x = direction_to_player * chase_speed
@@ -106,7 +111,7 @@ func _on_veil_torn() -> void:
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	"""Daña al jugador al contacto"""
-	if not is_revealed or not can_attack:
+	if not is_revealed or not can_attack or is_stunned:
 		return
 
 	if body.is_in_group("player"):
@@ -114,7 +119,26 @@ func _on_hurtbox_body_entered(body: Node2D) -> void:
 		GameManager.change_health(-damage)
 		print("False Friend damaged player: -%d HP" % damage)
 
+		# Aplicar knockback (rebote hacia atrás)
+		_apply_knockback(body)
+
 		# Cooldown breve para evitar daño múltiple instantáneo
 		can_attack = false
 		await get_tree().create_timer(0.5).timeout
 		can_attack = true
+
+func _apply_knockback(player: Node2D) -> void:
+	"""Rebota hacia atrás después de golpear"""
+	# Calcular dirección opuesta al jugador
+	var direction_away = sign(global_position.x - player.global_position.x)
+
+	# Aplicar fuerza de knockback
+	velocity.x = direction_away * knockback_force
+	velocity.y = -150.0  # Pequeño salto hacia atrás
+
+	# Aturdir temporalmente
+	is_stunned = true
+
+	# Remover aturdimiento después del tiempo
+	await get_tree().create_timer(knockback_duration).timeout
+	is_stunned = false
