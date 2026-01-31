@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://test_level_simple"]
+[gd_scene load_steps=7 format=3 uid="uid://test_level_simple"]
 
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
 [ext_resource type="PackedScene" uid="uid://false_enemy_001" path="res://scenes/characters/entities/false_enemy.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://false_friend_001" path="res://scenes/characters/entities/false_friend.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://hud_001" path="res://scenes/ui/hud.tscn" id="5"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1500, 50)
@@ -98,3 +99,5 @@ position = Vector2(800, 540)
 
 [node name="FalseFriend1" parent="Entities" instance=ExtResource("4")]
 position = Vector2(650, 320)
+
+[node name="HUD" parent="." instance=ExtResource("5")]

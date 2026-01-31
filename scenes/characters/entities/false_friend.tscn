@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://false_friend_001"]
+[gd_scene load_steps=7 format=3 uid="uid://false_friend_001"]
 
 [ext_resource type="Script" path="res://scripts/entities/false_friend.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/components/veil_component.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="3"]
+[ext_resource type="Script" path="res://scripts/components/range_indicator.gd" id="4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(28, 30)
@@ -34,3 +35,6 @@ monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 shape = SubResource("CircleShape2D_hurtbox")
+
+[node name="RangeIndicator" type="Node2D" parent="."]
+script = ExtResource("4")

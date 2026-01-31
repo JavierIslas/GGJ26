@@ -163,22 +163,75 @@ func _flash_screen() -> void:
 	tween.tween_property(flash, "modulate:a", 0.0, 0.1)
 	tween.finished.connect(func(): canvas.queue_free())
 
-func _shake_camera(trauma: float) -> void:
+func _shake_camera(trauma_amount: float) -> void:
 	# Buscar la cámara del jugador
 	if player.has_node("Camera2D"):
 		var camera = player.get_node("Camera2D")
-		# TODO: Implementar camera shake con trauma
-		# Por ahora, un offset simple
-		var original_offset = camera.offset
-		camera.offset = Vector2(randf_range(-3, 3), randf_range(-3, 3))
 
-		var tween = create_tween()
-		tween.tween_property(camera, "offset", original_offset, 0.2)
+		# Si la cámara tiene el método add_trauma (script camera_shake.gd)
+		if camera.has_method("add_trauma"):
+			camera.add_trauma(trauma_amount)
+		else:
+			# Fallback: shake simple
+			var original_offset = camera.offset
+			camera.offset = Vector2(randf_range(-3, 3), randf_range(-3, 3))
+
+			var tween = create_tween()
+			tween.tween_property(camera, "offset", original_offset, 0.2)
 
 func _spawn_reveal_particles(pos: Vector2) -> void:
-	# TODO: Crear GPUParticles2D con fragmentos de velo cayendo
-	# Por ahora, placeholder vacío
-	pass
+	"""Crea partículas de fragmentos de velo cayendo"""
+	var particles = GPUParticles2D.new()
+
+	# Configuración básica
+	particles.global_position = pos
+	particles.emitting = true
+	particles.one_shot = true
+	particles.amount = 20
+	particles.lifetime = 0.8
+	particles.explosiveness = 1.0
+
+	# Material de partícula
+	var material = ParticleProcessMaterial.new()
+
+	# Emisión en explosión radial
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = 8.0
+
+	# Dirección y velocidad
+	material.direction = Vector3(0, 1, 0)  # Hacia abajo
+	material.spread = 180.0  # Explosión en todas direcciones
+	material.initial_velocity_min = 50.0
+	material.initial_velocity_max = 150.0
+
+	# Gravedad
+	material.gravity = Vector3(0, 200, 0)
+
+	# Escala
+	material.scale_min = 2.0
+	material.scale_max = 4.0
+
+	# Rotación
+	material.angular_velocity_min = -180.0
+	material.angular_velocity_max = 180.0
+
+	# Color (blanco con fade a transparente)
+	material.color = Color.WHITE
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, Color(1, 1, 1, 1))
+	gradient.add_point(1.0, Color(1, 1, 1, 0))
+	var gradient_texture = GradientTexture1D.new()
+	gradient_texture.gradient = gradient
+	material.color_ramp = gradient_texture
+
+	particles.process_material = material
+
+	# Añadir al árbol
+	get_tree().root.add_child(particles)
+
+	# Auto-destruir después de la vida útil
+	await get_tree().create_timer(particles.lifetime + 0.1).timeout
+	particles.queue_free()
 
 func _on_cooldown_finished() -> void:
 	is_on_cooldown = false

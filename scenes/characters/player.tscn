@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://bubhj7r567uy1"]
+[gd_scene load_steps=7 format=3 uid="uid://bubhj7r567uy1"]
 
 [ext_resource type="Script" uid="uid://cm8tvgaokhjyk" path="res://scripts/core/player_controller.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2_yewv4"]
-[ext_resource type="Script" path="res://scripts/core/reveal_system.gd" id="3_reveal"]
+[ext_resource type="Script" uid="uid://c0fyi2fcxnj28" path="res://scripts/core/reveal_system.gd" id="3_reveal"]
+[ext_resource type="Script" path="res://scripts/utils/camera_shake.gd" id="4_camera"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(28, 30)
@@ -32,6 +33,7 @@ one_shot = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true
+script = ExtResource("4_camera")
 
 [node name="RevealSystem" type="Node2D" parent="."]
 script = ExtResource("3_reveal")
