@@ -98,6 +98,7 @@ IntentoAgente/
 ### **Técnica:**
 - **[Changelog](CHANGELOG.md)** - Historial completo de cambios y features
 - **[Advanced Turrets](ADVANCED_TURRETS.md)** - Mecánicas detalladas de torretas avanzadas
+- **[Endings Config](ENDINGS_CONFIG.md)** - Sistema de endings múltiples y configuración
 - **[Audio Reference](AUDIO_REFERENCE.md)** - Guía de implementación de audio
 
 ### **Guía rápida:**
@@ -109,17 +110,18 @@ IntentoAgente/
 
 ## 🚀 Estado del Desarrollo
 
-**Fase actual:** Alpha 0.3.1 (Producción)
+**Fase actual:** Alpha 0.4.3 (Producción)
 
 ### ✅ Completado:
 - ✅ Core mechanics (movimiento, salto, revelación)
 - ✅ Sistema de entidades (3 tipos base + 6 variantes)
 - ✅ Level 1 (tutorial + puzzles básicos)
 - ✅ Level 2 (torretas avanzadas + boss room)
-- ✅ UI completa (main menu, HUD, pause, game over, victory)
+- ✅ UI completa (main menu, HUD, pause, game over, victory, **endings**)
 - ✅ Sistema de audio (placeholders)
 - ✅ Optimización de performance (~85% mejora)
 - ✅ Polish & juice (transiciones, squash & stretch)
+- ✅ **Sistema de endings múltiples** (3 endings basados en % verdades)
 
 ### 📊 Entidades Implementadas:
 - **False Enemy** (huye) + Fast variant (2× velocidad)
@@ -137,10 +139,11 @@ IntentoAgente/
 - Ninguno actualmente
 
 ### 🔜 Próximos pasos:
-1. Level 3 (final/boss fight)
-2. Endings múltiples basados en % de verdades
+1. Level 3 y Level 4 (expansión a 4+ niveles planeados)
+2. Boss fight final (stretch goal)
 3. Assets de audio reales
 4. Arte final (sprites y animaciones)
+5. Polish VFX (partículas, chromatic aberration)
 
 Ver [CHANGELOG.md](CHANGELOG.md) para detalles completos de features implementadas.
 
@@ -161,4 +164,4 @@ Proyecto creado para Global Game Jam 2026.
 ---
 
 **Última actualización:** 2026-01-31
-**Versión:** Alpha 0.3.1
+**Versión:** Alpha 0.4.3

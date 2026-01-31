@@ -49,8 +49,7 @@ func _on_veil_torn() -> void:
 	# Cambio visual: Púrpura más oscuro/peligroso
 	sprite.modulate = Color(0.5, 0.1, 0.6, 1.0)
 
-	# Registrar verdad revelada
-	GameManager.reveal_truth()
+	# NOTA: VeilComponent ya contó esta verdad automáticamente
 
 	# Comenzar a disparar
 	shoot_timer.start()
@@ -93,22 +92,31 @@ func _fire_projectile() -> void:
 	projectile.speed = projectile_speed
 	projectile.damage = projectile_damage
 
-	# Añadir al mundo
-	get_tree().root.add_child(projectile)
+	# FIX MEMORY LEAK: Usar ProjectileManager en lugar de root
+	ProjectileManager.add_projectile(projectile)
 
 	# SFX
 	AudioManager.play_sfx("projectile_shoot", -8.0)
 
 func _predict_player_position() -> Vector2:
 	"""Predice dónde estará el jugador"""
+	if not player_ref or not is_instance_valid(player_ref):
+		return global_position
+
 	var player_pos = player_ref.global_position
 	var player_velocity = Vector2.ZERO
 
 	if player_ref is CharacterBody2D:
 		player_velocity = player_ref.velocity
 
+	# FIX: Si jugador no se mueve, apuntar directo
+	if player_velocity.length() < 50.0:
+		return player_pos
+
 	var distance = global_position.distance_to(player_pos)
 	var time_to_hit = distance / projectile_speed
-	var predicted_position = player_pos + player_velocity * time_to_hit
+
+	# FIX: Predicción reducida (50%) para evitar disparos incorrectos
+	var predicted_position = player_pos + player_velocity * time_to_hit * 0.5
 
 	return predicted_position

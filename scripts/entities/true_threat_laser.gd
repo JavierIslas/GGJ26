@@ -40,6 +40,11 @@ var is_angle_locked: bool = false  # Si el ángulo está congelado
 enum State { IDLE, TELEGRAPHING, FIRING }
 var current_state: State = State.IDLE
 
+# Performance optimization
+var update_counter: int = 0
+var update_frequency: int = 3  # Update every N frames (lower for laser)
+var cached_angle: float = 0.0
+
 func _ready() -> void:
 	add_to_group("entities")
 
@@ -142,15 +147,28 @@ func _process(_delta: float) -> void:
 	if not is_revealed or not player_ref or not is_instance_valid(player_ref):
 		return
 
+	# OPTIMIZATION: Only update rotation when not locked (locked angle doesn't change)
+	if is_angle_locked:
+		return  # No need to update if angle is locked
+
+	# OPTIMIZATION: Update only every N frames
+	update_counter += 1
+	if update_counter < update_frequency:
+		return
+
+	update_counter = 0
+
 	var angle: float
 
 	# Rastrear al jugador mientras no esté congelado
-	# Se congela solo durante los últimos freeze_time segundos del telegraph
-	if not is_angle_locked:
-		var direction_to_player = (player_ref.global_position - global_position).normalized()
-		angle = direction_to_player.angle()
-	else:
-		angle = locked_angle
+	var direction_to_player = (player_ref.global_position - global_position).normalized()
+	angle = direction_to_player.angle()
+
+	# OPTIMIZATION: Only update if angle changed significantly
+	if abs(angle - cached_angle) < 0.01:
+		return
+
+	cached_angle = angle
 
 	# Rotar líneas
 	if telegraph_line:
@@ -186,6 +204,12 @@ func _animate_telegraph() -> void:
 	if not telegraph_line:
 		return
 
+	# OPTIMIZATION: Kill previous tween if exists to avoid accumulation
+	if telegraph_line.has_meta("telegraph_tween"):
+		var old_tween = telegraph_line.get_meta("telegraph_tween")
+		if old_tween and old_tween.is_valid():
+			old_tween.kill()
+
 	var tween = create_tween()
 	tween.set_loops()
 	tween.tween_property(telegraph_line, "modulate:a", 0.6, 0.3)
@@ -214,9 +238,10 @@ func _fire_laser() -> void:
 	# Ocultar telegraph
 	if telegraph_line:
 		telegraph_line.visible = false
-		var tween = telegraph_line.get_meta("telegraph_tween", null)
-		if tween:
-			tween.kill()
+		if telegraph_line.has_meta("telegraph_tween"):
+			var tween = telegraph_line.get_meta("telegraph_tween")
+			if tween and tween.is_valid():
+				tween.kill()
 
 	# Mostrar láser
 	if laser_line:
@@ -257,14 +282,14 @@ func _apply_laser_damage() -> void:
 	if not laser_area or not laser_area.monitoring:
 		return
 
-	var bodies = laser_area.get_overlapping_bodies()
-	for body in bodies:
-		if body.is_in_group("player"):
+	# OPTIMIZATION: Only check player directly instead of all bodies
+	if player_ref and is_instance_valid(player_ref):
+		if laser_area.overlaps_body(player_ref):
 			# Aplicar daño
 			GameManager.change_health(-laser_damage)
 
 			# Feedback visual en jugador
-			_flash_player(body)
+			_flash_player(player_ref)
 
 func _flash_player(player: Node2D) -> void:
 	"""Efecto de flash en el jugador al recibir daño"""

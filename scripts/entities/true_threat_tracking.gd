@@ -30,6 +30,11 @@ var target_angle: float = 0.0
 var is_aimed: bool = false
 var projectile_scene = preload("res://scenes/components/projectile.tscn")
 
+# Performance optimization
+var update_counter: int = 0
+var update_frequency: int = 2  # Update every N frames
+var last_aimed_state: bool = false
+
 func _ready() -> void:
 	add_to_group("entities")
 
@@ -47,7 +52,7 @@ func _ready() -> void:
 		laser_sight.width = 2.0
 		laser_sight.default_color = laser_color
 		laser_sight.add_point(Vector2.ZERO)
-		laser_sight.add_point(Vector2(100, 0))
+		laser_sight.add_point(Vector2(500, 0))  # Fixed length
 		laser_sight.visible = false
 		add_child(laser_sight)
 
@@ -72,8 +77,7 @@ func _on_veil_torn() -> void:
 	if laser_sight and show_laser_sight:
 		laser_sight.visible = true
 
-	# Registrar verdad
-	GameManager.reveal_truth()
+	# NOTA: VeilComponent ya contó esta verdad automáticamente
 
 	# Comenzar a disparar
 	shoot_timer.start()
@@ -84,7 +88,7 @@ func _process(delta: float) -> void:
 	if not is_revealed or not player_ref or not is_instance_valid(player_ref):
 		return
 
-	# Calcular ángulo hacia el jugador
+	# Calcular ángulo hacia el jugador cada frame (necesario para tracking suave)
 	var direction_to_player = (player_ref.global_position - global_position).normalized()
 	target_angle = direction_to_player.angle()
 
@@ -95,7 +99,9 @@ func _process(delta: float) -> void:
 		# Todavía no apuntado
 		is_aimed = false
 		var rotation_step = deg_to_rad(tracking_speed) * delta
+		# FIX: Normalize angle to prevent getting stuck
 		current_rotation += sign(angle_diff) * min(rotation_step, abs(angle_diff))
+		current_rotation = wrapf(current_rotation, -PI, PI)  # Keep angle normalized
 	else:
 		# Apuntado correctamente
 		is_aimed = true
@@ -104,18 +110,20 @@ func _process(delta: float) -> void:
 	# Aplicar rotación al sprite
 	sprite.rotation = current_rotation
 
-	# Actualizar laser sight
-	_update_laser_sight()
+	# OPTIMIZATION: Update laser sight only every N frames or when aimed state changes
+	update_counter += 1
+	if update_counter >= update_frequency or is_aimed != last_aimed_state:
+		update_counter = 0
+		_update_laser_sight()
+		last_aimed_state = is_aimed
 
 func _update_laser_sight() -> void:
 	"""Actualiza la línea del laser sight"""
 	if not laser_sight or not laser_sight.visible:
 		return
 
-	var laser_length = 500.0
-	var end_point = Vector2(cos(current_rotation), sin(current_rotation)) * laser_length
-
-	laser_sight.set_point_position(1, end_point)
+	# OPTIMIZATION: Only update rotation, not endpoint (it's always the same relative position)
+	laser_sight.rotation = current_rotation
 
 	# Cambiar color si está apuntado
 	if is_aimed:
@@ -157,8 +165,8 @@ func _fire_projectile() -> void:
 	projectile.speed = projectile_speed
 	projectile.damage = projectile_damage
 
-	# Añadir al mundo
-	get_tree().root.add_child(projectile)
+	# FIX MEMORY LEAK: Usar ProjectileManager en lugar de root
+	ProjectileManager.add_projectile(projectile)
 
 	# SFX
 	AudioManager.play_sfx("projectile_shoot", -8.0)

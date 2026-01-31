@@ -26,6 +26,7 @@ var is_revealed: bool = false
 var player_ref: Node2D = null
 var can_attack: bool = true
 var is_stunned: bool = false  # Aturdido después de golpear (knockback)
+var grace_period_active: bool = false  # Grace period después de revelarse
 
 func _ready() -> void:
 	add_to_group("entities")
@@ -102,24 +103,43 @@ func _on_veil_torn() -> void:
 	# Cambiar color del sprite (placeholder hasta tener arte real)
 	sprite.modulate = Color(1.0, 0.3, 0.3)  # Rojo intenso
 
-	# Activar hurtbox para dañar al jugador
+	# FIX: Grace period para evitar daño instantáneo
+	grace_period_active = true
+	can_attack = false
+
+	# FIX: Empujar levemente hacia atrás para dar espacio al jugador
+	if player_ref and is_instance_valid(player_ref):
+		var direction_away = sign(global_position.x - player_ref.global_position.x)
+		velocity.x = direction_away * 200.0  # Pequeño empujón inicial
+		velocity.y = -100.0  # Pequeño salto
+
+	# Activar hurtbox después de grace period (1 segundo)
+	await get_tree().create_timer(1.0).timeout
 	if hurtbox:
 		hurtbox.monitoring = true
+	can_attack = true
+	grace_period_active = false
 
 	# Rugido/transformación
 	if animation_player and animation_player.has_animation("transform"):
 		animation_player.play("transform")
 
-	print("False Friend revealed! Now hostile!")
+	print("False Friend revealed! Grace period active...")
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	"""Daña al jugador al contacto"""
-	if not is_revealed or not can_attack or is_stunned:
+	# FIX: No hacer daño durante grace period
+	if not is_revealed or not can_attack or is_stunned or grace_period_active:
 		return
 
 	if body.is_in_group("player"):
-		# Dañar al jugador
-		GameManager.change_health(-damage)
+		# Dañar al jugador usando el sistema de iFrames
+		if body.has_method("take_damage"):
+			body.take_damage(damage)
+		else:
+			# Fallback si el jugador no tiene el método
+			GameManager.change_health(-damage)
+
 		print("False Friend damaged player: -%d HP" % damage)
 
 		# Aplicar knockback (rebote hacia atrás)

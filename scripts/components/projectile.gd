@@ -5,11 +5,10 @@ extends Area2D
 ## Se mueve en línea recta y daña al jugador al contacto
 
 @export var speed: float = 150.0
-@export var damage: int = 2
+@export var damage: int = 1  # Reducido de 2 a 1 para mejor balance con iFrames
 @export var lifetime: float = 5.0  # Auto-destrucción después de X segundos
 
 var direction: Vector2 = Vector2.RIGHT
-var time_alive: float = 0.0
 
 func _ready() -> void:
 	# Configurar collision
@@ -28,8 +27,23 @@ func _physics_process(delta: float) -> void:
 	# Mover en la dirección establecida
 	position += direction * speed * delta
 
-	# Actualizar tiempo de vida
-	time_alive += delta
+	# OPTIMIZATION: Destroy if way off screen to prevent accumulation
+	# Use camera position instead of viewport size for large levels
+	var camera = get_viewport().get_camera_2d()
+	if camera:
+		var screen_center = camera.get_screen_center_position()
+		var screen_size = get_viewport_rect().size
+		var margin = 200.0
+
+		# Calculate screen bounds based on camera position
+		var left_bound = screen_center.x - screen_size.x / 2 - margin
+		var right_bound = screen_center.x + screen_size.x / 2 + margin
+		var top_bound = screen_center.y - screen_size.y / 2 - margin
+		var bottom_bound = screen_center.y + screen_size.y / 2 + margin
+
+		if global_position.x < left_bound or global_position.x > right_bound or \
+		   global_position.y < top_bound or global_position.y > bottom_bound:
+			queue_free()
 
 func set_direction(dir: Vector2) -> void:
 	"""Establece la dirección del proyectil (debe estar normalizada)"""
@@ -41,8 +55,13 @@ func set_direction(dir: Vector2) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	"""Colisiona con el jugador"""
 	if body.is_in_group("player"):
-		# Dañar al jugador
-		GameManager.change_health(-damage)
+		# Dañar al jugador usando el sistema de iFrames
+		if body.has_method("take_damage"):
+			body.take_damage(damage)
+		else:
+			# Fallback si el jugador no tiene el método
+			GameManager.change_health(-damage)
+
 		print("Projectile hit player: -%d HP" % damage)
 
 		# Destruir el proyectil

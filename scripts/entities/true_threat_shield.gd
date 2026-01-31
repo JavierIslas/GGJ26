@@ -76,14 +76,21 @@ func _setup_shield_sprite() -> void:
 	_animate_shield()
 
 func _animate_shield() -> void:
-	"""Anima el escudo pulsando"""
+	"""Anima el escudo pulsando y rotando"""
 	if not shield_sprite or not shield_sprite.visible:
 		return
 
-	var tween = create_tween()
-	tween.set_loops()
-	tween.tween_property(shield_sprite, "scale", Vector2(1.5, 1.5), 1.0).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(shield_sprite, "scale", Vector2(1.4, 1.4), 1.0).set_ease(Tween.EASE_IN_OUT)
+	# OPTIMIZATION: Use tweens for both scale and rotation instead of _process
+	# Scale animation (pulsing)
+	var scale_tween = create_tween()
+	scale_tween.set_loops()
+	scale_tween.tween_property(shield_sprite, "scale", Vector2(1.5, 1.5), 1.0).set_ease(Tween.EASE_IN_OUT)
+	scale_tween.tween_property(shield_sprite, "scale", Vector2(1.4, 1.4), 1.0).set_ease(Tween.EASE_IN_OUT)
+
+	# Rotation animation (continuous spin, replaces _process rotation)
+	var rotation_tween = create_tween()
+	rotation_tween.set_loops()
+	rotation_tween.tween_property(shield_sprite, "rotation", TAU, 12.0).set_trans(Tween.TRANS_LINEAR)
 
 func _on_veil_torn() -> void:
 	"""Revelado: Primera vez rompe escudo, segunda vez se destruye"""
@@ -184,27 +191,37 @@ func _fire_projectile() -> void:
 	projectile.speed = projectile_speed
 	projectile.damage = projectile_damage
 
-	# Añadir al mundo
-	get_tree().root.add_child(projectile)
+	# FIX MEMORY LEAK: Usar ProjectileManager en lugar de root
+	ProjectileManager.add_projectile(projectile)
 
 	# SFX
 	AudioManager.play_sfx("projectile_shoot", -8.0)
 
 func _predict_player_position() -> Vector2:
 	"""Predice dónde estará el jugador"""
+	if not player_ref or not is_instance_valid(player_ref):
+		return global_position
+
 	var player_pos = player_ref.global_position
 	var player_velocity = Vector2.ZERO
 
+	# OPTIMIZATION: Only predict if player is moving significantly
 	if player_ref is CharacterBody2D:
 		player_velocity = player_ref.velocity
 
+		# If player is barely moving, don't bother with prediction
+		if player_velocity.length() < 50.0:
+			return player_pos
+
 	var distance = global_position.distance_to(player_pos)
 	var time_to_hit = distance / projectile_speed
-	var predicted_position = player_pos + player_velocity * time_to_hit
+	var predicted_position = player_pos + player_velocity * time_to_hit * 0.5  # Reduced prediction
 
 	return predicted_position
 
 func _process(_delta: float) -> void:
 	"""Rotar escudo constantemente"""
-	if shield_sprite and shield_sprite.visible:
-		shield_sprite.rotation += _delta * 0.5
+	# OPTIMIZATION: Use Tween instead of manual rotation in _process
+	# This is handled by _animate_shield() now, so this function can be removed
+	# Keeping it minimal for compatibility
+	pass

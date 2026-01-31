@@ -40,6 +40,9 @@ func _on_restart_button_pressed() -> void:
 	# Resetear estado del nivel
 	GameManager.reset_current_level()
 
+	# FIX MEMORY LEAK: Limpiar proyectiles antes de reiniciar
+	ProjectileManager.clear_all_projectiles()
+
 	# Reiniciar nivel
 	get_tree().reload_current_scene()
 
@@ -49,6 +52,9 @@ func _on_main_menu_button_pressed() -> void:
 
 	# Reiniciar estado del GameManager
 	GameManager.reset_game()
+
+	# FIX MEMORY LEAK: Limpiar proyectiles antes de volver a menú
+	ProjectileManager.clear_all_projectiles()
 
 	# Volver al menú principal
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

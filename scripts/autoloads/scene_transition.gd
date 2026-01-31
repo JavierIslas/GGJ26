@@ -10,7 +10,6 @@ var is_transitioning: bool = false
 
 func _ready() -> void:
 	# Configurar layer para estar encima de todo
-	layer = 999
 
 	# Crear ColorRect
 	color_rect = ColorRect.new()

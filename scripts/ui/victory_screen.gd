@@ -106,6 +106,9 @@ func _on_next_level_button_pressed() -> void:
 	# Despausar
 	get_tree().paused = false
 
+	# FIX MEMORY LEAK: Limpiar proyectiles antes de cambiar de nivel
+	ProjectileManager.clear_all_projectiles()
+
 	# Cargar siguiente nivel
 	get_tree().change_scene_to_file(next_level_path)
 
@@ -116,6 +119,9 @@ func _on_retry_button_pressed() -> void:
 
 	# Resetear estado del nivel
 	GameManager.reset_current_level()
+
+	# FIX MEMORY LEAK: Limpiar proyectiles antes de recargar nivel
+	ProjectileManager.clear_all_projectiles()
 
 	# Recargar nivel
 	if current_level_path != "":
@@ -130,6 +136,9 @@ func _on_menu_button_pressed() -> void:
 
 	# Resetear GameManager
 	GameManager.reset_game()
+
+	# FIX MEMORY LEAK: Limpiar proyectiles antes de ir al menú
+	ProjectileManager.clear_all_projectiles()
 
 	# Volver al menú
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

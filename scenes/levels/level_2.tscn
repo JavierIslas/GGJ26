@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://dr0c2rqeklns3"]
+[gd_scene load_steps=18 format=3 uid="uid://dr0c2rqeklns3"]
 
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://btqr6wm500ph6" path="res://scripts/level/level_manager.gd" id="10"]
 [ext_resource type="PackedScene" path="res://scenes/level/level_goal.tscn" id="11"]
 [ext_resource type="PackedScene" path="res://scenes/ui/victory_screen.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ending_screen.tscn" id="12_ending"]
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_laser.tscn" id="13"]
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_burst.tscn" id="14"]
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_shield.tscn" id="15"]
@@ -214,6 +215,7 @@ door_color = Color(0.8, 0.6, 0.1, 1)
 [node name="LevelGoal" parent="." instance=ExtResource("11")]
 position = Vector2(5100, 530)
 required_truths = 12
+next_level_path = "res://scenes/levels/level_3.tscn"
 
 [node name="UI" type="Node2D" parent="."]
 
@@ -224,6 +226,8 @@ required_truths = 12
 [node name="GameOver" parent="UI" instance=ExtResource("8")]
 
 [node name="VictoryScreen" parent="UI" instance=ExtResource("12")]
+
+[node name="EndingScreen" parent="UI" instance=ExtResource("12_ending")]
 
 [node name="Instructions" type="Node2D" parent="."]
 

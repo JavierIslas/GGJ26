@@ -82,8 +82,8 @@ func _on_fire_timer_timeout() -> void:
 	projectile.set_direction(direction)
 	projectile.speed = projectile_speed
 
-	# Añadir al árbol
-	get_tree().root.add_child(projectile)
+	# FIX MEMORY LEAK: Usar ProjectileManager en lugar de root
+	ProjectileManager.add_projectile(projectile)
 
 	# Efecto visual de disparo (pulso)
 	_fire_effect()
@@ -101,14 +101,19 @@ func _predict_player_position() -> Vector2:
 	if player_ref is CharacterBody2D:
 		player_velocity = player_ref.velocity
 
+	# FIX: Si jugador no se mueve significativamente, apuntar directo
+	if player_velocity.length() < 50.0:
+		return player_pos
+
 	# Calcular distancia actual
 	var distance = global_position.distance_to(player_pos)
 
 	# Calcular tiempo estimado que tardará el proyectil en llegar
 	var time_to_hit = distance / projectile_speed
 
-	# Predecir posición futura
-	var predicted_position = player_pos + player_velocity * time_to_hit
+	# FIX: Usar predicción reducida para evitar que proyectiles vayan "con" el jugador
+	# Solo predecir 50% del movimiento para que apunte más hacia donde está
+	var predicted_position = player_pos + player_velocity * time_to_hit * 0.5
 
 	return predicted_position
 

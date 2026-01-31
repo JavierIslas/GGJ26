@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://coh20tdlv48ij"]
+[gd_scene load_steps=15 format=3 uid="uid://coh20tdlv48ij"]
 
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://btqr6wm500ph6" path="res://scripts/level/level_manager.gd" id="10"]
 [ext_resource type="PackedScene" path="res://scenes/level/level_goal.tscn" id="11"]
 [ext_resource type="PackedScene" path="res://scenes/ui/victory_screen.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ending_screen.tscn" id="12_ending"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1500, 50)
@@ -176,6 +177,8 @@ next_level_path = "res://scenes/levels/level_2.tscn"
 [node name="GameOver" parent="UI" instance=ExtResource("8")]
 
 [node name="VictoryScreen" parent="UI" instance=ExtResource("12")]
+
+[node name="EndingScreen" parent="UI" instance=ExtResource("12_ending")]
 
 [node name="Instructions" type="Node2D" parent="."]
 

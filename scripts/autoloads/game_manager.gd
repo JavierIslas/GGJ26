@@ -14,10 +14,11 @@ var total_truths_possible: int = 0
 # Estado del nivel actual
 var current_level: int = 1
 var current_level_truths: int = 0
+var max_levels: int = 3  # Total de niveles en el juego (actualizar cuando se añadan más)
 
 # Estado del jugador
-var player_hp: int = 3
-var max_hp: int = 3
+var player_hp: int = 5
+var max_hp: int = 5
 
 # Señales para comunicar cambios
 signal truth_revealed(total: int)
@@ -109,3 +110,7 @@ func get_truth_percentage() -> float:
 	if total_truths_possible == 0:
 		return 0.0
 	return (float(total_truths_revealed) / float(total_truths_possible)) * 100.0
+
+## Verifica si el nivel actual es el último
+func is_final_level() -> bool:
+	return current_level >= max_levels
