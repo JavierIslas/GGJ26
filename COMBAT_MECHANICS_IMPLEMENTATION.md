@@ -250,9 +250,23 @@ Si quieres agregar **Moonlight Dash**, las bases están listas:
 
 ---
 
-**Última actualización:** 2026-01-31
-**Estado:** Listo para testing
-**Pendiente:** Configurar input `launch_shard` en Project Settings
+---
+
+## 🔧 Bugfixes Posteriores
+
+### False Enemy Patrol System (2026-01-31)
+- ✅ **Fix:** Raycast de detección de suelo corregido
+- ✅ **Fix:** Velocidad aumentada (50→120 px/s) para visibilidad
+- ✅ **Fix:** Collision layers - Doors separadas de World
+- ✅ **Resultado:** False Enemies ahora patrullan visiblemente sin chocar con puertas
+
+Ver: `FALSE_ENEMY_PATROL_FIX.md` para detalles completos.
+
+---
+
+**Última actualización:** 2026-01-31 (Patrol Fix)
+**Estado:** Listo para testing completo
+**Pendiente:** Configurar input `dash` (pressed:false issue)
 
 ---
 

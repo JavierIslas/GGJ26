@@ -13,8 +13,8 @@ extends CharacterBody2D
 signal died
 
 @export_group("Movement")
-@export var patrol_speed: float = 50.0
-@export var flee_speed: float = 100.0
+@export var patrol_speed: float = 120.0  # Velocidad visible de patrullaje
+@export var flee_speed: float = 180.0  # Huida rápida cuando revelado
 
 @export_group("Detection")
 @export var player_detection_range: float = 64.0
@@ -86,9 +86,13 @@ func _behavior_revealed(_delta: float) -> void:
 
 func _is_floor_ahead() -> bool:
 	"""Detecta si hay suelo adelante para no caer"""
-	var raycast_distance = 20.0
-	var from = global_position + Vector2(direction * 16, 16)
-	var to = from + Vector2(0, raycast_distance)
+	# Raycast desde los pies, adelante y hacia abajo
+	var feet_offset = 15.0  # Altura aproximada de los pies (mitad del sprite)
+	var ahead_distance = 20.0  # Qué tan adelante mirar
+	var down_distance = 10.0  # Qué tan abajo buscar suelo
+
+	var from = global_position + Vector2(direction * ahead_distance, feet_offset)
+	var to = from + Vector2(0, down_distance)
 
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsRayQueryParameters2D.create(from, to)
