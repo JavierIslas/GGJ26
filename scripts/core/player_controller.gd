@@ -11,11 +11,11 @@ signal landed
 signal veil_torn  # Se emitirá cuando arranque un velo
 
 # === CONSTANTES DE MOVIMIENTO ===
-const SPEED = 150.0
-const JUMP_VELOCITY = -400.0
-const GRAVITY = 980.0
-const COYOTE_TIME = 0.15
-const JUMP_BUFFER = 0.1
+const SPEED = 200.0           # Ni muy lento ni muy rápido
+const JUMP_VELOCITY = -550.0  # Salto cómodo
+const GRAVITY = 1200.0        # Cae con buen peso, no flota
+const COYOTE_TIME = 0.15      # Perdonador
+const JUMP_BUFFER = 0.1       # Responsivo
 
 # === PARÁMETROS DE MOVIMIENTO ===
 @export_group("Movement")

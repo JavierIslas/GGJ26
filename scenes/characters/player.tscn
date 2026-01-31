@@ -1,10 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://bubhj7r567uy1"]
+[gd_scene load_steps=6 format=3 uid="uid://bubhj7r567uy1"]
 
 [ext_resource type="Script" uid="uid://cm8tvgaokhjyk" path="res://scripts/core/player_controller.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2_yewv4"]
+[ext_resource type="Script" path="res://scripts/core/reveal_system.gd" id="3_reveal"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(28, 30)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_reveal"]
+radius = 48.0
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2
@@ -28,3 +32,17 @@ one_shot = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true
+
+[node name="RevealSystem" type="Node2D" parent="."]
+script = ExtResource("3_reveal")
+
+[node name="DetectionArea" type="Area2D" parent="RevealSystem"]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RevealSystem/DetectionArea"]
+shape = SubResource("CircleShape2D_reveal")
+
+[node name="CooldownTimer" type="Timer" parent="RevealSystem"]
+wait_time = 0.5
+one_shot = true
