@@ -384,16 +384,15 @@ position = Vector2(5680, 550)
 activation_type = 1
 
 [node name="Puzzle32_Controller" parent="Puzzles" instance=ExtResource("20_timed_puzzle")]
+required_switches = 3
+required_stunned_enemies = 4
+time_window = 10.0
+coyote_time = 1.0
 switch_group = "puzzle_mass_switches"
 enemy_group = "puzzle_mass_control"
+auto_start = false
+show_timer_ui = true
 
-[node name="Puzzle32_TriggerArea" type="Area2D" parent="Puzzles"]
-position = Vector2(5300, 530)
-script = ExtResource("22_puzzle_trigger")
-puzzle_controller_path = NodePath("../Puzzle32_Controller")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Puzzles/Puzzle32_TriggerArea"]
-shape = SubResource("trigger_shape")
 
 [node name="UI" type="Node2D" parent="."]
 

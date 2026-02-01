@@ -108,9 +108,13 @@ func _process(delta: float) -> void:
 	# Verificar condiciones continuamente
 	_check_conditions()
 
-func _on_switch_toggled(_is_active: bool) -> void:
-	# Un switch cambió de estado, verificar condiciones
-	if is_active:
+func _on_switch_toggled(switch_is_active: bool) -> void:
+	# Un switch cambió de estado
+	if not is_active and not auto_start and switch_is_active:
+		# Primer switch activado - iniciar puzzle
+		print("[TimedPuzzleController] First switch activated - starting puzzle!")
+		start_puzzle()
+	elif is_active:
 		_check_conditions()
 
 func _check_conditions() -> void:
