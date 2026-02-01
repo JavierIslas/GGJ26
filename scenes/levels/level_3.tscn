@@ -336,12 +336,12 @@ door_color = Color(0.2, 0.8, 1, 1)
 
 [node name="Door5" parent="Doors" instance=ExtResource("15")]
 position = Vector2(4750, 530)
-truths_required = 14
+truths_required = 10
 door_color = Color(0.8, 0.1, 0.8, 1)
 
 [node name="LevelGoal" parent="." instance=ExtResource("17")]
 position = Vector2(7200, 530)
-required_truths = 17
+required_truths = 10
 
 [node name="UI" type="Node2D" parent="."]
 

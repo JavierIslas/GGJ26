@@ -209,12 +209,12 @@ door_color = Color(0.8, 0.1, 0.8, 1)
 
 [node name="DoorFinal" parent="Doors" instance=ExtResource("9")]
 position = Vector2(5000, 530)
-truths_required = 12
+truths_required = 7
 door_color = Color(0.8, 0.6, 0.1, 1)
 
 [node name="LevelGoal" parent="." instance=ExtResource("11")]
 position = Vector2(5100, 530)
-required_truths = 12
+required_truths = 7
 next_level_path = "res://scenes/levels/level_3.tscn"
 
 [node name="UI" type="Node2D" parent="."]

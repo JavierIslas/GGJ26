@@ -160,12 +160,12 @@ truths_required = 3
 
 [node name="Door3_Final" parent="Doors" instance=ExtResource("9")]
 position = Vector2(2950, 530)
-truths_required = 6
+truths_required = 4
 door_color = Color(0.8, 0.6, 0.1, 1)
 
 [node name="LevelGoal" parent="." instance=ExtResource("11")]
 position = Vector2(3050, 530)
-required_truths = 6
+required_truths = 4
 next_level_path = "res://scenes/levels/level_2.tscn"
 
 [node name="UI" type="Node2D" parent="."]
@@ -181,17 +181,6 @@ next_level_path = "res://scenes/levels/level_2.tscn"
 [node name="EndingScreen" parent="UI" instance=ExtResource("12_ending")]
 
 [node name="Instructions" type="Node2D" parent="."]
-
-[node name="IntroText" type="Label" parent="Instructions"]
-offset_left = 100.0
-offset_top = 400.0
-offset_right = 300.0
-offset_bottom = 450.0
-theme_override_font_sizes/font_size = 16
-text = "Usa A/D para moverte
-Espacio para saltar
-E para revelar verdades"
-horizontal_alignment = 1
 
 [node name="Door1Hint" type="Label" parent="Instructions"]
 offset_left = 480.0

@@ -18,9 +18,10 @@ signal entity_revealed(entity: Node2D)
 @export var reveal_cooldown: float = 0.5
 
 ## === WOLF'S HOWL PARAMETERS ===
+## Howl es un AOE que REVELA enemigos ocultos y ATURDE enemigos ya revelados
 @export var howl_charge_time_required: float = 1.1  # Segundos para cargar howl (era 1.5)
-@export var howl_radius: float = 130.0  # Radio de efecto (era 96.0)
-@export var howl_stun_duration: float = 2.0  # Duración del aturdimiento
+@export var howl_radius: float = 130.0  # Radio de efecto AOE (era 96.0)
+@export var howl_stun_duration: float = 2.0  # Duración del aturdimiento (solo revelados)
 @export var howl_cooldown: float = 5.5  # Cooldown del howl (era 8.0)
 
 ## Referencias
@@ -402,7 +403,7 @@ func get_current_target() -> Node2D:
 # === WOLF'S HOWL SYSTEM ===
 
 func _perform_howl() -> void:
-	"""Ejecuta el Wolf's Howl - aturde enemigos revelados en área"""
+	"""Ejecuta el Wolf's Howl - AOE que revela enemigos ocultos y aturde revelados"""
 	print("=== WOLF'S HOWL UNLEASHED ===")
 
 	# Activar cooldown
@@ -425,12 +426,13 @@ func _perform_howl() -> void:
 
 	# Bloquear movimiento del jugador brevemente
 	if player.has_method("start_tear_veil_animation"):
-		# Usar la misma animación o crear una nueva
-		# Por ahora reusar la animación de tear veil
-		pass
+		player.start_tear_veil_animation()
 
-	# Detectar enemigos revelados en radio amplio
+	# Contadores para feedback
+	var revealed_count = 0
 	var stunned_count = 0
+
+	# Detectar TODOS los enemigos en radio amplio
 	for entity in get_tree().get_nodes_in_group("entities"):
 		if not is_instance_valid(entity):
 			continue
@@ -440,27 +442,45 @@ func _perform_howl() -> void:
 		if distance > howl_radius:
 			continue
 
-		# Verificar si está revelado
+		# Verificar que tenga VeilComponent
 		if not entity.has_node("VeilComponent"):
 			continue
 
 		var veil = entity.get_node("VeilComponent")
+
+		# === CASO 1: Enemigo SIN revelar → REVELAR ===
 		if not veil.is_revealed:
-			continue
+			# Arrancar el velo
+			veil.tear_veil()
 
-		# Aturdir enemigo
-		if entity.has_method("stun"):
-			entity.stun(howl_stun_duration)
-			stunned_count += 1
-			print("  - Stunned: %s" % entity.name)
+			# Generar shard por revelación
+			if player.has_method("add_veil_shard"):
+				player.add_veil_shard()
 
-	# Partículas de howl
+			# Feedback visual de revelación individual
+			_show_reveal_feedback(entity)
+
+			# Emitir señal
+			entity_revealed.emit(entity)
+
+			revealed_count += 1
+			print("  - Revealed: %s" % entity.name)
+
+		# === CASO 2: Enemigo YA revelado → ATURDIR ===
+		else:
+			# Aturdir enemigo
+			if entity.has_method("stun"):
+				entity.stun(howl_stun_duration)
+				stunned_count += 1
+				print("  - Stunned: %s" % entity.name)
+
+	# Partículas de howl (onda expansiva general)
 	_spawn_howl_particles()
 
 	# SFX
 	AudioManager.play_sfx("wolf_howl", 0.0)
 
-	print("=== Wolf's Howl stunned %d enemies ===" % stunned_count)
+	print("=== Wolf's Howl: %d revealed, %d stunned ===" % [revealed_count, stunned_count])
 
 func _update_howl_charge_visual() -> void:
 	"""Feedback visual mientras carga el howl"""
