@@ -7,8 +7,6 @@
 radius = 20.0
 
 [node name="PuzzleSwitch" type="Area2D" groups=["puzzle_elements"]]
-collision_layer = 0
-collision_mask = 6
 script = ExtResource("1")
 can_toggle = false
 inactive_color = Color(0.5, 0.5, 0.5, 1)
