@@ -38,7 +38,7 @@ var sprite: Sprite2D = null
 func _ready() -> void:
 	# Configurar collision para detectar proyectiles
 	collision_layer = 0
-	collision_mask = 4  # Layer 4: Projectiles
+	collision_mask = 16  # Layer 5: Player Projectiles (VeilShards)
 
 	# Conectar señales
 	body_entered.connect(_on_body_entered)

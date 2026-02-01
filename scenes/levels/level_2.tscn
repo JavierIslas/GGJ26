@@ -1,13 +1,10 @@
-[gd_scene load_steps=18 format=3 uid="uid://dr0c2rqeklns3"]
+[gd_scene load_steps=22 format=3 uid="uid://dr0c2rqeklns3"]
 
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/characters/entities/false_enemy.tscn" id="3_false_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/false_enemy_fast.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/false_enemy.tscn" id="3_false_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/false_friend_jumper.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/puzzle/sync_reveal_door.tscn" id="16_sync_door"]
-[ext_resource type="PackedScene" path="res://scenes/puzzle/puzzle_switch.tscn" id="17_puzzle_switch"]
-[ext_resource type="Script" path="res://scripts/puzzle/activated_platform.gd" id="18_activated_platform"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_tracking.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="7"]
@@ -20,6 +17,9 @@
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_laser.tscn" id="13"]
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_burst.tscn" id="14"]
 [ext_resource type="PackedScene" path="res://scenes/characters/entities/true_threat_shield.tscn" id="15"]
+[ext_resource type="PackedScene" path="res://scenes/puzzle/sync_reveal_door.tscn" id="16_sync_door"]
+[ext_resource type="PackedScene" path="res://scenes/puzzle/puzzle_switch.tscn" id="17_puzzle_switch"]
+[ext_resource type="Script" uid="uid://c0cru1ly1rsf7" path="res://scripts/puzzle/activated_platform.gd" id="18_activated_platform"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1500, 50)
@@ -121,8 +121,8 @@ scale = Vector2(9, 0.9)
 texture = ExtResource("2")
 
 [node name="Puzzle22_ActivatedPlatform" type="StaticBody2D" parent="Platforms"]
-position = Vector2(2250, 380)
 modulate = Color(1, 1, 1, 0.3)
+position = Vector2(2250, 380)
 script = ExtResource("18_activated_platform")
 puzzle_switch_path = NodePath("../../Puzzles/Puzzle22_Switch")
 
@@ -224,12 +224,7 @@ door_color = Color(1, 0.2, 0.2, 1)
 
 [node name="Puzzle21_SyncDoor" parent="Doors" instance=ExtResource("16_sync_door")]
 position = Vector2(1700, 530)
-required_reveals = 3
-time_window = 3.5
 enemy_group = "puzzle_sync_area3"
-door_color_locked = Color(1, 0, 0, 1)
-door_color_unlocked = Color(0, 1, 0, 1)
-open_direction = Vector2(0, -200)
 
 [node name="Door2_Area4" parent="Doors" instance=ExtResource("9")]
 position = Vector2(1900, 530)
@@ -260,8 +255,6 @@ next_level_path = "res://scenes/levels/level_3.tscn"
 [node name="Puzzle22_Switch" parent="Puzzles" instance=ExtResource("17_puzzle_switch")]
 position = Vector2(2400, 300)
 activation_type = 0
-stays_active = true
-can_toggle = false
 
 [node name="UI" type="Node2D" parent="."]
 

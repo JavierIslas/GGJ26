@@ -18,6 +18,9 @@ var direction: Vector2 = Vector2.RIGHT
 var launched: bool = false
 
 func _ready() -> void:
+	# Agregar al grupo de proyectiles
+	add_to_group("projectiles")
+
 	# Configurar collision
 	collision_layer = 16  # Layer 5: Player Projectiles (nueva)
 	collision_mask = 4 | 8  # Mask 3: Entities, Mask 4: Enemy Projectiles

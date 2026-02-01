@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://c8vq2lm4k3pqr"]
+[gd_scene load_steps=25 format=3 uid="uid://c8vq2lm4k3pqr"]
 
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
@@ -20,8 +20,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/ending_screen.tscn" id="18"]
 [ext_resource type="PackedScene" path="res://scenes/puzzle/puzzle_switch.tscn" id="19_puzzle_switch"]
 [ext_resource type="PackedScene" path="res://scenes/puzzle/timed_puzzle_controller.tscn" id="20_timed_puzzle"]
-[ext_resource type="Script" path="res://scripts/puzzle/puzzle_controlled_door.gd" id="21_puzzle_door"]
-[ext_resource type="Script" path="res://scripts/puzzle/puzzle_trigger_area.gd" id="22_puzzle_trigger"]
+[ext_resource type="Script" uid="uid://cjbtroxsiomoh" path="res://scripts/puzzle/puzzle_controlled_door.gd" id="21_puzzle_door"]
+[ext_resource type="Script" uid="uid://3rhaxbt22job" path="res://scripts/puzzle/puzzle_trigger_area.gd" id="22_puzzle_trigger"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1500, 50)
@@ -360,8 +360,6 @@ door_color = Color(0.8, 0.1, 0.8, 1)
 
 [node name="Puzzle32_FinalDoor" parent="Doors" instance=ExtResource("15")]
 position = Vector2(5400, 530)
-truths_required = 0
-door_color = Color(1, 0.8, 0, 1)
 script = ExtResource("21_puzzle_door")
 puzzle_controller_path = NodePath("../../Puzzles/Puzzle32_Controller")
 open_direction = Vector2(0, -200)
@@ -376,37 +374,23 @@ required_truths = 10
 [node name="Puzzle32_Switch1" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
 position = Vector2(5520, 520)
 activation_type = 1
-stays_active = true
-can_toggle = false
 
 [node name="Puzzle32_Switch2" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
 position = Vector2(5600, 520)
 activation_type = 1
-stays_active = true
-can_toggle = false
 
 [node name="Puzzle32_Switch3" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
 position = Vector2(5680, 520)
 activation_type = 1
-stays_active = true
-can_toggle = false
 
 [node name="Puzzle32_Controller" parent="Puzzles" instance=ExtResource("20_timed_puzzle")]
-required_switches = 3
-required_stunned_enemies = 4
-time_window = 3.0
-coyote_time = 0.5
 switch_group = "puzzle_mass_switches"
 enemy_group = "puzzle_mass_control"
-auto_start = false
-one_time_only = true
-show_timer_ui = true
 
 [node name="Puzzle32_TriggerArea" type="Area2D" parent="Puzzles"]
 position = Vector2(5300, 530)
 script = ExtResource("22_puzzle_trigger")
 puzzle_controller_path = NodePath("../Puzzle32_Controller")
-one_time_only = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Puzzles/Puzzle32_TriggerArea"]
 shape = SubResource("trigger_shape")

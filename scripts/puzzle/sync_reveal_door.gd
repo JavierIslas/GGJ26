@@ -71,13 +71,18 @@ func _process(delta: float) -> void:
 
 func _on_truth_revealed(_total: int) -> void:
 	if is_open or is_locked:
+		print("[SyncRevealDoor] %s ignoring reveal - door is %s" % [name, "open" if is_open else "locked"])
 		return
+
+	print("[SyncRevealDoor] %s truth_revealed signal received! Searching for newly revealed enemy..." % name)
 
 	# Buscar qué enemigo fue revelado
 	var newly_revealed = _find_newly_revealed_enemy()
 
 	if newly_revealed:
 		_register_reveal(newly_revealed)
+	else:
+		print("[SyncRevealDoor] %s could not find newly revealed enemy in group '%s'" % [name, enemy_group if enemy_group != "" else "entities"])
 
 func _find_newly_revealed_enemy() -> Node2D:
 	# Buscar enemigos en el grupo especificado o todos los enemigos
@@ -85,8 +90,10 @@ func _find_newly_revealed_enemy() -> Node2D:
 
 	if enemy_group != "":
 		candidates = get_tree().get_nodes_in_group(enemy_group)
+		print("[SyncRevealDoor] Searching in group '%s': found %d candidates" % [enemy_group, candidates.size()])
 	else:
 		candidates = get_tree().get_nodes_in_group("entities")
+		print("[SyncRevealDoor] Searching in group 'entities': found %d candidates" % candidates.size())
 
 	for enemy in candidates:
 		if not is_instance_valid(enemy):
@@ -96,6 +103,7 @@ func _find_newly_revealed_enemy() -> Node2D:
 		if enemy.has_node("VeilComponent"):
 			var veil = enemy.get_node("VeilComponent")
 			if veil.is_revealed and enemy not in revealed_enemies:
+				print("[SyncRevealDoor] Found newly revealed enemy: %s" % enemy.name)
 				return enemy
 
 	return null

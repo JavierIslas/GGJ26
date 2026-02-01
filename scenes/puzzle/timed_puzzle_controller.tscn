@@ -1,15 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://c5rbfblyo608f"]
 
-[ext_resource type="Script" path="res://scripts/puzzle/timed_puzzle_controller.gd" id="1"]
+[ext_resource type="Script" uid="uid://tq41qlvl6h14" path="res://scripts/puzzle/timed_puzzle_controller.gd" id="1"]
 
 [node name="TimedPuzzleController" type="Node"]
 script = ExtResource("1")
-required_switches = 3
 required_stunned_enemies = 4
-time_window = 3.0
-coyote_time = 0.5
-switch_group = ""
-enemy_group = ""
-auto_start = false
-one_time_only = true
-show_timer_ui = true
