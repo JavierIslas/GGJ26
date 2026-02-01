@@ -11,17 +11,17 @@ extends Node2D
 
 signal entity_revealed(entity: Node2D)
 
-## Rango de detección (32 píxeles según GDD)
-@export var reveal_range: float = 48.0
+## Rango de detección (aumentado a 80px para mejor usabilidad)
+@export var reveal_range: float = 80.0
 
 ## Cooldown entre revelaciones (0.5s según GDD)
 @export var reveal_cooldown: float = 0.5
 
 ## === WOLF'S HOWL PARAMETERS ===
-@export var howl_charge_time_required: float = 1.5  # Segundos para cargar howl
-@export var howl_radius: float = 96.0  # Radio de efecto (doble del reveal)
+@export var howl_charge_time_required: float = 1.1  # Segundos para cargar howl (era 1.5)
+@export var howl_radius: float = 130.0  # Radio de efecto (era 96.0)
 @export var howl_stun_duration: float = 2.0  # Duración del aturdimiento
-@export var howl_cooldown: float = 8.0  # Cooldown del howl
+@export var howl_cooldown: float = 5.5  # Cooldown del howl (era 8.0)
 
 ## Referencias
 @onready var player: PlayerController = get_parent() as PlayerController

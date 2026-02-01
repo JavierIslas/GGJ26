@@ -15,22 +15,22 @@ signal landed
 signal veil_torn  # Se emitirá cuando arranque un velo
 
 # === CONSTANTES DE MOVIMIENTO ===
-const SPEED = 200.0           # Ni muy lento ni muy rápido
-const JUMP_VELOCITY = -550.0  # Salto cómodo
-const GRAVITY = 1200.0        # Cae con buen peso, no flota
-const COYOTE_TIME = 0.15      # Perdonador
+const SPEED = 230.0           # Más dinámico para combate (era 200.0)
+const JUMP_VELOCITY = -500.0  # Más preciso, menos flotante (era -550.0)
+const GRAVITY = 1300.0        # Complementa jump reducido (era 1200.0)
+const COYOTE_TIME = 0.12      # Más tight, menos obvio (era 0.15)
 const JUMP_BUFFER = 0.1       # Responsivo
 
 # === PARÁMETROS DE MOVIMIENTO ===
 @export_group("Movement")
 @export var acceleration: float = 1200.0
 @export var friction: float = 1000.0
-@export var air_resistance: float = 400.0
+@export var air_resistance: float = 700.0  # Más control en el aire (era 400.0)
 
 # === PARÁMETROS DE SALTO ===
 @export_group("Jump")
 @export var jump_cut_multiplier: float = 0.5  # Al soltar el botón
-@export var max_fall_speed: float = 400.0
+@export var max_fall_speed: float = 500.0  # Caída más responsiva (era 400.0)
 
 # === PARÁMETROS DE DAÑO ===
 @export_group("Damage")
@@ -45,9 +45,9 @@ const JUMP_BUFFER = 0.1       # Responsivo
 
 # === PARÁMETROS DE MOONLIGHT DASH ===
 @export_group("Moonlight Dash")
-@export var dash_distance: float = 80.0  # Distancia del dash en píxeles
-@export var dash_duration: float = 0.2  # Duración del dash en segundos
-@export var dash_cooldown: float = 3.0  # Cooldown entre dashes
+@export var dash_distance: float = 135.0  # Distancia del dash en píxeles (era 80.0)
+@export var dash_duration: float = 0.25  # Duración del dash en segundos (era 0.2)
+@export var dash_cooldown: float = 2.0  # Cooldown entre dashes (era 3.0)
 
 # === REFERENCIAS ===
 @onready var sprite: Sprite2D = $Sprite2D
@@ -635,8 +635,8 @@ func _end_dash() -> void:
 	is_dashing = false
 	dash_timer = 0.0
 
-	# Restaurar velocidad (pequeño momentum)
-	velocity.x *= 0.5
+	# Restaurar velocidad (momentum aumentado para más fluidez)
+	velocity.x *= 0.75  # Era 0.5, ahora 75% de momentum
 
 	print("Moonlight Dash ended! Shards: %d" % veil_shards)
 
