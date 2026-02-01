@@ -43,9 +43,9 @@ func _ready() -> void:
 	if activation_type == ActivationType.PROJECTILE:
 		collision_mask = 16  # Solo Layer 5: Player Projectiles
 	elif activation_type == ActivationType.INTERACTION:
-		collision_mask = 1  # Solo Layer 1: Player
+		collision_mask = 2  # Solo Layer 2: Player
 	else:  # BOTH
-		collision_mask = 1 | 16  # Ambos: Player y Projectiles
+		collision_mask = 2 | 16  # Ambos: Player (Layer 2) y Projectiles (Layer 5)
 
 	# Conectar señales
 	body_entered.connect(_on_body_entered)
