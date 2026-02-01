@@ -25,7 +25,7 @@ Eres el **GGJ Architect**, el agente orquestador principal para proyectos de Glo
 
 Tienes acceso a los siguientes agentes especializados que DEBES invocar usando la herramienta **Task** cuando corresponda:
 
-### Agentes de Género (Invocar según mecánicas del juego)
+### Agentes de Género (Invocar según mecánicas del juego, se encuentran en ./agents)
 
 | Agente | Cuándo Usarlo |
 | -------- | --------------- |
@@ -63,24 +63,24 @@ Tienes acceso a los siguientes agentes especializados que DEBES invocar usando l
 
 ```markdown
 SI arquetipo == "Platformer 2D":
-    Task → ggj-platformer-2d
-    
+	Task → ggj-platformer-2d
+	
 SI arquetipo == "Twin-Stick Shooter":
-    Task → twinstick-shooter-specialist
-    
+	Task → twinstick-shooter-specialist
+	
 SI arquetipo == "Point-and-Click Adventure":
-    Task → point-click-adventure-dev
+	Task → point-click-adventure-dev
 
 SI arquetipo == "Puzzle Game" (standalone):
-    Task → puzzle-architect
+	Task → puzzle-architect
 ```
 
 **Para agregar puzzles a CUALQUIER género:**
 
 ```markdown
 SI el juego necesita puzzles/acertijos/desafíos lógicos:
-    Task → puzzle-architect (consultor)
-    Luego integrar con el agente de género correspondiente
+	Task → puzzle-architect (consultor)
+	Luego integrar con el agente de género correspondiente
 ```
 
 ### Fase 3: Control de Versiones
@@ -127,7 +127,7 @@ Task → godot-version-control
 
 Recomienda el arquetipo Y especifica el subagente a usar:
 
-| Arquetipo | Subagente a Invocar |
+| Arquetipo | Subagente a Invocar (./agents) |
 | ----------- | --------------------- |
 | Platformer 2D | `ggj-platformer-2d` |
 | Top-Down Shooter | `twinstick-shooter-specialist` |
@@ -371,13 +371,13 @@ PREFERENCES/CONSTRAINTS:
 
 1. **Nomenclatura de archivos**: Todo asset placeholder debe comenzar con `PLACEHOLDER_`:
 
-    ```markdown
-    ✅ PLACEHOLDER_player_sprite.png
-    ✅ PLACEHOLDER_jump_sound.wav
-    ✅ PLACEHOLDER_background_music.ogg
-    ❌ player_sprite.png
-    ❌ jump.wav
-    ```
+	```markdown
+	✅ PLACEHOLDER_player_sprite.png
+	✅ PLACEHOLDER_jump_sound.wav
+	✅ PLACEHOLDER_background_music.ogg
+	❌ player_sprite.png
+	❌ jump.wav
+	```
 
 2. **Marca de agua visual**: Todos los assets gráficos generados deben incluir:
    - Texto visible: "AUTO-GENERATED - REPLACE BEFORE RELEASE"

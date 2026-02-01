@@ -131,50 +131,50 @@ Total: -1 HP → Más perdonador
 
 ```gdscript
 func take_damage(amount: int) -> void:
-    """Recibe daño y activa iFrames"""
-    # Si ya está invencible, ignorar daño
-    if is_invincible:
-        print("Player is invincible, damage ignored")
-        return
+	"""Recibe daño y activa iFrames"""
+	# Si ya está invencible, ignorar daño
+	if is_invincible:
+		print("Player is invincible, damage ignored")
+		return
 
-    # Aplicar daño
-    GameManager.change_health(-amount)
+	# Aplicar daño
+	GameManager.change_health(-amount)
 
-    # Si murió, no activar iFrames
-    if GameManager.player_hp <= 0:
-        return
+	# Si murió, no activar iFrames
+	if GameManager.player_hp <= 0:
+		return
 
-    # Activar invencibilidad temporal
-    _activate_invincibility()
+	# Activar invencibilidad temporal
+	_activate_invincibility()
 ```
 
 ### Activación de iFrames
 
 ```gdscript
 func _activate_invincibility() -> void:
-    is_invincible = true
-    invincibility_timer.start()  # 1.0s
-    flash_timer.start()          # Parpadeo cada 0.1s
+	is_invincible = true
+	invincibility_timer.start()  # 1.0s
+	flash_timer.start()          # Parpadeo cada 0.1s
 ```
 
 ### Parpadeo Visual
 
 ```gdscript
 func _on_flash_timeout() -> void:
-    # Alternar entre visible (1.0) e invisible (0.3)
-    sprite.modulate.a = 0.3 if sprite.modulate.a == 1.0 else 1.0
+	# Alternar entre visible (1.0) e invisible (0.3)
+	sprite.modulate.a = 0.3 if sprite.modulate.a == 1.0 else 1.0
 ```
 
 ### Integración en Proyectiles
 
 ```gdscript
 func _on_body_entered(body: Node2D) -> void:
-    if body.is_in_group("player"):
-        # Usa el sistema de iFrames
-        if body.has_method("take_damage"):
-            body.take_damage(damage)  # ✅ Respeta iFrames
-        else:
-            GameManager.change_health(-damage)  # Fallback
+	if body.is_in_group("player"):
+		# Usa el sistema de iFrames
+		if body.has_method("take_damage"):
+			body.take_damage(damage)  # ✅ Respeta iFrames
+		else:
+			GameManager.change_health(-damage)  # Fallback
 ```
 
 ## Testing & Debug

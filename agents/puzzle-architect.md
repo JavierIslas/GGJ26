@@ -108,8 +108,8 @@ res://
 │           ├── puzzle_data.gd
 │           └── hint_data.gd
 └── scenes/
-    └── puzzles/
-        ├── [puzzles específicos del proyecto]
+	└── puzzles/
+		├── [puzzles específicos del proyecto]
 ```
 
 ---
@@ -146,10 +146,10 @@ PUZZLES
 │   └── Luz/Óptica (reflejos, sombras)
 │
 └── INVENTARIO/RECURSOS
-    ├── Combinación (A + B = C)
-    ├── Uso contextual (llave → puerta)
-    ├── Gestión (recursos limitados)
-    └── Trading (intercambiar para obtener)
+	├── Combinación (A + B = C)
+	├── Uso contextual (llave → puerta)
+	├── Gestión (recursos limitados)
+	└── Trading (intercambiar para obtener)
 ```
 
 ### Por Contexto de Uso
@@ -199,10 +199,10 @@ signal interaction_attempted(element_id: String, success: bool)
 @export var cooldown: float = 0.0
 
 enum InteractionType {
-    TOGGLE,      # Cambia entre estados
-    MOMENTARY,   # Activo solo mientras se presiona
-    SEQUENTIAL,  # Cicla entre estados válidos
-    ONE_SHOT     # Solo se puede activar una vez
+	TOGGLE,      # Cambia entre estados
+	MOMENTARY,   # Activo solo mientras se presiona
+	SEQUENTIAL,  # Cicla entre estados válidos
+	ONE_SHOT     # Solo se puede activar una vez
 }
 
 var current_state: Variant
@@ -211,149 +211,149 @@ var is_on_cooldown: bool = false
 var has_been_activated: bool = false  # Para ONE_SHOT
 
 func _ready() -> void:
-    current_state = initial_state
-    add_to_group("puzzle_elements")
-    if puzzle_group != "":
-        add_to_group("puzzle_" + puzzle_group)
-    _on_ready()
+	current_state = initial_state
+	add_to_group("puzzle_elements")
+	if puzzle_group != "":
+		add_to_group("puzzle_" + puzzle_group)
+	_on_ready()
 
 ## Override en subclases para setup adicional
 func _on_ready() -> void:
-    pass
+	pass
 
 ## Intenta interactuar con el elemento
 func interact(context: Dictionary = {}) -> bool:
-    if not _can_interact(context):
-        interaction_attempted.emit(element_id, false)
-        return false
-    
-    _process_interaction(context)
-    interaction_attempted.emit(element_id, true)
-    return true
+	if not _can_interact(context):
+		interaction_attempted.emit(element_id, false)
+		return false
+	
+	_process_interaction(context)
+	interaction_attempted.emit(element_id, true)
+	return true
 
 ## Verifica si se puede interactuar
 func _can_interact(context: Dictionary) -> bool:
-    if is_locked:
-        return false
-    if not is_interactable:
-        return false
-    if is_on_cooldown:
-        return false
-    if interaction_type == InteractionType.ONE_SHOT and has_been_activated:
-        return false
-    if requires_item != "" and not _has_required_item(context):
-        return false
-    return true
+	if is_locked:
+		return false
+	if not is_interactable:
+		return false
+	if is_on_cooldown:
+		return false
+	if interaction_type == InteractionType.ONE_SHOT and has_been_activated:
+		return false
+	if requires_item != "" and not _has_required_item(context):
+		return false
+	return true
 
 ## Procesa la interacción según el tipo
 func _process_interaction(context: Dictionary) -> void:
-    match interaction_type:
-        InteractionType.TOGGLE:
-            set_state(not current_state if current_state is bool else _get_next_state())
-        InteractionType.MOMENTARY:
-            set_state(true)
-            _start_cooldown()
-        InteractionType.SEQUENTIAL:
-            set_state(_get_next_state())
-        InteractionType.ONE_SHOT:
-            set_state(true)
-            has_been_activated = true
-    
-    _on_interact(context)
+	match interaction_type:
+		InteractionType.TOGGLE:
+			set_state(not current_state if current_state is bool else _get_next_state())
+		InteractionType.MOMENTARY:
+			set_state(true)
+			_start_cooldown()
+		InteractionType.SEQUENTIAL:
+			set_state(_get_next_state())
+		InteractionType.ONE_SHOT:
+			set_state(true)
+			has_been_activated = true
+	
+	_on_interact(context)
 
 ## Override en subclases para comportamiento específico
 func _on_interact(_context: Dictionary) -> void:
-    pass
+	pass
 
 ## Obtiene el siguiente estado en secuencia
 func _get_next_state() -> Variant:
-    var current_index = valid_states.find(current_state)
-    var next_index = (current_index + 1) % valid_states.size()
-    return valid_states[next_index]
+	var current_index = valid_states.find(current_state)
+	var next_index = (current_index + 1) % valid_states.size()
+	return valid_states[next_index]
 
 ## Cambia el estado del elemento
 func set_state(new_state: Variant, silent: bool = false) -> void:
-    if new_state == current_state:
-        return
-    
-    var old_state = current_state
-    current_state = new_state
-    
-    _on_state_changed(old_state, new_state)
-    
-    if not silent:
-        state_changed.emit(element_id, new_state)
-        
-        # Emitir activated/deactivated para estados booleanos
-        if new_state is bool:
-            if new_state:
-                activated.emit(element_id)
-            else:
-                deactivated.emit(element_id)
+	if new_state == current_state:
+		return
+	
+	var old_state = current_state
+	current_state = new_state
+	
+	_on_state_changed(old_state, new_state)
+	
+	if not silent:
+		state_changed.emit(element_id, new_state)
+		
+		# Emitir activated/deactivated para estados booleanos
+		if new_state is bool:
+			if new_state:
+				activated.emit(element_id)
+			else:
+				deactivated.emit(element_id)
 
 ## Override para reaccionar a cambios de estado
 func _on_state_changed(_old_state: Variant, _new_state: Variant) -> void:
-    pass
+	pass
 
 ## Para interacción tipo MOMENTARY
 func release() -> void:
-    if interaction_type == InteractionType.MOMENTARY:
-        set_state(false)
+	if interaction_type == InteractionType.MOMENTARY:
+		set_state(false)
 
 func _start_cooldown() -> void:
-    if cooldown > 0:
-        is_on_cooldown = true
-        await get_tree().create_timer(cooldown).timeout
-        is_on_cooldown = false
+	if cooldown > 0:
+		is_on_cooldown = true
+		await get_tree().create_timer(cooldown).timeout
+		is_on_cooldown = false
 
 ## Verifica si tiene el item requerido (integración con inventario)
 func _has_required_item(context: Dictionary) -> bool:
-    # Primero verificar en el contexto proporcionado
-    if context.has("inventory"):
-        return requires_item in context.inventory
-    if context.has("has_item") and context.has_item is Callable:
-        return context.has_item.call(requires_item)
-    
-    # Fallback a autoloads conocidos
-    if has_node("/root/GameState"):
-        var gs = get_node("/root/GameState")
-        if gs.has_method("has_item"):
-            return gs.has_item(requires_item)
-    if has_node("/root/InventoryManager"):
-        var im = get_node("/root/InventoryManager")
-        if im.has_method("has_item"):
-            return im.has_item(requires_item)
-    
-    return false
+	# Primero verificar en el contexto proporcionado
+	if context.has("inventory"):
+		return requires_item in context.inventory
+	if context.has("has_item") and context.has_item is Callable:
+		return context.has_item.call(requires_item)
+	
+	# Fallback a autoloads conocidos
+	if has_node("/root/GameState"):
+		var gs = get_node("/root/GameState")
+		if gs.has_method("has_item"):
+			return gs.has_item(requires_item)
+	if has_node("/root/InventoryManager"):
+		var im = get_node("/root/InventoryManager")
+		if im.has_method("has_item"):
+			return im.has_item(requires_item)
+	
+	return false
 
 ## Bloquea/desbloquea el elemento
 func set_locked(locked: bool) -> void:
-    is_locked = locked
+	is_locked = locked
 
 ## Resetea al estado inicial
 func reset() -> void:
-    set_state(initial_state, true)
-    is_locked = false
-    is_on_cooldown = false
-    has_been_activated = false
+	set_state(initial_state, true)
+	is_locked = false
+	is_on_cooldown = false
+	has_been_activated = false
 
 ## Obtiene datos para guardado
 func get_save_data() -> Dictionary:
-    return {
-        "element_id": element_id,
-        "current_state": current_state,
-        "is_locked": is_locked,
-        "has_been_activated": has_been_activated
-    }
+	return {
+		"element_id": element_id,
+		"current_state": current_state,
+		"is_locked": is_locked,
+		"has_been_activated": has_been_activated
+	}
 
 ## Carga datos de guardado
 func load_save_data(data: Dictionary) -> void:
-    if data.has("current_state"):
-        set_state(data.current_state, true)
-    if data.has("is_locked"):
-        is_locked = data.is_locked
-    if data.has("has_been_activated"):
-        has_been_activated = data.has_been_activated
+	if data.has("current_state"):
+		set_state(data.current_state, true)
+	if data.has("is_locked"):
+		is_locked = data.is_locked
+	if data.has("has_been_activated"):
+		has_been_activated = data.has_been_activated
 ```
 
 ---
@@ -377,12 +377,12 @@ signal attempt_made(attempt_number: int, success: bool)
 signal hint_requested(hint_level: int)
 
 enum PuzzleType {
-    SEQUENCE,      # Activar elementos en orden específico
-    COMBINATION,   # Todos los elementos en estado correcto
-    PATTERN,       # Reproducir un patrón mostrado
-    LOGIC,         # Satisfacer expresión lógica
-    SOKOBAN,       # Bloques en posiciones correctas
-    CUSTOM         # Lógica de validación personalizada
+	SEQUENCE,      # Activar elementos en orden específico
+	COMBINATION,   # Todos los elementos en estado correcto
+	PATTERN,       # Reproducir un patrón mostrado
+	LOGIC,         # Satisfacer expresión lógica
+	SOKOBAN,       # Bloques en posiciones correctas
+	CUSTOM         # Lógica de validación personalizada
 }
 
 @export_group("Identity")
@@ -430,382 +430,382 @@ var time_remaining: float = 0.0
 @onready var time_limit_timer: Timer = Timer.new()
 
 func _ready() -> void:
-    _setup_timers()
-    call_deferred("_initialize")
+	_setup_timers()
+	call_deferred("_initialize")
 
 func _initialize() -> void:
-    _collect_elements()
-    _connect_elements()
-    _check_already_solved()
+	_collect_elements()
+	_connect_elements()
+	_check_already_solved()
 
 func _setup_timers() -> void:
-    hint_timer.one_shot = true
-    hint_timer.timeout.connect(_on_hint_timer_timeout)
-    add_child(hint_timer)
-    
-    time_limit_timer.one_shot = true
-    time_limit_timer.timeout.connect(_on_time_limit_reached)
-    add_child(time_limit_timer)
+	hint_timer.one_shot = true
+	hint_timer.timeout.connect(_on_hint_timer_timeout)
+	add_child(hint_timer)
+	
+	time_limit_timer.one_shot = true
+	time_limit_timer.timeout.connect(_on_time_limit_reached)
+	add_child(time_limit_timer)
 
 func _collect_elements() -> void:
-    elements.clear()
-    
-    if puzzle_group != "":
-        for node in get_tree().get_nodes_in_group("puzzle_" + puzzle_group):
-            if node is PuzzleElement:
-                elements.append(node)
-    
-    # También buscar hijos directos
-    for child in get_children():
-        if child is PuzzleElement and child not in elements:
-            elements.append(child)
-    
-    print("[PuzzleController] '%s' inicializado con %d elementos" % [puzzle_id, elements.size()])
+	elements.clear()
+	
+	if puzzle_group != "":
+		for node in get_tree().get_nodes_in_group("puzzle_" + puzzle_group):
+			if node is PuzzleElement:
+				elements.append(node)
+	
+	# También buscar hijos directos
+	for child in get_children():
+		if child is PuzzleElement and child not in elements:
+			elements.append(child)
+	
+	print("[PuzzleController] '%s' inicializado con %d elementos" % [puzzle_id, elements.size()])
 
 func _connect_elements() -> void:
-    for element in elements:
-        if not element.state_changed.is_connected(_on_element_state_changed):
-            element.state_changed.connect(_on_element_state_changed)
-        if not element.activated.is_connected(_on_element_activated):
-            element.activated.connect(_on_element_activated)
+	for element in elements:
+		if not element.state_changed.is_connected(_on_element_state_changed):
+			element.state_changed.connect(_on_element_state_changed)
+		if not element.activated.is_connected(_on_element_activated):
+			element.activated.connect(_on_element_activated)
 
 func _check_already_solved() -> void:
-    if solved_flag != "" and _get_flag(solved_flag):
-        is_solved = true
-        _on_already_solved()
+	if solved_flag != "" and _get_flag(solved_flag):
+		is_solved = true
+		_on_already_solved()
 
 ## Inicia el puzzle (útil para puzzles con tiempo límite)
 func start_puzzle() -> void:
-    if is_solved or is_locked:
-        return
-    
-    is_active = true
-    puzzle_started.emit()
-    
-    if time_limit > 0:
-        time_remaining = time_limit
-        time_limit_timer.start(time_limit)
-    
-    if auto_offer_hints and hints.size() > 0:
-        hint_timer.start(hint_delay)
+	if is_solved or is_locked:
+		return
+	
+	is_active = true
+	puzzle_started.emit()
+	
+	if time_limit > 0:
+		time_remaining = time_limit
+		time_limit_timer.start(time_limit)
+	
+	if auto_offer_hints and hints.size() > 0:
+		hint_timer.start(hint_delay)
 
 ## Llamado cuando un elemento cambia de estado
 func _on_element_state_changed(element_id: String, new_state: Variant) -> void:
-    if is_solved or is_locked:
-        return
-    
-    if not is_active and puzzle_type != PuzzleType.COMBINATION:
-        return
-    
-    match puzzle_type:
-        PuzzleType.COMBINATION:
-            _validate_combination()
-        PuzzleType.LOGIC:
-            _validate_logic()
-        PuzzleType.SOKOBAN:
-            _validate_sokoban()
-        PuzzleType.CUSTOM:
-            _validate_custom()
+	if is_solved or is_locked:
+		return
+	
+	if not is_active and puzzle_type != PuzzleType.COMBINATION:
+		return
+	
+	match puzzle_type:
+		PuzzleType.COMBINATION:
+			_validate_combination()
+		PuzzleType.LOGIC:
+			_validate_logic()
+		PuzzleType.SOKOBAN:
+			_validate_sokoban()
+		PuzzleType.CUSTOM:
+			_validate_custom()
 
 ## Llamado cuando un elemento se activa
 func _on_element_activated(element_id: String) -> void:
-    if is_solved or is_locked:
-        return
-    
-    match puzzle_type:
-        PuzzleType.SEQUENCE:
-            _process_sequence_input(element_id)
-        PuzzleType.PATTERN:
-            _process_pattern_input(element_id)
+	if is_solved or is_locked:
+		return
+	
+	match puzzle_type:
+		PuzzleType.SEQUENCE:
+			_process_sequence_input(element_id)
+		PuzzleType.PATTERN:
+			_process_pattern_input(element_id)
 
 # === VALIDADORES POR TIPO ===
 
 func _process_sequence_input(element_id: String) -> void:
-    current_sequence.append(element_id)
-    progress_changed.emit(current_sequence.size(), solution.size())
-    
-    # Verificar si el input es correcto hasta ahora
-    var index = current_sequence.size() - 1
-    if index < solution.size():
-        if current_sequence[index] != solution[index]:
-            _on_wrong_attempt()
-            return
-    
-    # Verificar si completó la secuencia
-    if current_sequence.size() == solution.size():
-        if current_sequence == solution:
-            _solve()
-        else:
-            _on_wrong_attempt()
+	current_sequence.append(element_id)
+	progress_changed.emit(current_sequence.size(), solution.size())
+	
+	# Verificar si el input es correcto hasta ahora
+	var index = current_sequence.size() - 1
+	if index < solution.size():
+		if current_sequence[index] != solution[index]:
+			_on_wrong_attempt()
+			return
+	
+	# Verificar si completó la secuencia
+	if current_sequence.size() == solution.size():
+		if current_sequence == solution:
+			_solve()
+		else:
+			_on_wrong_attempt()
 
 func _process_pattern_input(element_id: String) -> void:
-    # Similar a secuencia pero puede incluir timing
-    _process_sequence_input(element_id)
+	# Similar a secuencia pero puede incluir timing
+	_process_sequence_input(element_id)
 
 func _validate_combination() -> void:
-    var current_config = _get_current_configuration()
-    
-    if solution_is_ordered:
-        if current_config == solution:
-            _solve()
-    else:
-        # Verificar que todos los estados requeridos estén presentes
-        var matches = true
-        for required in solution:
-            var found = false
-            for config in current_config:
-                if _config_matches(config, required):
-                    found = true
-                    break
-            if not found:
-                matches = false
-                break
-        
-        if matches:
-            _solve()
+	var current_config = _get_current_configuration()
+	
+	if solution_is_ordered:
+		if current_config == solution:
+			_solve()
+	else:
+		# Verificar que todos los estados requeridos estén presentes
+		var matches = true
+		for required in solution:
+			var found = false
+			for config in current_config:
+				if _config_matches(config, required):
+					found = true
+					break
+			if not found:
+				matches = false
+				break
+		
+		if matches:
+			_solve()
 
 func _validate_logic() -> void:
-    # Evalúa expresión lógica definida en solution
-    # solution debería ser un string tipo "(A AND B) OR C"
-    if solution.size() > 0 and solution[0] is String:
-        var expression = solution[0]
-        if _evaluate_logic_expression(expression):
-            _solve()
+	# Evalúa expresión lógica definida en solution
+	# solution debería ser un string tipo "(A AND B) OR C"
+	if solution.size() > 0 and solution[0] is String:
+		var expression = solution[0]
+		if _evaluate_logic_expression(expression):
+			_solve()
 
 func _validate_sokoban() -> void:
-    # solution es array de {element_id, position}
-    var all_correct = true
-    for required in solution:
-        var element = _get_element_by_id(required.element_id)
-        if element and element.get_parent() is Node2D:
-            var pos = element.get_parent().global_position
-            var target = required.position
-            if pos.distance_to(target) > 5:  # Tolerancia
-                all_correct = false
-                break
-    
-    if all_correct:
-        _solve()
+	# solution es array de {element_id, position}
+	var all_correct = true
+	for required in solution:
+		var element = _get_element_by_id(required.element_id)
+		if element and element.get_parent() is Node2D:
+			var pos = element.get_parent().global_position
+			var target = required.position
+			if pos.distance_to(target) > 5:  # Tolerancia
+				all_correct = false
+				break
+	
+	if all_correct:
+		_solve()
 
 func _validate_custom() -> void:
-    # Override en subclases para lógica personalizada
-    pass
+	# Override en subclases para lógica personalizada
+	pass
 
 # === HELPERS ===
 
 func _get_current_configuration() -> Array:
-    var config = []
-    for element in elements:
-        config.append({
-            "id": element.element_id,
-            "state": element.current_state
-        })
-    return config
+	var config = []
+	for element in elements:
+		config.append({
+			"id": element.element_id,
+			"state": element.current_state
+		})
+	return config
 
 func _config_matches(config: Dictionary, required: Dictionary) -> bool:
-    return config.id == required.id and config.state == required.state
+	return config.id == required.id and config.state == required.state
 
 func _get_element_by_id(id: String) -> PuzzleElement:
-    for element in elements:
-        if element.element_id == id:
-            return element
-    return null
+	for element in elements:
+		if element.element_id == id:
+			return element
+	return null
 
 func _evaluate_logic_expression(expression: String) -> bool:
-    # Parser simple para expresiones lógicas
-    # Reemplaza IDs de elementos con sus valores booleanos
-    var eval_expr = expression
-    for element in elements:
-        var value_str = "true" if element.current_state else "false"
-        eval_expr = eval_expr.replace(element.element_id, value_str)
-    
-    # Evaluar usando Expression de Godot
-    var expr = Expression.new()
-    var error = expr.parse(eval_expr)
-    if error != OK:
-        push_error("[PuzzleController] Error parsing logic: %s" % expression)
-        return false
-    
-    var result = expr.execute()
-    return result == true
+	# Parser simple para expresiones lógicas
+	# Reemplaza IDs de elementos con sus valores booleanos
+	var eval_expr = expression
+	for element in elements:
+		var value_str = "true" if element.current_state else "false"
+		eval_expr = eval_expr.replace(element.element_id, value_str)
+	
+	# Evaluar usando Expression de Godot
+	var expr = Expression.new()
+	var error = expr.parse(eval_expr)
+	if error != OK:
+		push_error("[PuzzleController] Error parsing logic: %s" % expression)
+		return false
+	
+	var result = expr.execute()
+	return result == true
 
 # === RESOLUCIÓN Y FALLO ===
 
 func _solve() -> void:
-    is_solved = true
-    is_active = false
-    hint_timer.stop()
-    time_limit_timer.stop()
-    
-    # Activar flag
-    if solved_flag != "":
-        _set_flag(solved_flag, true)
-    
-    # Dar reward
-    if reward_item != "":
-        _give_item(reward_item)
-    
-    # Desbloquear elementos
-    for element_id in unlock_elements:
-        var element = _get_element_by_id(element_id)
-        if element:
-            element.set_locked(false)
-    
-    puzzle_solved.emit()
-    print("[PuzzleController] '%s' resuelto!" % puzzle_id)
+	is_solved = true
+	is_active = false
+	hint_timer.stop()
+	time_limit_timer.stop()
+	
+	# Activar flag
+	if solved_flag != "":
+		_set_flag(solved_flag, true)
+	
+	# Dar reward
+	if reward_item != "":
+		_give_item(reward_item)
+	
+	# Desbloquear elementos
+	for element_id in unlock_elements:
+		var element = _get_element_by_id(element_id)
+		if element:
+			element.set_locked(false)
+	
+	puzzle_solved.emit()
+	print("[PuzzleController] '%s' resuelto!" % puzzle_id)
 
 func _on_wrong_attempt() -> void:
-    attempts += 1
-    attempt_made.emit(attempts, false)
-    
-    if max_attempts > 0 and attempts >= max_attempts:
-        if lock_on_fail:
-            is_locked = true
-        puzzle_failed.emit()
-    elif auto_reset_on_fail:
-        await get_tree().create_timer(reset_delay).timeout
-        reset_puzzle()
-    else:
-        current_sequence.clear()  # Solo limpiar secuencia, no estados
+	attempts += 1
+	attempt_made.emit(attempts, false)
+	
+	if max_attempts > 0 and attempts >= max_attempts:
+		if lock_on_fail:
+			is_locked = true
+		puzzle_failed.emit()
+	elif auto_reset_on_fail:
+		await get_tree().create_timer(reset_delay).timeout
+		reset_puzzle()
+	else:
+		current_sequence.clear()  # Solo limpiar secuencia, no estados
 
 func _on_already_solved() -> void:
-    # Override para comportamiento cuando ya estaba resuelto
-    # Por ejemplo, mantener puerta abierta
-    pass
+	# Override para comportamiento cuando ya estaba resuelto
+	# Por ejemplo, mantener puerta abierta
+	pass
 
 func _on_time_limit_reached() -> void:
-    if not is_solved:
-        puzzle_failed.emit()
-        if lock_on_fail:
-            is_locked = true
+	if not is_solved:
+		puzzle_failed.emit()
+		if lock_on_fail:
+			is_locked = true
 
 # === HINTS ===
 
 func _on_hint_timer_timeout() -> void:
-    if current_hint_index < hints.size():
-        hint_requested.emit(current_hint_index)
+	if current_hint_index < hints.size():
+		hint_requested.emit(current_hint_index)
 
 func request_hint() -> String:
-    if current_hint_index >= hints.size():
-        return ""
-    
-    # Verificar si hay costo de recurso
-    if hints_cost_resource != "" and not _consume_resource(hints_cost_resource):
-        return ""
-    
-    var hint = hints[current_hint_index]
-    current_hint_index += 1
-    
-    # Programar siguiente hint
-    if auto_offer_hints and current_hint_index < hints.size():
-        hint_timer.start(hint_delay)
-    
-    return hint
+	if current_hint_index >= hints.size():
+		return ""
+	
+	# Verificar si hay costo de recurso
+	if hints_cost_resource != "" and not _consume_resource(hints_cost_resource):
+		return ""
+	
+	var hint = hints[current_hint_index]
+	current_hint_index += 1
+	
+	# Programar siguiente hint
+	if auto_offer_hints and current_hint_index < hints.size():
+		hint_timer.start(hint_delay)
+	
+	return hint
 
 func get_current_hint_level() -> int:
-    return current_hint_index
+	return current_hint_index
 
 func get_total_hints() -> int:
-    return hints.size()
+	return hints.size()
 
 # === CONTROL ===
 
 func reset_puzzle() -> void:
-    current_sequence.clear()
-    attempts = 0
-    is_solved = false
-    is_active = false
-    current_hint_index = 0
-    
-    for element in elements:
-        element.reset()
-    
-    hint_timer.stop()
-    time_limit_timer.stop()
-    
-    puzzle_reset.emit()
+	current_sequence.clear()
+	attempts = 0
+	is_solved = false
+	is_active = false
+	current_hint_index = 0
+	
+	for element in elements:
+		element.reset()
+	
+	hint_timer.stop()
+	time_limit_timer.stop()
+	
+	puzzle_reset.emit()
 
 func lock_puzzle() -> void:
-    is_locked = true
-    for element in elements:
-        element.set_locked(true)
+	is_locked = true
+	for element in elements:
+		element.set_locked(true)
 
 func unlock_puzzle() -> void:
-    is_locked = false
-    for element in elements:
-        element.set_locked(false)
+	is_locked = false
+	for element in elements:
+		element.set_locked(false)
 
 # === INTEGRACIÓN CON SISTEMAS EXTERNOS ===
 
 func _get_flag(flag_name: String) -> bool:
-    if has_node("/root/GameState"):
-        var gs = get_node("/root/GameState")
-        if gs.has_method("has_flag"):
-            return gs.has_flag(flag_name)
-    if has_node("/root/GameManager"):
-        var gm = get_node("/root/GameManager")
-        if gm.has_method("has_flag"):
-            return gm.has_flag(flag_name)
-    return false
+	if has_node("/root/GameState"):
+		var gs = get_node("/root/GameState")
+		if gs.has_method("has_flag"):
+			return gs.has_flag(flag_name)
+	if has_node("/root/GameManager"):
+		var gm = get_node("/root/GameManager")
+		if gm.has_method("has_flag"):
+			return gm.has_flag(flag_name)
+	return false
 
 func _set_flag(flag_name: String, value: bool) -> void:
-    if has_node("/root/GameState"):
-        var gs = get_node("/root/GameState")
-        if gs.has_method("set_flag"):
-            gs.set_flag(flag_name, value)
-            return
-    if has_node("/root/GameManager"):
-        var gm = get_node("/root/GameManager")
-        if gm.has_method("set_flag"):
-            gm.set_flag(flag_name, value)
+	if has_node("/root/GameState"):
+		var gs = get_node("/root/GameState")
+		if gs.has_method("set_flag"):
+			gs.set_flag(flag_name, value)
+			return
+	if has_node("/root/GameManager"):
+		var gm = get_node("/root/GameManager")
+		if gm.has_method("set_flag"):
+			gm.set_flag(flag_name, value)
 
 func _give_item(item_id: String) -> void:
-    if has_node("/root/GameState"):
-        var gs = get_node("/root/GameState")
-        if gs.has_method("add_item"):
-            gs.add_item(item_id)
-            return
-    if has_node("/root/InventoryManager"):
-        var im = get_node("/root/InventoryManager")
-        if im.has_method("add_item"):
-            im.add_item(item_id)
+	if has_node("/root/GameState"):
+		var gs = get_node("/root/GameState")
+		if gs.has_method("add_item"):
+			gs.add_item(item_id)
+			return
+	if has_node("/root/InventoryManager"):
+		var im = get_node("/root/InventoryManager")
+		if im.has_method("add_item"):
+			im.add_item(item_id)
 
 func _consume_resource(resource_name: String) -> bool:
-    if has_node("/root/GameManager"):
-        var gm = get_node("/root/GameManager")
-        if gm.has_method("consume_resource"):
-            return gm.consume_resource(resource_name)
-    return true  # Si no hay sistema de recursos, permitir gratis
+	if has_node("/root/GameManager"):
+		var gm = get_node("/root/GameManager")
+		if gm.has_method("consume_resource"):
+			return gm.consume_resource(resource_name)
+	return true  # Si no hay sistema de recursos, permitir gratis
 
 # === SAVE/LOAD ===
 
 func get_save_data() -> Dictionary:
-    var elements_data = []
-    for element in elements:
-        elements_data.append(element.get_save_data())
-    
-    return {
-        "puzzle_id": puzzle_id,
-        "is_solved": is_solved,
-        "is_locked": is_locked,
-        "attempts": attempts,
-        "current_hint_index": current_hint_index,
-        "current_sequence": current_sequence,
-        "elements": elements_data
-    }
+	var elements_data = []
+	for element in elements:
+		elements_data.append(element.get_save_data())
+	
+	return {
+		"puzzle_id": puzzle_id,
+		"is_solved": is_solved,
+		"is_locked": is_locked,
+		"attempts": attempts,
+		"current_hint_index": current_hint_index,
+		"current_sequence": current_sequence,
+		"elements": elements_data
+	}
 
 func load_save_data(data: Dictionary) -> void:
-    is_solved = data.get("is_solved", false)
-    is_locked = data.get("is_locked", false)
-    attempts = data.get("attempts", 0)
-    current_hint_index = data.get("current_hint_index", 0)
-    current_sequence = data.get("current_sequence", [])
-    
-    if data.has("elements"):
-        for element_data in data.elements:
-            var element = _get_element_by_id(element_data.element_id)
-            if element:
-                element.load_save_data(element_data)
+	is_solved = data.get("is_solved", false)
+	is_locked = data.get("is_locked", false)
+	attempts = data.get("attempts", 0)
+	current_hint_index = data.get("current_hint_index", 0)
+	current_sequence = data.get("current_sequence", [])
+	
+	if data.has("elements"):
+		for element_data in data.elements:
+			var element = _get_element_by_id(element_data.element_id)
+			if element:
+				element.load_save_data(element_data)
 ```
 
 ---
@@ -825,26 +825,26 @@ signal hint_shown(hint_text: String, hint_level: int)
 signal all_hints_exhausted
 
 enum HintLevel {
-    ENVIRONMENTAL,  # Pista visual/ambiental sutil
-    SUBTLE,         # Pista vaga en texto
-    MODERATE,       # Pista clara
-    EXPLICIT,       # Casi la solución
-    SOLUTION        # Solución directa
+	ENVIRONMENTAL,  # Pista visual/ambiental sutil
+	SUBTLE,         # Pista vaga en texto
+	MODERATE,       # Pista clara
+	EXPLICIT,       # Casi la solución
+	SOLUTION        # Solución directa
 }
 
 @export var hints_by_level: Dictionary = {}  # HintLevel -> String
 @export var time_thresholds: Dictionary = {
-    HintLevel.ENVIRONMENTAL: 15.0,
-    HintLevel.SUBTLE: 30.0,
-    HintLevel.MODERATE: 60.0,
-    HintLevel.EXPLICIT: 120.0,
-    HintLevel.SOLUTION: 180.0
+	HintLevel.ENVIRONMENTAL: 15.0,
+	HintLevel.SUBTLE: 30.0,
+	HintLevel.MODERATE: 60.0,
+	HintLevel.EXPLICIT: 120.0,
+	HintLevel.SOLUTION: 180.0
 }
 @export var attempt_thresholds: Dictionary = {
-    HintLevel.SUBTLE: 2,
-    HintLevel.MODERATE: 4,
-    HintLevel.EXPLICIT: 7,
-    HintLevel.SOLUTION: 10
+	HintLevel.SUBTLE: 2,
+	HintLevel.MODERATE: 4,
+	HintLevel.EXPLICIT: 7,
+	HintLevel.SOLUTION: 10
 }
 
 var current_hint_level: int = -1
@@ -854,78 +854,78 @@ var is_tracking: bool = false
 var shown_hints: Array[int] = []
 
 func _process(delta: float) -> void:
-    if is_tracking:
-        time_since_start += delta
-        _check_auto_hints()
+	if is_tracking:
+		time_since_start += delta
+		_check_auto_hints()
 
 func start_tracking() -> void:
-    is_tracking = true
-    time_since_start = 0.0
-    failed_attempts = 0
-    current_hint_level = -1
-    shown_hints.clear()
+	is_tracking = true
+	time_since_start = 0.0
+	failed_attempts = 0
+	current_hint_level = -1
+	shown_hints.clear()
 
 func stop_tracking() -> void:
-    is_tracking = false
+	is_tracking = false
 
 func record_failed_attempt() -> void:
-    failed_attempts += 1
-    _check_attempt_hints()
+	failed_attempts += 1
+	_check_attempt_hints()
 
 func _check_auto_hints() -> void:
-    for level in time_thresholds.keys():
-        if level > current_hint_level and level not in shown_hints:
-            if time_since_start >= time_thresholds[level]:
-                hint_available.emit(level)
-                break
+	for level in time_thresholds.keys():
+		if level > current_hint_level and level not in shown_hints:
+			if time_since_start >= time_thresholds[level]:
+				hint_available.emit(level)
+				break
 
 func _check_attempt_hints() -> void:
-    for level in attempt_thresholds.keys():
-        if level > current_hint_level and level not in shown_hints:
-            if failed_attempts >= attempt_thresholds[level]:
-                hint_available.emit(level)
-                break
+	for level in attempt_thresholds.keys():
+		if level > current_hint_level and level not in shown_hints:
+			if failed_attempts >= attempt_thresholds[level]:
+				hint_available.emit(level)
+				break
 
 func show_hint(level: int = -1) -> String:
-    if level == -1:
-        level = current_hint_level + 1
-    
-    if level >= HintLevel.size():
-        all_hints_exhausted.emit()
-        return ""
-    
-    if not hints_by_level.has(level):
-        return ""
-    
-    current_hint_level = level
-    shown_hints.append(level)
-    
-    var hint_text = hints_by_level[level]
-    hint_shown.emit(hint_text, level)
-    
-    return hint_text
+	if level == -1:
+		level = current_hint_level + 1
+	
+	if level >= HintLevel.size():
+		all_hints_exhausted.emit()
+		return ""
+	
+	if not hints_by_level.has(level):
+		return ""
+	
+	current_hint_level = level
+	shown_hints.append(level)
+	
+	var hint_text = hints_by_level[level]
+	hint_shown.emit(hint_text, level)
+	
+	return hint_text
 
 func get_next_available_hint() -> Dictionary:
-    var next_level = current_hint_level + 1
-    if next_level >= HintLevel.size() or not hints_by_level.has(next_level):
-        return {}
-    
-    return {
-        "level": next_level,
-        "level_name": HintLevel.keys()[next_level],
-        "text": hints_by_level[next_level]
-    }
+	var next_level = current_hint_level + 1
+	if next_level >= HintLevel.size() or not hints_by_level.has(next_level):
+		return {}
+	
+	return {
+		"level": next_level,
+		"level_name": HintLevel.keys()[next_level],
+		"text": hints_by_level[next_level]
+	}
 
 func reset() -> void:
-    current_hint_level = -1
-    time_since_start = 0.0
-    failed_attempts = 0
-    shown_hints.clear()
+	current_hint_level = -1
+	time_since_start = 0.0
+	failed_attempts = 0
+	shown_hints.clear()
 
 static func get_level_name(level: int) -> String:
-    if level >= 0 and level < HintLevel.size():
-        return HintLevel.keys()[level]
-    return "UNKNOWN"
+	if level >= 0 and level < HintLevel.size():
+		return HintLevel.keys()[level]
+	return "UNKNOWN"
 ```
 
 ---
@@ -942,10 +942,10 @@ extends PuzzleElement
 ## Interruptor activable por el jugador o presión.
 
 enum ActivationType {
-    PLAYER_INTERACT,  # Presionar botón de interacción
-    PLAYER_TOUCH,     # Tocar/pisar
-    PROJECTILE,       # Disparar
-    WEIGHT            # Requiere peso encima
+	PLAYER_INTERACT,  # Presionar botón de interacción
+	PLAYER_TOUCH,     # Tocar/pisar
+	PROJECTILE,       # Disparar
+	WEIGHT            # Requiere peso encima
 }
 
 @export var activation_type: ActivationType = ActivationType.PLAYER_TOUCH
@@ -961,66 +961,66 @@ var bodies_on_switch: Array = []
 var current_weight: float = 0.0
 
 func _on_ready() -> void:
-    if area:
-        area.body_entered.connect(_on_body_entered)
-        area.body_exited.connect(_on_body_exited)
+	if area:
+		area.body_entered.connect(_on_body_entered)
+		area.body_exited.connect(_on_body_exited)
 
 func _on_body_entered(body: Node2D) -> void:
-    match activation_type:
-        ActivationType.PLAYER_TOUCH:
-            if body.is_in_group("player"):
-                interact({"body": body})
-        
-        ActivationType.WEIGHT:
-            if body.has_method("get_weight"):
-                bodies_on_switch.append(body)
-                _update_weight()
-            elif body.is_in_group("player"):
-                bodies_on_switch.append(body)
-                _update_weight()
+	match activation_type:
+		ActivationType.PLAYER_TOUCH:
+			if body.is_in_group("player"):
+				interact({"body": body})
+		
+		ActivationType.WEIGHT:
+			if body.has_method("get_weight"):
+				bodies_on_switch.append(body)
+				_update_weight()
+			elif body.is_in_group("player"):
+				bodies_on_switch.append(body)
+				_update_weight()
 
 func _on_body_exited(body: Node2D) -> void:
-    if body in bodies_on_switch:
-        bodies_on_switch.erase(body)
-        _update_weight()
-    
-    if activation_type == ActivationType.PLAYER_TOUCH and stay_active_while_pressed:
-        if body.is_in_group("player") and interaction_type == InteractionType.MOMENTARY:
-            release()
+	if body in bodies_on_switch:
+		bodies_on_switch.erase(body)
+		_update_weight()
+	
+	if activation_type == ActivationType.PLAYER_TOUCH and stay_active_while_pressed:
+		if body.is_in_group("player") and interaction_type == InteractionType.MOMENTARY:
+			release()
 
 func _update_weight() -> void:
-    current_weight = 0.0
-    for body in bodies_on_switch:
-        if body.has_method("get_weight"):
-            current_weight += body.get_weight()
-        else:
-            current_weight += 1.0  # Peso default
-    
-    if current_weight >= required_weight:
-        if not current_state:
-            set_state(true)
-            _play_animation("activate")
-    else:
-        if current_state and stay_active_while_pressed:
-            set_state(false)
-            _play_animation("deactivate")
+	current_weight = 0.0
+	for body in bodies_on_switch:
+		if body.has_method("get_weight"):
+			current_weight += body.get_weight()
+		else:
+			current_weight += 1.0  # Peso default
+	
+	if current_weight >= required_weight:
+		if not current_state:
+			set_state(true)
+			_play_animation("activate")
+	else:
+		if current_state and stay_active_while_pressed:
+			set_state(false)
+			_play_animation("deactivate")
 
 func _on_state_changed(_old_state: Variant, new_state: Variant) -> void:
-    _play_animation("activate" if new_state else "deactivate")
-    _play_sound()
+	_play_animation("activate" if new_state else "deactivate")
+	_play_sound()
 
 func _play_animation(anim_name: String) -> void:
-    if animation_player and animation_player.has_animation(anim_name):
-        animation_player.play(anim_name)
+	if animation_player and animation_player.has_animation(anim_name):
+		animation_player.play(anim_name)
 
 func _play_sound() -> void:
-    if audio:
-        audio.play()
+	if audio:
+		audio.play()
 
 # Para activación por proyectil
 func hit_by_projectile() -> void:
-    if activation_type == ActivationType.PROJECTILE:
-        interact({})
+	if activation_type == ActivationType.PROJECTILE:
+		interact({})
 ```
 
 ### PuzzleDoor (Puerta controlada por puzzle)
@@ -1036,11 +1036,11 @@ signal door_opened
 signal door_closed
 
 enum DoorType {
-    SLIDE_HORIZONTAL,
-    SLIDE_VERTICAL,
-    ROTATE,
-    FADE,
-    CUSTOM
+	SLIDE_HORIZONTAL,
+	SLIDE_VERTICAL,
+	ROTATE,
+	FADE,
+	CUSTOM
 }
 
 @export var door_type: DoorType = DoorType.SLIDE_VERTICAL
@@ -1063,115 +1063,115 @@ var closed_position: Vector2
 var closed_rotation: float
 
 func _ready() -> void:
-    closed_position = position
-    closed_rotation = rotation
-    
-    if starts_open:
-        _set_open_state(true, true)
-    
-    _connect_to_puzzle()
+	closed_position = position
+	closed_rotation = rotation
+	
+	if starts_open:
+		_set_open_state(true, true)
+	
+	_connect_to_puzzle()
 
 func _connect_to_puzzle() -> void:
-    # Buscar puzzle controller
-    if listen_to_puzzle != "":
-        await get_tree().process_frame
-        for node in get_tree().get_nodes_in_group("puzzle_elements"):
-            if node is PuzzleController and node.puzzle_id == listen_to_puzzle:
-                node.puzzle_solved.connect(_on_puzzle_solved)
-                node.puzzle_reset.connect(_on_puzzle_reset)
-                return
-    
-    # Escuchar elementos específicos
-    if listen_to_elements.size() > 0:
-        await get_tree().process_frame
-        for node in get_tree().get_nodes_in_group("puzzle_elements"):
-            if node is PuzzleElement and node.element_id in listen_to_elements:
-                node.state_changed.connect(_on_element_state_changed)
+	# Buscar puzzle controller
+	if listen_to_puzzle != "":
+		await get_tree().process_frame
+		for node in get_tree().get_nodes_in_group("puzzle_elements"):
+			if node is PuzzleController and node.puzzle_id == listen_to_puzzle:
+				node.puzzle_solved.connect(_on_puzzle_solved)
+				node.puzzle_reset.connect(_on_puzzle_reset)
+				return
+	
+	# Escuchar elementos específicos
+	if listen_to_elements.size() > 0:
+		await get_tree().process_frame
+		for node in get_tree().get_nodes_in_group("puzzle_elements"):
+			if node is PuzzleElement and node.element_id in listen_to_elements:
+				node.state_changed.connect(_on_element_state_changed)
 
 func _on_puzzle_solved() -> void:
-    open()
+	open()
 
 func _on_puzzle_reset() -> void:
-    close()
+	close()
 
 func _on_element_state_changed(_element_id: String, _new_state: Variant) -> void:
-    _check_elements_state()
+	_check_elements_state()
 
 func _check_elements_state() -> void:
-    var should_open = false
-    
-    if require_all_elements:
-        should_open = true
-        for element_id in listen_to_elements:
-            var element = _find_element(element_id)
-            if element and not element.current_state:
-                should_open = false
-                break
-    else:
-        for element_id in listen_to_elements:
-            var element = _find_element(element_id)
-            if element and element.current_state:
-                should_open = true
-                break
-    
-    if should_open and not is_open:
-        open()
-    elif not should_open and is_open:
-        close()
+	var should_open = false
+	
+	if require_all_elements:
+		should_open = true
+		for element_id in listen_to_elements:
+			var element = _find_element(element_id)
+			if element and not element.current_state:
+				should_open = false
+				break
+	else:
+		for element_id in listen_to_elements:
+			var element = _find_element(element_id)
+			if element and element.current_state:
+				should_open = true
+				break
+	
+	if should_open and not is_open:
+		open()
+	elif not should_open and is_open:
+		close()
 
 func _find_element(element_id: String) -> PuzzleElement:
-    for node in get_tree().get_nodes_in_group("puzzle_elements"):
-        if node is PuzzleElement and node.element_id == element_id:
-            return node
-    return null
+	for node in get_tree().get_nodes_in_group("puzzle_elements"):
+		if node is PuzzleElement and node.element_id == element_id:
+			return node
+	return null
 
 func open() -> void:
-    if is_open:
-        return
-    _set_open_state(true)
+	if is_open:
+		return
+	_set_open_state(true)
 
 func close() -> void:
-    if not is_open:
-        return
-    _set_open_state(false)
+	if not is_open:
+		return
+	_set_open_state(false)
 
 func _set_open_state(opening: bool, instant: bool = false) -> void:
-    is_open = opening
-    
-    var target_pos = closed_position + open_offset if opening else closed_position
-    var target_rot = closed_rotation + deg_to_rad(open_rotation) if opening else closed_rotation
-    
-    if instant:
-        position = target_pos
-        rotation = target_rot
-        _update_collision()
-        return
-    
-    var tween = create_tween()
-    tween.set_parallel(true)
-    
-    match door_type:
-        DoorType.SLIDE_HORIZONTAL, DoorType.SLIDE_VERTICAL:
-            tween.tween_property(self, "position", target_pos, animation_duration)
-        DoorType.ROTATE:
-            tween.tween_property(self, "rotation", target_rot, animation_duration)
-        DoorType.FADE:
-            tween.tween_property(sprite, "modulate:a", 0.0 if opening else 1.0, animation_duration)
-    
-    if audio:
-        audio.play()
-    
-    await tween.finished
-    _update_collision()
-    
-    if opening:
-        door_opened.emit()
-    else:
-        door_closed.emit()
+	is_open = opening
+	
+	var target_pos = closed_position + open_offset if opening else closed_position
+	var target_rot = closed_rotation + deg_to_rad(open_rotation) if opening else closed_rotation
+	
+	if instant:
+		position = target_pos
+		rotation = target_rot
+		_update_collision()
+		return
+	
+	var tween = create_tween()
+	tween.set_parallel(true)
+	
+	match door_type:
+		DoorType.SLIDE_HORIZONTAL, DoorType.SLIDE_VERTICAL:
+			tween.tween_property(self, "position", target_pos, animation_duration)
+		DoorType.ROTATE:
+			tween.tween_property(self, "rotation", target_rot, animation_duration)
+		DoorType.FADE:
+			tween.tween_property(sprite, "modulate:a", 0.0 if opening else 1.0, animation_duration)
+	
+	if audio:
+		audio.play()
+	
+	await tween.finished
+	_update_collision()
+	
+	if opening:
+		door_opened.emit()
+	else:
+		door_closed.emit()
 
 func _update_collision() -> void:
-    if body:
-        body.set_collision_layer_value(1, not is_open)
+	if body:
+		body.set_collision_layer_value(1, not is_open)
 ```
 
 ---
@@ -1196,41 +1196,41 @@ extends PuzzleController
 var is_showing_pattern: bool = false
 
 func _ready() -> void:
-    super._ready()
-    puzzle_type = PuzzleType.SEQUENCE
-    
-    if auto_show_pattern:
-        call_deferred("show_pattern")
+	super._ready()
+	puzzle_type = PuzzleType.SEQUENCE
+	
+	if auto_show_pattern:
+		call_deferred("show_pattern")
 
 func show_pattern() -> void:
-    is_showing_pattern = true
-    
-    # Bloquear input durante demostración
-    for element in elements:
-        element.set_locked(true)
-    
-    # Mostrar cada elemento de la solución
-    for element_id in solution:
-        var element = _get_element_by_id(element_id)
-        if element:
-            element.set_state(true)
-            await get_tree().create_timer(pattern_display_speed).timeout
-            element.set_state(false)
-            await get_tree().create_timer(pattern_pause).timeout
-    
-    # Desbloquear input
-    for element in elements:
-        element.set_locked(false)
-    
-    is_shown_pattern = false
-    start_puzzle()
+	is_showing_pattern = true
+	
+	# Bloquear input durante demostración
+	for element in elements:
+		element.set_locked(true)
+	
+	# Mostrar cada elemento de la solución
+	for element_id in solution:
+		var element = _get_element_by_id(element_id)
+		if element:
+			element.set_state(true)
+			await get_tree().create_timer(pattern_display_speed).timeout
+			element.set_state(false)
+			await get_tree().create_timer(pattern_pause).timeout
+	
+	# Desbloquear input
+	for element in elements:
+		element.set_locked(false)
+	
+	is_shown_pattern = false
+	start_puzzle()
 
 func _on_wrong_attempt() -> void:
-    super._on_wrong_attempt()
-    
-    if show_pattern_on_fail and not is_solved:
-        await get_tree().create_timer(1.0).timeout
-        show_pattern()
+	super._on_wrong_attempt()
+	
+	if show_pattern_on_fail and not is_solved:
+		await get_tree().create_timer(1.0).timeout
+		show_pattern()
 ```
 
 ### Combination Lock Puzzle
@@ -1252,44 +1252,44 @@ signal digit_entered(digit: String, position: int)
 signal combination_cleared
 
 func _ready() -> void:
-    super._ready()
-    puzzle_type = PuzzleType.CUSTOM
+	super._ready()
+	puzzle_type = PuzzleType.CUSTOM
 
 func enter_digit(digit: String) -> void:
-    if is_solved or is_locked:
-        return
-    
-    if digit not in valid_digits:
-        return
-    
-    if current_input.length() < num_digits:
-        current_input += digit
-        digit_entered.emit(digit, current_input.length() - 1)
-        progress_changed.emit(current_input.length(), num_digits)
-    
-    if current_input.length() == num_digits:
-        _validate_custom()
+	if is_solved or is_locked:
+		return
+	
+	if digit not in valid_digits:
+		return
+	
+	if current_input.length() < num_digits:
+		current_input += digit
+		digit_entered.emit(digit, current_input.length() - 1)
+		progress_changed.emit(current_input.length(), num_digits)
+	
+	if current_input.length() == num_digits:
+		_validate_custom()
 
 func clear_input() -> void:
-    current_input = ""
-    combination_cleared.emit()
-    progress_changed.emit(0, num_digits)
+	current_input = ""
+	combination_cleared.emit()
+	progress_changed.emit(0, num_digits)
 
 func backspace() -> void:
-    if current_input.length() > 0:
-        current_input = current_input.substr(0, current_input.length() - 1)
-        progress_changed.emit(current_input.length(), num_digits)
+	if current_input.length() > 0:
+		current_input = current_input.substr(0, current_input.length() - 1)
+		progress_changed.emit(current_input.length(), num_digits)
 
 func _validate_custom() -> void:
-    if current_input == correct_combination:
-        _solve()
-    else:
-        _on_wrong_attempt()
-        clear_input()
+	if current_input == correct_combination:
+		_solve()
+	else:
+		_on_wrong_attempt()
+		clear_input()
 
 func reset_puzzle() -> void:
-    super.reset_puzzle()
-    clear_input()
+	super.reset_puzzle()
+	clear_input()
 ```
 
 ### Sokoban Puzzle
@@ -1307,46 +1307,46 @@ extends PuzzleController
 var pushable_blocks: Array[Node2D] = []
 
 func _ready() -> void:
-    super._ready()
-    puzzle_type = PuzzleType.SOKOBAN
-    
-    # Encontrar bloques empujables
-    await get_tree().process_frame
-    for node in get_tree().get_nodes_in_group("pushable_block"):
-        pushable_blocks.append(node)
-        if node.has_signal("moved"):
-            node.moved.connect(_on_block_moved)
+	super._ready()
+	puzzle_type = PuzzleType.SOKOBAN
+	
+	# Encontrar bloques empujables
+	await get_tree().process_frame
+	for node in get_tree().get_nodes_in_group("pushable_block"):
+		pushable_blocks.append(node)
+		if node.has_signal("moved"):
+			node.moved.connect(_on_block_moved)
 
 func _on_block_moved() -> void:
-    _validate_sokoban()
+	_validate_sokoban()
 
 func _validate_sokoban() -> void:
-    if target_positions.is_empty():
-        return
-    
-    if win_on_any_target:
-        # Cada bloque debe estar en alguna meta
-        for block in pushable_blocks:
-            var on_target = false
-            for target in target_positions:
-                if block.global_position.distance_to(target) < 5:
-                    on_target = true
-                    break
-            if not on_target:
-                return
-        _solve()
-    else:
-        # Bloques específicos en metas específicas (usar solution)
-        super._validate_sokoban()
+	if target_positions.is_empty():
+		return
+	
+	if win_on_any_target:
+		# Cada bloque debe estar en alguna meta
+		for block in pushable_blocks:
+			var on_target = false
+			for target in target_positions:
+				if block.global_position.distance_to(target) < 5:
+					on_target = true
+					break
+			if not on_target:
+				return
+		_solve()
+	else:
+		# Bloques específicos en metas específicas (usar solution)
+		super._validate_sokoban()
 
 func get_blocks_on_targets() -> int:
-    var count = 0
-    for block in pushable_blocks:
-        for target in target_positions:
-            if block.global_position.distance_to(target) < 5:
-                count += 1
-                break
-    return count
+	var count = 0
+	for block in pushable_blocks:
+		for target in target_positions:
+			if block.global_position.distance_to(target) < 5:
+				count += 1
+				break
+	return count
 ```
 
 ---
@@ -1365,12 +1365,12 @@ extends Node2D
 @onready var door: PuzzleDoor = $PuzzleDoor
 
 func _ready() -> void:
-    puzzle_controller.puzzle_solved.connect(_on_puzzle_solved)
+	puzzle_controller.puzzle_solved.connect(_on_puzzle_solved)
 
 func _on_puzzle_solved() -> void:
-    # La puerta se abre automáticamente si está configurada
-    # Opcional: efectos adicionales
-    $AudioStreamPlayer.play()  # Sonido de éxito
+	# La puerta se abre automáticamente si está configurada
+	# Opcional: efectos adicionales
+	$AudioStreamPlayer.play()  # Sonido de éxito
 ```
 
 ### Para point-click-adventure-dev
@@ -1385,33 +1385,33 @@ extends PuzzleController
 @export var result_item: String = "health_potion"
 
 func _ready() -> void:
-    super._ready()
-    puzzle_type = PuzzleType.CUSTOM
-    
-    # Conectar con sistema de inventario
-    if has_node("/root/InventoryManager"):
-        var im = get_node("/root/InventoryManager")
-        im.item_used_on.connect(_on_item_used)
+	super._ready()
+	puzzle_type = PuzzleType.CUSTOM
+	
+	# Conectar con sistema de inventario
+	if has_node("/root/InventoryManager"):
+		var im = get_node("/root/InventoryManager")
+		im.item_used_on.connect(_on_item_used)
 
 func _on_item_used(item_id: String, target_id: String) -> void:
-    if target_id != puzzle_id:
-        return
-    
-    # Verificar si tiene todos los items
-    var has_all = true
-    for required in required_items:
-        if not GameState.has_item(required):
-            has_all = false
-            break
-    
-    if has_all:
-        # Consumir items
-        for required in required_items:
-            GameState.remove_item(required)
-        
-        # Dar resultado
-        GameState.add_item(result_item)
-        _solve()
+	if target_id != puzzle_id:
+		return
+	
+	# Verificar si tiene todos los items
+	var has_all = true
+	for required in required_items:
+		if not GameState.has_item(required):
+			has_all = false
+			break
+	
+	if has_all:
+		# Consumir items
+		for required in required_items:
+			GameState.remove_item(required)
+		
+		# Dar resultado
+		GameState.add_item(result_item)
+		_solve()
 ```
 
 ### Para twinstick-shooter-specialist
@@ -1428,44 +1428,44 @@ var current_phase: int = 0
 var phase_puzzle: PuzzleController
 
 func _ready() -> void:
-    super._ready()
-    _setup_phase_puzzle()
-    _start_phase(0)
+	super._ready()
+	_setup_phase_puzzle()
+	_start_phase(0)
 
 func _setup_phase_puzzle() -> void:
-    phase_puzzle = PuzzleController.new()
-    phase_puzzle.puzzle_type = PuzzleController.PuzzleType.SEQUENCE
-    phase_puzzle.puzzle_solved.connect(_on_phase_solved)
-    add_child(phase_puzzle)
+	phase_puzzle = PuzzleController.new()
+	phase_puzzle.puzzle_type = PuzzleController.PuzzleType.SEQUENCE
+	phase_puzzle.puzzle_solved.connect(_on_phase_solved)
+	add_child(phase_puzzle)
 
 func _start_phase(phase_index: int) -> void:
-    current_phase = phase_index
-    var phase = phases[phase_index]
-    
-    # Configurar el "puzzle" de esta fase
-    # El jugador debe descubrir la debilidad
-    phase_puzzle.solution = phase.weakness_sequence
-    phase_puzzle.reset_puzzle()
-    
-    # Mostrar patrón de ataque (hint visual)
-    _perform_attack_pattern(phase.attack_pattern)
+	current_phase = phase_index
+	var phase = phases[phase_index]
+	
+	# Configurar el "puzzle" de esta fase
+	# El jugador debe descubrir la debilidad
+	phase_puzzle.solution = phase.weakness_sequence
+	phase_puzzle.reset_puzzle()
+	
+	# Mostrar patrón de ataque (hint visual)
+	_perform_attack_pattern(phase.attack_pattern)
 
 func _on_phase_solved() -> void:
-    # Fase completada, abrir ventana de vulnerabilidad
-    _open_vulnerability_window(3.0)
+	# Fase completada, abrir ventana de vulnerabilidad
+	_open_vulnerability_window(3.0)
 
 func _open_vulnerability_window(duration: float) -> void:
-    is_vulnerable = true
-    # Permitir daño al jefe
-    await get_tree().create_timer(duration).timeout
-    is_vulnerable = false
-    
-    # Si sobrevivió, repetir fase o avanzar según vida
-    if current_health > 0:
-        if current_health < phases[current_phase].health_threshold:
-            _start_phase(current_phase + 1)
-        else:
-            _start_phase(current_phase)
+	is_vulnerable = true
+	# Permitir daño al jefe
+	await get_tree().create_timer(duration).timeout
+	is_vulnerable = false
+	
+	# Si sobrevivió, repetir fase o avanzar según vida
+	if current_health > 0:
+		if current_health < phases[current_phase].health_threshold:
+			_start_phase(current_phase + 1)
+		else:
+			_start_phase(current_phase)
 ```
 
 ---
@@ -1566,10 +1566,10 @@ Cuando te invoquen, pregunta:
 
 - **OBLIGATORIO**: Todo asset gráfico o de audio generado para puzzles debe:
   1. Tener nombre que comience con `PLACEHOLDER_`
-     - Ejemplo: `PLACEHOLDER_switch_on.png`, `PLACEHOLDER_puzzle_solved_AUTOGEN.wav`
+	 - Ejemplo: `PLACEHOLDER_switch_on.png`, `PLACEHOLDER_puzzle_solved_AUTOGEN.wav`
   2. Incluir marca de agua visible en assets gráficos:
-     - Texto: "AUTO-GENERATED - REPLACE BEFORE RELEASE"
-     - Posición: Esquina inferior derecha, 50% opacidad
+	 - Texto: "AUTO-GENERATED - REPLACE BEFORE RELEASE"
+	 - Posición: Esquina inferior derecha, 50% opacidad
   3. Los assets de audio deben incluir `_AUTOGEN` en el nombre
 
 - **Assets típicos de puzzles**:

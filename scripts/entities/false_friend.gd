@@ -23,7 +23,7 @@ signal died
 @export var knockback_duration: float = 0.6  # Tiempo de aturdimiento después de golpear
 
 @export_group("Health")
-@export var max_hp: int = 3  # Requiere 3 hits de shard para eliminar
+@export var max_hp: int = 1  # Muere con 1 shard (más accesible)
 var current_hp: int = max_hp
 
 @onready var sprite: Sprite2D = $Sprite2D

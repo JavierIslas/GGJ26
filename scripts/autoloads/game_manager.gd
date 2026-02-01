@@ -12,9 +12,9 @@ var total_truths_revealed: int = 0
 var total_truths_possible: int = 0
 
 # Estado del nivel actual
-var current_level: int = 1
+var current_level: int = 0  # 0 = Tutorial, 1-3 = Niveles principales
 var current_level_truths: int = 0
-var max_levels: int = 3  # Total de niveles en el juego (actualizar cuando se añadan más)
+var max_levels: int = 3  # Total de niveles principales (sin contar tutorial)
 
 # Estado del jugador
 var player_hp: int = 5
@@ -37,6 +37,11 @@ func reveal_truth() -> void:
 
 ## Cambia la vida del jugador
 func change_health(amount: int) -> void:
+	# Tutorial (nivel 0) = invencible, no recibe daño
+	if current_level == 0 and amount < 0:
+		print("Tutorial mode: damage ignored")
+		return
+
 	player_hp = clamp(player_hp + amount, 0, max_hp)
 	health_changed.emit(player_hp, max_hp)
 
@@ -84,7 +89,7 @@ func complete_level() -> void:
 func reset_game() -> void:
 	total_truths_revealed = 0
 	total_truths_possible = 0
-	current_level = 1
+	current_level = 0  # Volver al tutorial
 	current_level_truths = 0
 	player_hp = max_hp
 	print("Game reset")

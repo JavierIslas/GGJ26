@@ -72,10 +72,10 @@ Cada revelación tiene consecuencias: puedes liberar un camino bloqueado, pero t
 [Frame 1-10]  Animación de "grab" del jugador (0.15 seg)
 [Frame 11]    Jugador "arranca" el velo de la entidad
 [Frame 12-25] Animación de revelación de la entidad (0.25 seg):
-              ├── Particle effect: Fragmentos de máscara cayendo
-              ├── Screen shake leve (trauma = 0.3)
-              ├── SFX: Sonido de tela rasgándose + reverb
-              └── Entidad cambia de sprite (masked → revealed)
+			  ├── Particle effect: Fragmentos de máscara cayendo
+			  ├── Screen shake leve (trauma = 0.3)
+			  ├── SFX: Sonido de tela rasgándose + reverb
+			  └── Entidad cambia de sprite (masked → revealed)
 [Frame 26+]   Entidad ejecuta su comportamiento "revelado"
 ```
 
@@ -371,9 +371,9 @@ SOLUCIÓN:
 2. **Mediodía (11:00-13:00):**
    - Escaneo a 300dpi (o fotografía con buena luz)
    - Procesamiento en GIMP/Photoshop:
-     - Ajustar niveles (contraste blanco/negro máximo)
-     - Recortar sprites individuales
-     - Exportar como PNG con transparencia
+	 - Ajustar niveles (contraste blanco/negro máximo)
+	 - Recortar sprites individuales
+	 - Exportar como PNG con transparencia
 3. **Tarde (13:00+):**
    - Integrar sprites en Godot
    - Ajustar tamaños y colliders
@@ -474,9 +474,9 @@ res://
 │   └── fonts/
 │       └── gothic_font.ttf         # Google Fonts
 └── resources/
-    └── entity_data/                # Resources para tipos de entidades
-        ├── false_enemy_data.tres
-        └── ...
+	└── entity_data/                # Resources para tipos de entidades
+		├── false_enemy_data.tres
+		└── ...
 ```
 
 ---

@@ -15,9 +15,9 @@ func _ready() -> void:
 	GameManager.reset_game()
 
 func _on_play_button_pressed() -> void:
-	"""Inicia el juego desde Level 1"""
-	print("Starting game...")
-	get_tree().change_scene_to_file("res://scenes/levels/level_1.tscn")
+	"""Inicia el juego desde el Tutorial"""
+	print("Starting game from tutorial...")
+	get_tree().change_scene_to_file("res://scenes/levels/tutorial.tscn")
 
 func _on_options_button_pressed() -> void:
 	"""Abre menú de opciones (placeholder por ahora)"""
