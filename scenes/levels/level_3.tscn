@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://c8vq2lm4k3pqr"]
+[gd_scene load_steps=24 format=3 uid="uid://c8vq2lm4k3pqr"]
 
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
@@ -21,7 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://r40guc4gbmfa" path="res://scenes/puzzle/puzzle_switch.tscn" id="19_puzzle_switch"]
 [ext_resource type="PackedScene" uid="uid://c5rbfblyo608f" path="res://scenes/puzzle/timed_puzzle_controller.tscn" id="20_timed_puzzle"]
 [ext_resource type="Script" uid="uid://cjbtroxsiomoh" path="res://scripts/puzzle/puzzle_controlled_door.gd" id="21_puzzle_door"]
-[ext_resource type="Script" path="res://scripts/puzzle/puzzle_timer_ui.gd" id="22_timer_ui"]
+[ext_resource type="Script" uid="uid://b81yti42aisl2" path="res://scripts/puzzle/puzzle_timer_ui.gd" id="22_timer_ui"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1500, 50)
@@ -381,10 +381,12 @@ position = Vector2(5680, 550)
 activation_type = 1
 
 [node name="Puzzle32_Controller" parent="Puzzles" instance=ExtResource("20_timed_puzzle")]
-time_window = 10.0
+required_switches = 3
+required_stunned_enemies = 0
+time_window = 8.0
 coyote_time = 1.0
 switch_group = "puzzle_mass_switches"
-enemy_group = "puzzle_mass_control"
+enemy_group = ""
 
 [node name="Puzzle32_Instructions" type="Label" parent="Puzzles"]
 offset_left = 5200.0
@@ -395,10 +397,10 @@ theme_override_colors/font_color = Color(1, 1, 0.3, 1)
 theme_override_font_sizes/font_size = 14
 text = "PUZZLE: CONTROL DE MASAS
 
-1. Activa un SWITCH (E) para empezar (10s)
-2. Revela los 4 FALSE FRIENDS (E tap)
-3. HOWL (E hold) para aturdirlos
-4. Activa los otros 2 SWITCHES"
+1. Activa un SWITCH (E) para empezar (8s)
+2. Activa los otros 2 SWITCHES
+
+(Los False Friends se aturden al revelarlos)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
