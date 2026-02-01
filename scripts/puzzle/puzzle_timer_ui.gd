@@ -38,9 +38,9 @@ func _process(_delta: float) -> void:
 	if not controller or not visible:
 		return
 
-	if controller.is_active and controller.has("time_remaining"):
+	if controller.is_active:
 		var time_left = controller.time_remaining
-		text = "Tiempo: %.1fs | Progreso: ?" % time_left
+		text = "Tiempo: %.1fs" % time_left
 
 		# Color warning cuando queda poco tiempo
 		if time_left < 3.0:
