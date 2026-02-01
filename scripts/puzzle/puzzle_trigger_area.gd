@@ -9,21 +9,30 @@ var has_triggered: bool = false
 func _ready() -> void:
 	# Configurar collision para detectar al jugador
 	collision_layer = 0
-	collision_mask = 1  # Layer 1: Player
+	collision_mask = 2  # Layer 2: Player
 
 	body_entered.connect(_on_body_entered)
 
+	print("[PuzzleTriggerArea] Initialized at %s - Mask: %d" % [global_position, collision_mask])
+
 func _on_body_entered(body: Node2D) -> void:
+	print("[PuzzleTriggerArea] Body entered: %s (is_player: %s)" % [body.name, body.is_in_group("player")])
+
 	if has_triggered and one_time_only:
+		print("[PuzzleTriggerArea] Already triggered, ignoring")
 		return
 
 	if not body.is_in_group("player"):
+		print("[PuzzleTriggerArea] Not player, ignoring")
 		return
 
 	# Iniciar puzzle
 	if not puzzle_controller_path.is_empty():
 		var controller = get_node(puzzle_controller_path)
 		if controller and controller.has_method("start_puzzle"):
+			print("[PuzzleTriggerArea] Starting puzzle controller...")
 			controller.start_puzzle()
 			has_triggered = true
 			print("[PuzzleTriggerArea] Puzzle started!")
+		else:
+			print("[PuzzleTriggerArea] ERROR: Controller not found or doesn't have start_puzzle()")

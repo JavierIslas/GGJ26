@@ -137,6 +137,9 @@ func _check_conditions() -> void:
 	var total_current = active_switches + stunned_count
 	progress_changed.emit(total_current, total_required)
 
+	# Debug progress
+	print("[TimedPuzzleController] Progress: %d/%d switches, %d/%d enemies" % [active_switches, required_switches, stunned_count, required_stunned_enemies])
+
 	# Verificar si se cumplen TODAS las condiciones
 	var switches_ok = active_switches >= required_switches
 	var enemies_ok = stunned_count >= required_stunned_enemies
