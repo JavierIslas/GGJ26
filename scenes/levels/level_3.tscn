@@ -18,8 +18,8 @@
 [ext_resource type="Script" uid="uid://btqr6wm500ph6" path="res://scripts/level/level_manager.gd" id="16"]
 [ext_resource type="PackedScene" path="res://scenes/level/level_goal.tscn" id="17"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ending_screen.tscn" id="18"]
-[ext_resource type="PackedScene" path="res://scenes/puzzle/puzzle_switch.tscn" id="19_puzzle_switch"]
-[ext_resource type="PackedScene" path="res://scenes/puzzle/timed_puzzle_controller.tscn" id="20_timed_puzzle"]
+[ext_resource type="PackedScene" uid="uid://r40guc4gbmfa" path="res://scenes/puzzle/puzzle_switch.tscn" id="19_puzzle_switch"]
+[ext_resource type="PackedScene" uid="uid://c5rbfblyo608f" path="res://scenes/puzzle/timed_puzzle_controller.tscn" id="20_timed_puzzle"]
 [ext_resource type="Script" uid="uid://cjbtroxsiomoh" path="res://scripts/puzzle/puzzle_controlled_door.gd" id="21_puzzle_door"]
 [ext_resource type="Script" uid="uid://3rhaxbt22job" path="res://scripts/puzzle/puzzle_trigger_area.gd" id="22_puzzle_trigger"]
 
