@@ -45,7 +45,7 @@ func _ready() -> void:
 	area_entered.connect(_on_area_entered)
 
 	# Obtener sprite si existe
-	if sprite_node_path != "":
+	if not sprite_node_path.is_empty():
 		sprite = get_node(sprite_node_path)
 	elif has_node("Sprite2D"):
 		sprite = $Sprite2D
