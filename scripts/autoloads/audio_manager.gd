@@ -45,6 +45,7 @@ func play_sfx(sfx_name: String, volume_db: float = 0.0) -> void:
 	player.stream = load(sfx_path)
 	player.volume_db = volume_db
 	player.bus = "SFX"
+	player.process_mode = Node.PROCESS_MODE_ALWAYS  # No afectado por pausa
 	add_child(player)
 	player.play()
 
@@ -73,8 +74,11 @@ func deactivate_combat() -> void:
 		var tween = create_tween()
 		tween.tween_property(combat_layer, "volume_db", -80.0, crossfade_duration)
 
-## Carga y reproduce música (placeholder por ahora)
+## Carga y reproduce música con soporte para intro + loop
 func play_music(ambient_path: String, combat_path: String = "") -> void:
+	# Detener música previa
+	stop_music()
+
 	# Cargar capa ambiental
 	if ResourceLoader.exists(ambient_path):
 		ambient_layer.stream = load(ambient_path)
@@ -84,6 +88,44 @@ func play_music(ambient_path: String, combat_path: String = "") -> void:
 	if combat_path != "" and ResourceLoader.exists(combat_path):
 		combat_layer.stream = load(combat_path)
 		combat_layer.play()
+
+## Carga y reproduce música con intro separada
+## intro_path: Se reproduce una vez
+## loop_path: Se reproduce en loop después del intro
+## combat_path: Capa de combate (opcional)
+func play_music_with_intro(intro_path: String, loop_path: String, combat_path: String = "") -> void:
+	# Detener música previa
+	stop_music()
+
+	# Cargar intro (sin loop)
+	if ResourceLoader.exists(intro_path):
+		ambient_layer.stream = load(intro_path)
+		ambient_layer.play()
+
+		# Conectar señal para cambiar al loop cuando termine
+		if not ambient_layer.finished.is_connected(_on_intro_finished):
+			ambient_layer.finished.connect(_on_intro_finished.bind(loop_path))
+
+	# Cargar capa de combate si existe
+	if combat_path != "" and ResourceLoader.exists(combat_path):
+		combat_layer.stream = load(combat_path)
+		# No reproducir aún, esperar a que empiece el loop
+		# (o reproducir sincronizado con la intro si prefieres)
+
+## Callback cuando termina la intro
+func _on_intro_finished(loop_path: String) -> void:
+	# Desconectar señal para evitar reconexiones
+	if ambient_layer.finished.is_connected(_on_intro_finished):
+		ambient_layer.finished.disconnect(_on_intro_finished)
+
+	# Cargar y reproducir loop
+	if ResourceLoader.exists(loop_path):
+		ambient_layer.stream = load(loop_path)
+		ambient_layer.play()
+
+		# IMPORTANTE: Activar loop en el stream si es AudioStreamOggVorbis
+		if ambient_layer.stream is AudioStreamOggVorbis:
+			ambient_layer.stream.loop = true
 
 ## Detiene toda la música
 func stop_music() -> void:

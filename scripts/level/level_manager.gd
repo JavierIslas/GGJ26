@@ -17,6 +17,12 @@ func _ready() -> void:
 	# Esperar un frame para asegurar que todas las entidades estén listas
 	await get_tree().process_frame
 
+	# Reproducir música del nivel con intro + loop
+	AudioManager.play_music_with_intro(
+		"res://assets/audio/music/level_intro.ogg",
+		"res://assets/audio/music/level_loop.ogg"
+	)
+
 	# Guardar el total de verdades al INICIO del nivel
 	level_start_total_truths = GameManager.total_truths_revealed
 
