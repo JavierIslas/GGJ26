@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://c8vq2lm4k3pqr"]
+[gd_scene load_steps=23 format=3 uid="uid://c8vq2lm4k3pqr"]
 
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
@@ -21,13 +21,10 @@
 [ext_resource type="PackedScene" uid="uid://r40guc4gbmfa" path="res://scenes/puzzle/puzzle_switch.tscn" id="19_puzzle_switch"]
 [ext_resource type="PackedScene" uid="uid://c5rbfblyo608f" path="res://scenes/puzzle/timed_puzzle_controller.tscn" id="20_timed_puzzle"]
 [ext_resource type="Script" uid="uid://cjbtroxsiomoh" path="res://scripts/puzzle/puzzle_controlled_door.gd" id="21_puzzle_door"]
-[ext_resource type="Script" uid="uid://3rhaxbt22job" path="res://scripts/puzzle/puzzle_trigger_area.gd" id="22_puzzle_trigger"]
+[ext_resource type="Script" path="res://scripts/puzzle/puzzle_timer_ui.gd" id="22_timer_ui"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1500, 50)
-
-[sub_resource type="RectangleShape2D" id="trigger_shape"]
-size = Vector2(400, 200)
 
 [node name="Level3" type="Node2D"]
 
@@ -384,17 +381,40 @@ position = Vector2(5680, 550)
 activation_type = 1
 
 [node name="Puzzle32_Controller" parent="Puzzles" instance=ExtResource("20_timed_puzzle")]
-required_switches = 3
-required_stunned_enemies = 4
 time_window = 10.0
 coyote_time = 1.0
 switch_group = "puzzle_mass_switches"
 enemy_group = "puzzle_mass_control"
-auto_start = false
-show_timer_ui = true
 
+[node name="Puzzle32_Instructions" type="Label" parent="Puzzles"]
+offset_left = 5200.0
+offset_top = 400.0
+offset_right = 5800.0
+offset_bottom = 490.0
+theme_override_colors/font_color = Color(1, 1, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "PUZZLE: CONTROL DE MASAS
+
+1. Activa un SWITCH (E) para empezar (10s)
+2. Revela los 4 FALSE FRIENDS (E tap)
+3. HOWL (E hold) para aturdirlos
+4. Activa los otros 2 SWITCHES"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="UI" type="Node2D" parent="."]
+
+[node name="Puzzle32_TimerUI" type="Label" parent="UI"]
+offset_left = 400.0
+offset_top = 100.0
+offset_right = 700.0
+offset_bottom = 150.0
+theme_override_font_sizes/font_size = 24
+text = "Tiempo: 10.0s"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("22_timer_ui")
+controller_path = NodePath("../../Puzzles/Puzzle32_Controller")
 
 [node name="HUD" parent="UI" instance=ExtResource("12")]
 
