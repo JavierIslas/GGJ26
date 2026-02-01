@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/puzzle/puzzle_switch.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 20.0
+
+[node name="PuzzleSwitch" type="Area2D" groups=["puzzle_elements"]]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("1")
+activation_type = 2
+stays_active = true
+can_toggle = false
+active_color = Color(0, 1, 0, 1)
+inactive_color = Color(0.5, 0.5, 0.5, 1)
+sprite_node_path = NodePath("Sprite2D")
+activation_sound = "switch_on"
+deactivation_sound = "switch_off"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.5, 0.5, 0.5, 1)
+scale = Vector2(0.625, 0.625)
+texture = ExtResource("2")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -30.0
+offset_top = -50.0
+offset_right = 30.0
+offset_bottom = -30.0
+theme_override_colors/font_color = Color(1, 1, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "SWITCH"
+horizontal_alignment = 1
