@@ -36,9 +36,16 @@ var deactivate_timer: Timer = null
 var sprite: Sprite2D = null
 
 func _ready() -> void:
-	# Configurar collision para detectar proyectiles
+	# Configurar collision según tipo de activación
 	collision_layer = 0
-	collision_mask = 16  # Layer 5: Player Projectiles (VeilShards)
+
+	# Configurar mask según tipo
+	if activation_type == ActivationType.PROJECTILE:
+		collision_mask = 16  # Solo Layer 5: Player Projectiles
+	elif activation_type == ActivationType.INTERACTION:
+		collision_mask = 1  # Solo Layer 1: Player
+	else:  # BOTH
+		collision_mask = 1 | 16  # Ambos: Player y Projectiles
 
 	# Conectar señales
 	body_entered.connect(_on_body_entered)
@@ -49,6 +56,10 @@ func _ready() -> void:
 		sprite = get_node(sprite_node_path)
 	elif has_node("Sprite2D"):
 		sprite = $Sprite2D
+
+	# Debug: print configuración
+	var type_name = ["PROJECTILE", "INTERACTION", "BOTH"][activation_type]
+	print("[PuzzleSwitch] %s initialized - Type: %s, Mask: %d" % [name, type_name, collision_mask])
 
 	# Crear timer para auto-desactivación
 	if not stays_active:
@@ -71,6 +82,7 @@ func _on_body_entered(body: Node2D) -> void:
 	# Activado por interacción del jugador
 	if activation_type == ActivationType.INTERACTION or activation_type == ActivationType.BOTH:
 		if body.is_in_group("player"):
+			print("[PuzzleSwitch] %s - Player entered range, press E to activate" % name)
 			# Mostrar prompt de interacción
 			_show_interaction_prompt(true)
 
@@ -88,6 +100,7 @@ func _process(_delta: float) -> void:
 				break
 
 		if player_in_range and Input.is_action_just_pressed("reveal"):
+			print("[PuzzleSwitch] %s - E pressed, activating..." % name)
 			_activate()
 
 func _activate() -> void:
