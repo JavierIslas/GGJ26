@@ -22,6 +22,8 @@
 [ext_resource type="PackedScene" uid="uid://c5rbfblyo608f" path="res://scenes/puzzle/timed_puzzle_controller.tscn" id="20_timed_puzzle"]
 [ext_resource type="Script" uid="uid://cjbtroxsiomoh" path="res://scripts/puzzle/puzzle_controlled_door.gd" id="21_puzzle_door"]
 [ext_resource type="Script" uid="uid://b81yti42aisl2" path="res://scripts/puzzle/puzzle_timer_ui.gd" id="22_timer_ui"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/hp_pickup.tscn" id="23_hp_pickup"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/shard_pickup.tscn" id="24_shard_pickup"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 size = Vector2(1500, 50)
@@ -266,6 +268,30 @@ modulate = Color(0.35, 0.35, 0.4, 1)
 scale = Vector2(5.5, 0.9)
 texture = ExtResource("2")
 
+[node name="SecretPlatform1" type="StaticBody2D" parent="Platforms"]
+position = Vector2(2850, 360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/SecretPlatform1"]
+scale = Vector2(0.15, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/SecretPlatform1"]
+modulate = Color(1, 0.8, 0, 1)
+scale = Vector2(7, 0.9)
+texture = ExtResource("2")
+
+[node name="SecretPlatform2" type="StaticBody2D" parent="Platforms"]
+position = Vector2(5200, 300)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/SecretPlatform2"]
+scale = Vector2(0.18, 0.6)
+shape = SubResource("floor_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="Platforms/SecretPlatform2"]
+modulate = Color(1, 0.8, 0, 1)
+scale = Vector2(8, 0.9)
+texture = ExtResource("2")
+
 [node name="Entities" type="Node2D" parent="."]
 
 [node name="Area1_FalseEnemy" parent="Entities" instance=ExtResource("3")]
@@ -345,6 +371,11 @@ position = Vector2(2950, 530)
 truths_required = 7
 door_color = Color(1, 1, 0.2, 1)
 
+[node name="SecretDoor1" parent="Doors" instance=ExtResource("15")]
+position = Vector2(2850, 430)
+truths_required = 8
+door_color = Color(1, 0.8, 0, 1)
+
 [node name="Door4" parent="Doors" instance=ExtResource("15")]
 position = Vector2(3750, 530)
 truths_required = 11
@@ -355,8 +386,13 @@ position = Vector2(4750, 530)
 truths_required = 10
 door_color = Color(0.8, 0.1, 0.8, 1)
 
+[node name="SecretDoor2" parent="Doors" instance=ExtResource("15")]
+position = Vector2(5200, 370)
+truths_required = 14
+door_color = Color(1, 0.8, 0, 1)
+
 [node name="Puzzle32_FinalDoor" parent="Doors" instance=ExtResource("15")]
-position = Vector2(5400, 530)
+position = Vector2(6082, 504)
 script = ExtResource("21_puzzle_door")
 puzzle_controller_path = NodePath("../../Puzzles/Puzzle32_Controller")
 open_direction = Vector2(0, -200)
@@ -369,30 +405,28 @@ required_truths = 10
 [node name="Puzzles" type="Node2D" parent="."]
 
 [node name="Puzzle32_Switch1" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
-position = Vector2(5520, 550)
+position = Vector2(5815, 522)
 activation_type = 1
 
 [node name="Puzzle32_Switch2" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
-position = Vector2(5600, 550)
+position = Vector2(5895, 522)
 activation_type = 1
 
 [node name="Puzzle32_Switch3" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
-position = Vector2(5680, 550)
+position = Vector2(5975, 522)
 activation_type = 1
 
 [node name="Puzzle32_Controller" parent="Puzzles" instance=ExtResource("20_timed_puzzle")]
-required_switches = 3
 required_stunned_enemies = 0
 time_window = 8.0
 coyote_time = 1.0
 switch_group = "puzzle_mass_switches"
-enemy_group = ""
 
 [node name="Puzzle32_Instructions" type="Label" parent="Puzzles"]
-offset_left = 5200.0
-offset_top = 400.0
-offset_right = 5800.0
-offset_bottom = 490.0
+offset_left = 5588.0
+offset_top = 418.0
+offset_right = 6188.0
+offset_bottom = 553.0
 theme_override_colors/font_color = Color(1, 1, 0.3, 1)
 theme_override_font_sizes/font_size = 14
 text = "PUZZLE: CONTROL DE MASAS
@@ -404,13 +438,39 @@ text = "PUZZLE: CONTROL DE MASAS
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Pickups" type="Node2D" parent="."]
+
+[node name="Secret1_HP" parent="Pickups" instance=ExtResource("23_hp_pickup")]
+position = Vector2(2950, 410)
+
+[node name="Secret1_Shard1" parent="Pickups" instance=ExtResource("24_shard_pickup")]
+position = Vector2(2920, 410)
+
+[node name="Secret1_Shard2" parent="Pickups" instance=ExtResource("24_shard_pickup")]
+position = Vector2(2980, 410)
+
+[node name="Secret2_HP1" parent="Pickups" instance=ExtResource("23_hp_pickup")]
+position = Vector2(5280, 270)
+
+[node name="Secret2_HP2" parent="Pickups" instance=ExtResource("23_hp_pickup")]
+position = Vector2(5320, 270)
+
+[node name="Secret2_Shard1" parent="Pickups" instance=ExtResource("24_shard_pickup")]
+position = Vector2(5250, 250)
+
+[node name="Secret2_Shard2" parent="Pickups" instance=ExtResource("24_shard_pickup")]
+position = Vector2(5300, 250)
+
+[node name="Secret2_Shard3" parent="Pickups" instance=ExtResource("24_shard_pickup")]
+position = Vector2(5350, 250)
+
 [node name="UI" type="Node2D" parent="."]
 
 [node name="Puzzle32_TimerUI" type="Label" parent="UI"]
-offset_left = 400.0
-offset_top = 100.0
-offset_right = 700.0
-offset_bottom = 150.0
+offset_left = 6042.0
+offset_top = 412.0
+offset_right = 6342.0
+offset_bottom = 462.0
 theme_override_font_sizes/font_size = 24
 text = "Tiempo: 10.0s"
 horizontal_alignment = 1
@@ -510,11 +570,34 @@ text = "AREA 6: THE CALM
 FINAL CHALLENGE AHEAD"
 horizontal_alignment = 1
 
+[node name="SecretHint1" type="Label" parent="Instructions"]
+offset_left = 2750.0
+offset_top = 300.0
+offset_right = 2950.0
+offset_bottom = 350.0
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+theme_override_font_sizes/font_size = 12
+text = "SECRET AREA
+(8 verdades)"
+horizontal_alignment = 1
+
+[node name="SecretHint2" type="Label" parent="Instructions"]
+offset_left = 5100.0
+offset_top = 220.0
+offset_right = 5300.0
+offset_bottom = 280.0
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+theme_override_font_sizes/font_size = 12
+text = "SECRET AREA
+(14 verdades)
+Extra rewards!"
+horizontal_alignment = 1
+
 [node name="Area7Hint" type="Label" parent="Instructions"]
-offset_left = 5500.0
-offset_top = 450.0
-offset_right = 5800.0
-offset_bottom = 510.0
+offset_left = 5495.0
+offset_top = 330.0
+offset_right = 5795.0
+offset_bottom = 431.0
 theme_override_colors/font_color = Color(1, 0.2, 0.2, 1)
 theme_override_font_sizes/font_size = 16
 text = "AREA 7: THE CRUCIBLE
