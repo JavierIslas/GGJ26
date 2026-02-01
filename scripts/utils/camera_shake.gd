@@ -4,9 +4,9 @@ extends Camera2D
 ## Sistema de screen shake basado en trauma (0.0 a 1.0)
 ## Inspirado en GDC talk "Math for Game Programmers: Juicing Your Cameras With Math"
 
-@export var decay_rate: float = 1.0  ## Qué tan rápido se reduce el trauma
-@export var max_offset: float = 12.0  ## Máximo offset en píxeles
-@export var max_rotation: float = 4.0  ## Máxima rotación en grados
+@export var decay_rate: float = 5.0  ## Qué tan rápido se reduce el trauma (muy rápido)
+@export var max_offset: float = 4.0  ## Máximo offset en píxeles (muy reducido)
+@export var max_rotation: float = 0.0  ## Sin rotación (evita mareo/blur visual)
 
 var trauma: float = 0.0
 var trauma_power: float = 2.0  ## Exponente para suavizar la curva

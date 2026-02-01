@@ -274,7 +274,7 @@ func _shake_camera(trauma_amount: float) -> void:
 
 func _spawn_reveal_particles(pos: Vector2) -> void:
 	"""Crea partículas de fragmentos de velo cayendo con burst radial mejorado"""
-	var particles = GPUParticles2D.new()
+	var particles = CPUParticles2D.new()
 
 	# Configuración básica - MÁS PARTÍCULAS para más impacto
 	particles.global_position = pos
@@ -284,41 +284,34 @@ func _spawn_reveal_particles(pos: Vector2) -> void:
 	particles.lifetime = 1.0  # Aumentado de 0.8
 	particles.explosiveness = 1.0
 
-	# Material de partícula
-	var material = ParticleProcessMaterial.new()
-
 	# Emisión en explosión radial - MÁS GRANDE
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	material.emission_sphere_radius = 12.0  # Aumentado de 8.0
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 12.0  # Aumentado de 8.0
 
 	# Dirección y velocidad - MÁS RÁPIDA
-	material.direction = Vector3(0, 1, 0)  # Hacia abajo
-	material.spread = 180.0  # Explosión en todas direcciones
-	material.initial_velocity_min = 80.0  # Aumentado de 50.0
-	material.initial_velocity_max = 200.0  # Aumentado de 150.0
+	particles.direction = Vector2(0, 1)  # Hacia abajo
+	particles.spread = 180.0  # Explosión en todas direcciones
+	particles.initial_velocity_min = 80.0  # Aumentado de 50.0
+	particles.initial_velocity_max = 200.0  # Aumentado de 150.0
 
 	# Gravedad
-	material.gravity = Vector3(0, 250, 0)  # Aumentado de 200
+	particles.gravity = Vector2(0, 250)  # Aumentado de 200
 
 	# Escala - MÁS GRANDES
-	material.scale_min = 3.0  # Aumentado de 2.0
-	material.scale_max = 6.0  # Aumentado de 4.0
+	particles.scale_amount_min = 3.0  # Aumentado de 2.0
+	particles.scale_amount_max = 6.0  # Aumentado de 4.0
 
 	# Rotación - MÁS RÁPIDA
-	material.angular_velocity_min = -360.0  # Aumentado de -180.0
-	material.angular_velocity_max = 360.0  # Aumentado de 180.0
+	particles.angular_velocity_min = -360.0  # Aumentado de -180.0
+	particles.angular_velocity_max = 360.0  # Aumentado de 180.0
 
 	# === POLISH: Color con más punch (blanco brillante) ===
-	material.color = Color(1.5, 1.5, 1.5, 1.0)  # Overbright
+	particles.color = Color(1.5, 1.5, 1.5, 1.0)  # Overbright
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color(1.5, 1.5, 1.5, 1.0))
 	gradient.add_point(0.7, Color(1.0, 1.0, 1.0, 0.7))
 	gradient.add_point(1.0, Color(1.0, 1.0, 1.0, 0.0))
-	var gradient_texture = GradientTexture1D.new()
-	gradient_texture.gradient = gradient
-	material.color_ramp = gradient_texture
-
-	particles.process_material = material
+	particles.color_ramp = gradient
 
 	# Añadir al árbol
 	get_tree().root.add_child(particles)
@@ -518,7 +511,7 @@ func _howl_screen_flash() -> void:
 
 func _spawn_howl_particles() -> void:
 	"""Partículas de onda expansiva del howl"""
-	var particles = GPUParticles2D.new()
+	var particles = CPUParticles2D.new()
 
 	# Configuración básica
 	particles.global_position = player.global_position
@@ -528,44 +521,34 @@ func _spawn_howl_particles() -> void:
 	particles.lifetime = 1.5
 	particles.explosiveness = 1.0
 
-	# Material de partícula
-	var material = ParticleProcessMaterial.new()
-
-	# Emisión radial en anillo
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_RING
-	material.emission_ring_axis = Vector3(0, 0, 1)
-	material.emission_ring_height = 0.0
-	material.emission_ring_radius = howl_radius * 0.3
-	material.emission_ring_inner_radius = howl_radius * 0.2
+	# Emisión radial - CPUParticles no tiene EMISSION_SHAPE_RING, usar SPHERE
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = howl_radius * 0.3
 
 	# Explosión radial hacia afuera
-	material.direction = Vector3(0, 0, 0)
-	material.spread = 180.0
-	material.initial_velocity_min = 150.0
-	material.initial_velocity_max = 250.0
+	particles.direction = Vector2(0, 0)
+	particles.spread = 180.0
+	particles.initial_velocity_min = 150.0
+	particles.initial_velocity_max = 250.0
 
 	# Sin gravedad (onda de sonido)
-	material.gravity = Vector3.ZERO
+	particles.gravity = Vector2.ZERO
 
 	# Escala variable
-	material.scale_min = 4.0
-	material.scale_max = 8.0
+	particles.scale_amount_min = 4.0
+	particles.scale_amount_max = 8.0
 
 	# Rotación rápida
-	material.angular_velocity_min = -360.0
-	material.angular_velocity_max = 360.0
+	particles.angular_velocity_min = -360.0
+	particles.angular_velocity_max = 360.0
 
 	# Color blanco brillante con fade
-	material.color = Color(1.5, 1.5, 1.5, 1.0)
+	particles.color = Color(1.5, 1.5, 1.5, 1.0)
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color(1.5, 1.5, 1.5, 1.0))
 	gradient.add_point(0.4, Color(1.2, 1.2, 1.2, 0.7))
 	gradient.add_point(1.0, Color(1.0, 1.0, 1.0, 0.0))
-	var gradient_texture = GradientTexture1D.new()
-	gradient_texture.gradient = gradient
-	material.color_ramp = gradient_texture
-
-	particles.process_material = material
+	particles.color_ramp = gradient
 
 	# Añadir al árbol
 	get_tree().root.add_child(particles)
@@ -587,7 +570,7 @@ func _spawn_charge_particles() -> void:
 	if not player:
 		return
 
-	var particles = GPUParticles2D.new()
+	var particles = CPUParticles2D.new()
 
 	# Configuración básica
 	particles.global_position = player.global_position
@@ -597,36 +580,29 @@ func _spawn_charge_particles() -> void:
 	particles.lifetime = 0.5
 	particles.explosiveness = 1.0
 
-	# Material de partícula
-	var material = ParticleProcessMaterial.new()
-
 	# Emisión en esfera
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	material.emission_sphere_radius = 16.0
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 16.0
 
-	# Movimiento hacia el jugador (implosión)
-	material.direction = Vector3(0, 0, 0)
-	material.spread = 0.0
-	material.initial_velocity_min = -30.0
-	material.initial_velocity_max = -50.0
+	# Movimiento hacia el jugador (implosión) - en CPU usa velocidad negativa
+	particles.direction = Vector2(0, 0)
+	particles.spread = 0.0
+	particles.initial_velocity_min = -30.0
+	particles.initial_velocity_max = -50.0
 
 	# Sin gravedad
-	material.gravity = Vector3.ZERO
+	particles.gravity = Vector2.ZERO
 
 	# Escala pequeña
-	material.scale_min = 2.0
-	material.scale_max = 4.0
+	particles.scale_amount_min = 2.0
+	particles.scale_amount_max = 4.0
 
 	# Color blanco con alpha
-	material.color = Color(1.2, 1.2, 1.2, 0.6)
+	particles.color = Color(1.2, 1.2, 1.2, 0.6)
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color(1.2, 1.2, 1.2, 0.6))
 	gradient.add_point(1.0, Color(1.0, 1.0, 1.0, 0.0))
-	var gradient_texture = GradientTexture1D.new()
-	gradient_texture.gradient = gradient
-	material.color_ramp = gradient_texture
-
-	particles.process_material = material
+	particles.color_ramp = gradient
 
 	# Añadir al árbol
 	get_tree().root.add_child(particles)

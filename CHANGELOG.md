@@ -1,5 +1,96 @@
 # VEIL - Changelog
 
+## 🎮 Alpha 0.6.1 - Gamepad Support - 2026-01-31 (Noche)
+
+### FEATURE: Full Gamepad/Controller Support
+
+**Implementado soporte completo para gamepad en VEIL.**
+
+#### Input Mappings
+
+**Archivo modificado:** `project.godot:33-59`
+
+**Controles agregados:**
+
+| Action | Gamepad Input |
+|--------|---------------|
+| `move_left` | D-Pad Left + Left Stick Left (Axis 0: -1.0) |
+| `move_right` | D-Pad Right + Left Stick Right (Axis 0: +1.0) |
+| `jump` | A Button (Xbox) / Cross (PS) / B (Switch) |
+| `reveal` | B/X Buttons (Xbox) / Circle/Square (PS) / A/Y (Switch) |
+| `ui_cancel` | Start (Xbox) / Options (PS) / + (Switch) |
+
+#### Características
+
+**Dual Input Support:**
+- Movimiento con stick analógico (smooth) o D-Pad (digital)
+- Deadzone de 0.5 para prevenir drift
+- Múltiples botones para reveal (B y X) para mayor comodidad
+
+**Controllers Soportados:**
+- ✅ Xbox One / Series X|S
+- ✅ PlayStation DualShock 4 / DualSense
+- ✅ Nintendo Switch Pro Controller
+- ✅ Steam Controller
+- ✅ Gamepads genéricos (USB)
+
+**Plataformas:**
+- ✅ Windows (XInput plug & play)
+- ✅ Linux (con drivers apropiados)
+- ✅ macOS (soporte nativo)
+- ✅ Steam Deck (controles nativos)
+
+#### Configuración
+
+**Deadzone:** 0.5 (50%)
+- Ajustable en `project.godot`
+- Previene movimiento no intencional por drift del stick
+
+**Compatibilidad:**
+- Funciona automáticamente con el código existente
+- `Input.get_action_strength()` detecta tanto teclado como gamepad
+- Sin cambios necesarios en scripts de gameplay
+
+#### Testing
+
+**Verificar gamepad funcionando:**
+1. Conectar gamepad (USB o Bluetooth)
+2. Ejecutar VEIL
+3. Probar movimiento con stick/D-Pad
+4. Probar salto con A/Cross
+5. Probar reveal con B/Circle
+
+**Gamepad en todos los menús:**
+- Main Menu: Navegar y seleccionar con gamepad
+- Pause Menu: Pausar con Start/Options
+- Victory/Game Over: Navegar opciones
+
+#### Documentación
+
+**Archivo creado:** `GAMEPAD_CONFIG.md`
+
+**Contenido:**
+- Layouts de controles para Xbox, PlayStation, Switch
+- Mapeado técnico completo
+- Guía de troubleshooting
+- Configuración avanzada (deadzone, invertir ejes)
+- Tips para jugar con gamepad vs teclado
+
+#### Limitaciones Actuales
+
+⚠️ **No implementado:**
+- Vibración/Rumble (planeado para Alpha 0.7+)
+- Remapeo de controles en UI (usar `project.godot` por ahora)
+- Sensibilidad ajustable in-game
+
+✅ **Totalmente funcional:**
+- Todos los controles de gameplay
+- Navegación de UI
+- Pause/Resume
+- Compatibilidad multiplataforma
+
+---
+
 ## ⚖️ Alpha 0.6.0 - iFrames & Balance Update - 2026-01-31 (Noche)
 
 ### MAJOR FEATURE: Sistema de iFrames (Invincibility Frames)

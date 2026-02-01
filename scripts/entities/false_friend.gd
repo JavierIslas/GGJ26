@@ -242,7 +242,7 @@ func stun(duration: float) -> void:
 func _stun_visual_feedback() -> void:
 	"""Feedback visual de aturdimiento"""
 	# Partículas de estrellas arriba de la cabeza
-	var particles = GPUParticles2D.new()
+	var particles = CPUParticles2D.new()
 
 	particles.global_position = global_position + Vector2(0, -24)  # Arriba de la cabeza
 	particles.emitting = true
@@ -250,26 +250,21 @@ func _stun_visual_feedback() -> void:
 	particles.amount = 3
 	particles.lifetime = 0.8
 
-	var material = ParticleProcessMaterial.new()
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	material.emission_sphere_radius = 8.0
-	material.direction = Vector3(0, -1, 0)
-	material.spread = 30.0
-	material.initial_velocity_min = 10.0
-	material.initial_velocity_max = 20.0
-	material.gravity = Vector3(0, -20, 0)
-	material.scale_min = 3.0
-	material.scale_max = 5.0
-	material.color = Color(1.0, 1.0, 0.3, 0.9)  # Amarillo (mareado)
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 8.0
+	particles.direction = Vector2(0, -1)
+	particles.spread = 30.0
+	particles.initial_velocity_min = 10.0
+	particles.initial_velocity_max = 20.0
+	particles.gravity = Vector2(0, -20)
+	particles.scale_amount_min = 3.0
+	particles.scale_amount_max = 5.0
+	particles.color = Color(1.0, 1.0, 0.3, 0.9)  # Amarillo (mareado)
 
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color(1.0, 1.0, 0.5, 1.0))
 	gradient.add_point(1.0, Color(1.0, 1.0, 0.0, 0.0))
-	var gradient_texture = GradientTexture1D.new()
-	gradient_texture.gradient = gradient
-	material.color_ramp = gradient_texture
-
-	particles.process_material = material
+	particles.color_ramp = gradient
 
 	add_child(particles)
 

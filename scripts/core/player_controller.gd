@@ -523,7 +523,7 @@ func _shard_launch_feedback() -> void:
 
 func _spawn_shard_launch_particles() -> void:
 	"""Partículas al lanzar un shard"""
-	var particles = GPUParticles2D.new()
+	var particles = CPUParticles2D.new()
 
 	# Configuración básica
 	particles.global_position = global_position
@@ -533,35 +533,28 @@ func _spawn_shard_launch_particles() -> void:
 	particles.lifetime = 0.3
 	particles.explosiveness = 1.0
 
-	# Material de partícula
-	var material = ParticleProcessMaterial.new()
-
 	# Emisión en punto
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_POINT
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_POINT
 
 	# Dirección hacia atrás (recoil)
-	material.direction = Vector3(0, 0, 0)
-	material.spread = 30.0
-	material.initial_velocity_min = 20.0
-	material.initial_velocity_max = 40.0
+	particles.direction = Vector2(0, 0)
+	particles.spread = 30.0
+	particles.initial_velocity_min = 20.0
+	particles.initial_velocity_max = 40.0
 
 	# Gravedad ligera
-	material.gravity = Vector3(0, 50, 0)
+	particles.gravity = Vector2(0, 50)
 
 	# Escala pequeña
-	material.scale_min = 2.0
-	material.scale_max = 4.0
+	particles.scale_amount_min = 2.0
+	particles.scale_amount_max = 4.0
 
 	# Color blanco brillante
-	material.color = Color(1.2, 1.2, 1.2, 0.8)
+	particles.color = Color(1.2, 1.2, 1.2, 0.8)
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color(1.2, 1.2, 1.2, 0.8))
 	gradient.add_point(1.0, Color(1.0, 1.0, 1.0, 0.0))
-	var gradient_texture = GradientTexture1D.new()
-	gradient_texture.gradient = gradient
-	material.color_ramp = gradient_texture
-
-	particles.process_material = material
+	particles.color_ramp = gradient
 
 	# Añadir al árbol
 	get_tree().root.add_child(particles)
@@ -736,7 +729,7 @@ func _spawn_dash_afterimage() -> void:
 
 func _spawn_dash_start_particles() -> void:
 	"""Partículas al iniciar el dash"""
-	var particles = GPUParticles2D.new()
+	var particles = CPUParticles2D.new()
 
 	# Configuración básica
 	particles.global_position = global_position
@@ -746,36 +739,29 @@ func _spawn_dash_start_particles() -> void:
 	particles.lifetime = 0.4
 	particles.explosiveness = 1.0
 
-	# Material
-	var material = ParticleProcessMaterial.new()
-
 	# Emisión radial
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	material.emission_sphere_radius = 16.0
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 16.0
 
 	# Dirección opuesta al dash
-	material.direction = Vector3(-dash_direction.x, 0, 0)
-	material.spread = 45.0
-	material.initial_velocity_min = 60.0
-	material.initial_velocity_max = 100.0
+	particles.direction = Vector2(-dash_direction.x, 0)
+	particles.spread = 45.0
+	particles.initial_velocity_min = 60.0
+	particles.initial_velocity_max = 100.0
 
 	# Gravedad ligera
-	material.gravity = Vector3(0, 150, 0)
+	particles.gravity = Vector2(0, 150)
 
 	# Escala
-	material.scale_min = 3.0
-	material.scale_max = 6.0
+	particles.scale_amount_min = 3.0
+	particles.scale_amount_max = 6.0
 
 	# Color plateado/blanco
-	material.color = Color(0.8, 0.9, 1.0, 0.9)
+	particles.color = Color(0.8, 0.9, 1.0, 0.9)
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color(1.0, 1.0, 1.2, 1.0))
 	gradient.add_point(1.0, Color(0.7, 0.8, 1.0, 0.0))
-	var gradient_texture = GradientTexture1D.new()
-	gradient_texture.gradient = gradient
-	material.color_ramp = gradient_texture
-
-	particles.process_material = material
+	particles.color_ramp = gradient
 
 	# Añadir al árbol
 	get_tree().root.add_child(particles)
@@ -794,7 +780,7 @@ func _spawn_dash_start_particles() -> void:
 
 func _spawn_dash_pierce_particles(position: Vector2) -> void:
 	"""Partículas al atravesar un enemigo"""
-	var particles = GPUParticles2D.new()
+	var particles = CPUParticles2D.new()
 
 	# Configuración básica
 	particles.global_position = position
@@ -804,41 +790,34 @@ func _spawn_dash_pierce_particles(position: Vector2) -> void:
 	particles.lifetime = 0.5
 	particles.explosiveness = 1.0
 
-	# Material
-	var material = ParticleProcessMaterial.new()
-
 	# Emisión radial
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	material.emission_sphere_radius = 8.0
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 8.0
 
 	# Explosión radial
-	material.direction = Vector3(0, 0, 0)
-	material.spread = 180.0
-	material.initial_velocity_min = 80.0
-	material.initial_velocity_max = 150.0
+	particles.direction = Vector2(0, 0)
+	particles.spread = 180.0
+	particles.initial_velocity_min = 80.0
+	particles.initial_velocity_max = 150.0
 
 	# Gravedad
-	material.gravity = Vector3(0, 200, 0)
+	particles.gravity = Vector2(0, 200)
 
 	# Escala
-	material.scale_min = 3.0
-	material.scale_max = 6.0
+	particles.scale_amount_min = 3.0
+	particles.scale_amount_max = 6.0
 
 	# Rotación
-	material.angular_velocity_min = -540.0
-	material.angular_velocity_max = 540.0
+	particles.angular_velocity_min = -540.0
+	particles.angular_velocity_max = 540.0
 
 	# Color blanco brillante (atravesar)
-	material.color = Color(1.5, 1.5, 1.5, 1.0)
+	particles.color = Color(1.5, 1.5, 1.5, 1.0)
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color(1.5, 1.5, 1.5, 1.0))
 	gradient.add_point(0.6, Color(1.2, 1.2, 1.2, 0.7))
 	gradient.add_point(1.0, Color(1.0, 1.0, 1.0, 0.0))
-	var gradient_texture = GradientTexture1D.new()
-	gradient_texture.gradient = gradient
-	material.color_ramp = gradient_texture
-
-	particles.process_material = material
+	particles.color_ramp = gradient
 
 	# Añadir al árbol
 	get_tree().root.add_child(particles)
@@ -893,7 +872,7 @@ func _apply_knockback(damage_amount: int) -> void:
 
 func _spawn_landing_dust() -> void:
 	"""Crea partículas de polvo al aterrizar"""
-	var particles = GPUParticles2D.new()
+	var particles = CPUParticles2D.new()
 
 	# Configuración básica
 	particles.global_position = global_position + Vector2(0, 16)  # A los pies del jugador
@@ -903,40 +882,33 @@ func _spawn_landing_dust() -> void:
 	particles.lifetime = 0.5
 	particles.explosiveness = 1.0
 
-	# Material de partícula
-	var material = ParticleProcessMaterial.new()
-
 	# Emisión horizontal (a los lados)
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	material.emission_sphere_radius = 8.0
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 8.0
 
 	# Dirección horizontal con un poco de altura
-	material.direction = Vector3(0, -0.5, 0)  # Ligeramente hacia arriba
-	material.spread = 60.0  # Solo a los lados
-	material.initial_velocity_min = 30.0
-	material.initial_velocity_max = 80.0
+	particles.direction = Vector2(0, -0.5)  # Ligeramente hacia arriba
+	particles.spread = 60.0  # Solo a los lados
+	particles.initial_velocity_min = 30.0
+	particles.initial_velocity_max = 80.0
 
 	# Gravedad ligera
-	material.gravity = Vector3(0, 150, 0)
+	particles.gravity = Vector2(0, 150)
 
 	# Escala pequeña (partículas de polvo)
-	material.scale_min = 2.0
-	material.scale_max = 4.0
+	particles.scale_amount_min = 2.0
+	particles.scale_amount_max = 4.0
 
 	# Rotación
-	material.angular_velocity_min = -90.0
-	material.angular_velocity_max = 90.0
+	particles.angular_velocity_min = -90.0
+	particles.angular_velocity_max = 90.0
 
 	# Color gris/blanco (polvo)
-	material.color = Color(0.8, 0.8, 0.8, 0.8)
+	particles.color = Color(0.8, 0.8, 0.8, 0.8)
 	var gradient = Gradient.new()
 	gradient.add_point(0.0, Color(0.9, 0.9, 0.9, 0.8))
 	gradient.add_point(1.0, Color(0.8, 0.8, 0.8, 0.0))
-	var gradient_texture = GradientTexture1D.new()
-	gradient_texture.gradient = gradient
-	material.color_ramp = gradient_texture
-
-	particles.process_material = material
+	particles.color_ramp = gradient
 
 	# Añadir al árbol root (NO como hijo del jugador para mantener posición global)
 	get_tree().root.add_child(particles)

@@ -293,7 +293,7 @@ const JUMP_BUFFER = 0.1
   - Ajustar JUMP_VELOCITY si no se siente bien
   - Variable gravity (subiendo vs bajando) - Opcional
 - [ ] Partículas de revelación:
-  - GPUParticles2D simple
+  - GPUParticles2D  simple
   - Forma: Pequeños cuadrados blancos
   - Dirección: Explosión radial
   - Lifetime: 0.5s

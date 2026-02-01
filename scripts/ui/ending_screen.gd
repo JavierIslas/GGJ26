@@ -14,22 +14,22 @@ extends Control
 # Configuración de endings
 const ENDINGS = {
 	"ignorance": {
-		"name": "Ignorancia",
-		"color": Color(0.7, 0.3, 0.3),  # Rojo oscuro
+		"name": "The Comfortable Lie",
+		"color": Color(0.5, 0.5, 0.5),  # Gris (mediocridad, neutralidad)
 		"threshold": 0.0,  # < 50%
-		"narrative": "Cerraste los ojos ante la verdad.\n\nPreferiste la comodidad de la ignorancia, dejando la mayoría de los velos intactos. El mundo sigue igual que antes, con sus máscaras y sus mentiras.\n\nTe convenciste de que algunas verdades no merecen ser confrontadas. Quizás tengas razón. Quizás no.\n\nPero en las noches oscuras, aún puedes sentir el peso de los velos que dejaste sin arrancar."
+		"narrative": "Revelaste pocas verdades.\nPreferiste la comodidad de la mentira.\n\nEscapaste del Velo...\npero no cambiaste nada.\n\nLas máscaras siguen ahí.\nLos depredadores siguen cazando.\nLas víctimas siguen sufriendo.\n\nY tú...\nvolviste a ponerte la tuya.\n\n\n[El mundo de máscaras permanece intacto]\n[Eres parte del sistema ahora]"
 	},
 	"awakening": {
-		"name": "Despertar",
-		"color": Color(0.3, 0.8, 1.0),  # Azul brillante
+		"name": "The Painful Truth",
+		"color": Color(0.3, 0.6, 1.0),  # Azul (tristeza, verdad fría)
 		"threshold": 50.0,  # 50-80%
-		"narrative": "Confrontaste la verdad, pero no sin costo.\n\nArrancaste suficientes velos para ver el mundo tal como es: un lugar de hipocresía y dualidad. Los monstruos que parecían amigos. Las víctimas que parecían amenazas.\n\nLa verdad duele. Ahora lo sabes mejor que nadie.\n\nPero el conocimiento viene con un precio. Algunas verdades te perseguirán. Algunas heridas nunca sanarán.\n\n¿Valió la pena? Solo tú puedes responder eso."
+		"narrative": "Revelaste muchas verdades.\nViste el mundo como realmente es.\n\nLos amenazantes eran víctimas.\nLos amigables eran depredadores.\nEl sistema era violento.\n\nEscapaste del Velo...\npero el peso te sigue.\n\nAhora sabes demasiado para ser feliz.\nPero no suficiente para cambiar todo.\n\nVives con la verdad.\nY duele.\n\n[La claridad tiene un precio]\n[Algunas heridas nunca sanan]"
 	},
 	"revelator": {
-		"name": "El Revelador",
-		"color": Color(1.0, 0.84, 0.0),  # Dorado
+		"name": "The Big Bad Wolf",
+		"color": Color(1.0, 1.0, 1.0),  # Blanco puro (verdad absoluta)
 		"threshold": 80.0,  # > 80%
-		"narrative": "No dejaste ningún velo sin arrancar.\n\nCon valor implacable, confrontaste cada verdad, sin importar las consecuencias. El mundo ya no puede esconderse de ti.\n\nVes las máscaras en todas partes. La hipocresía. Las mentiras. La dualidad de cada ser.\n\nEres El Revelador. El que no teme a la verdad.\n\nPero en un mundo donde todos llevan máscaras, ¿qué significa ser el único que puede verlas?\n\nLa soledad del conocimiento absoluto es tu recompensa. Y tu maldición."
+		"narrative": "Revelaste TODAS las verdades.\nArrancaste cada velo.\nConfrontaste cada mentira.\n\nNo fuiste amable.\nNo fuiste selectiva.\nNo perdonaste nada.\n\nLos depredadores te temieron.\nLas víctimas te admiraron.\nEl sistema... colapsó.\n\nYa no eres la niña asustada.\nYa no eres la víctima.\n\nEres el lobo ahora.\n\nY el bosque te pertenece.\n\n[I'm not your victim anymore]\n[I'm the big bad wolf now]"
 	}
 }
 

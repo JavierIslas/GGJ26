@@ -42,6 +42,12 @@ func _open_door() -> void:
 	"""Abre la puerta desactivando colisión y cambiando visual"""
 	is_open = true
 
+	# === POLISH: Camera shake ===
+	_apply_camera_shake(0.5)
+
+	# === POLISH: Gamepad vibration ===
+	_apply_gamepad_vibration(0.5, 0.5, 0.3)
+
 	# Desactivar colisión
 	collision.disabled = true
 
@@ -73,3 +79,17 @@ func _update_label() -> void:
 	"""Actualiza el texto del label"""
 	var current_truths = GameManager.current_level_truths if use_level_truths else GameManager.total_truths_revealed
 	label.text = "%d / %d" % [current_truths, truths_required]
+
+# === POLISH & JUICE METHODS ===
+
+func _apply_camera_shake(trauma_amount: float) -> void:
+	"""Aplica screen shake a través de la cámara"""
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("add_trauma"):
+		camera.add_trauma(trauma_amount)
+
+func _apply_gamepad_vibration(weak_magnitude: float, strong_magnitude: float, duration: float) -> void:
+	"""Vibración de gamepad para feedback táctil"""
+	var joy_list = Input.get_connected_joypads()
+	for joy_id in joy_list:
+		Input.start_joy_vibration(joy_id, weak_magnitude, strong_magnitude, duration)
