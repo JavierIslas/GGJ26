@@ -372,15 +372,15 @@ required_truths = 10
 [node name="Puzzles" type="Node2D" parent="."]
 
 [node name="Puzzle32_Switch1" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
-position = Vector2(5520, 520)
+position = Vector2(5520, 550)
 activation_type = 1
 
 [node name="Puzzle32_Switch2" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
-position = Vector2(5600, 520)
+position = Vector2(5600, 550)
 activation_type = 1
 
 [node name="Puzzle32_Switch3" parent="Puzzles" groups=["puzzle_mass_switches"] instance=ExtResource("19_puzzle_switch")]
-position = Vector2(5680, 520)
+position = Vector2(5680, 550)
 activation_type = 1
 
 [node name="Puzzle32_Controller" parent="Puzzles" instance=ExtResource("20_timed_puzzle")]

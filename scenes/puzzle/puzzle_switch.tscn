@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://clrw62xcbpj7r" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
 
 [sub_resource type="CircleShape2D" id="1"]
-radius = 20.0
+radius = 40.0
 
 [node name="PuzzleSwitch" type="Area2D" groups=["puzzle_elements"]]
 script = ExtResource("1")
