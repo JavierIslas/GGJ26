@@ -3,10 +3,10 @@
 [ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
 
 [sub_resource type="TileSet" id="TileSet_jbqir"]
-tile_size = Vector2i(32, 32)
+tile_size = Vector2i(48, 48)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jbqir"]
-size = Vector2(1500, 50)
+size = Vector2(1500, 48)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yautc"]
 size = Vector2(150, 20)

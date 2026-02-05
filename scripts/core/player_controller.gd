@@ -135,6 +135,19 @@ func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 
+	# Tutorial 0: Freeze timer
+	if is_frozen:
+		freeze_timer -= delta
+		if freeze_timer <= 0:
+			is_frozen = false
+			freeze_timer = 0.0
+			print("Player unfrozen")
+		else:
+			# Mientras está frozen, no hacer nada
+			velocity = Vector2.ZERO
+			move_and_slide()
+			return
+
 	# Dash tiene prioridad sobre movimiento normal
 	if is_dashing:
 		_process_dash(delta)
@@ -924,3 +937,29 @@ func _spawn_landing_dust() -> void:
 		cleanup_timer.queue_free()
 	)
 	get_tree().root.add_child(cleanup_timer)
+
+## === TUTORIAL 0 METHODS ===
+
+var is_frozen: bool = false
+var freeze_timer: float = 0.0
+
+func freeze(duration: float) -> void:
+	"""Congela el jugador por X segundos (Tutorial 0)"""
+	is_frozen = true
+	freeze_timer = duration
+	velocity = Vector2.ZERO
+	print("Player frozen for %s seconds" % duration)
+
+func scripted_death() -> void:
+	"""Muerte scripted para Tutorial 0 (sin game over normal)"""
+	print("Player: Scripted death triggered")
+	is_dead = true
+	is_frozen = true
+	velocity = Vector2.ZERO
+
+	# Animación de muerte si existe
+	if animation_player and animation_player.has_animation("death"):
+		animation_player.play("death")
+
+	# Llamar a GameManager para manejar transición
+	GameManager.player_died_tutorial_0()

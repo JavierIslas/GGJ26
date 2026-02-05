@@ -22,7 +22,7 @@
 [ext_resource type="Script" uid="uid://c0cru1ly1rsf7" path="res://scripts/puzzle/activated_platform.gd" id="18_activated_platform"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
-size = Vector2(1500, 50)
+size = Vector2(1500, 48)
 
 [node name="Level2" type="Node2D"]
 

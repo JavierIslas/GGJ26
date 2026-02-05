@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://scripts/components/range_indicator.gd" id="4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(32, 32)
+size = Vector2(64, 96)
 
 [node name="TrueThreatTracking" type="StaticBody2D"]
 collision_layer = 4

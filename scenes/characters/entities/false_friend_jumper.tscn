@@ -6,10 +6,10 @@
 [ext_resource type="Script" path="res://scripts/components/range_indicator.gd" id="4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(28, 30)
+size = Vector2(56, 70)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hurtbox"]
-radius = 16.0
+radius = 32.0
 
 [node name="FalseFriendJumper" type="CharacterBody2D"]
 collision_layer = 4

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/placeholder/PLACEHOLDER_player.png" id="2"]
 
 [sub_resource type="CircleShape2D" id="1"]
-radius = 16.0
+radius = 24.0
 
 [node name="HPPickup" type="Area2D"]
 script = ExtResource("1")

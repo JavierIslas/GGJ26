@@ -1,0 +1,148 @@
+[gd_scene format=3 uid="uid://bt17wcv1sssgc"]
+
+[ext_resource type="PackedScene" uid="uid://bubhj7r567uy1" path="res://scenes/characters/player.tscn" id="1"]
+[ext_resource type="Script" uid="uid://bwnfvjncu5hwf" path="res://scripts/tutorial/tutorial_0_manager.gd" id="2"]
+[ext_resource type="Script" uid="uid://cuex7atlfsxqd" path="res://scripts/tutorial/tutorial_0_false_friend.gd" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/characters/entities/false_enemy.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/level/level_goal.tscn" id="5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(1200, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]
+size = Vector2(48, 60)
+
+[node name="Tutorial0" type="Node2D" unique_id=161640029]
+script = ExtResource("2")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=102919770]
+position = Vector2(600, 300)
+zoom = Vector2(0.75, 0.75)
+position_smoothing_enabled = true
+position_smoothing_speed = 1.8
+drag_horizontal_enabled = true
+drag_horizontal_offset = 80.0
+
+[node name="Environment" type="Node2D" parent="." unique_id=1546095009]
+
+[node name="Floor" type="StaticBody2D" parent="Environment" unique_id=536079047]
+position = Vector2(600, 360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Environment/Floor" unique_id=1632428383]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="ColorRect" type="ColorRect" parent="Environment/Floor" unique_id=1169888474]
+offset_left = -600.0
+offset_top = -24.0
+offset_right = 600.0
+offset_bottom = 24.0
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="HighPlatform1" type="StaticBody2D" parent="Environment" unique_id=508416145]
+position = Vector2(300, 110)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Environment/HighPlatform1" unique_id=993636040]
+scale = Vector2(0.5, 1)
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="ColorRect" type="ColorRect" parent="Environment/HighPlatform1" unique_id=577581170]
+offset_left = -100.0
+offset_top = -10.0
+offset_right = 100.0
+offset_bottom = 10.0
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="HighPlatform2" type="StaticBody2D" parent="Environment" unique_id=361602124]
+position = Vector2(450, 110)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Environment/HighPlatform2" unique_id=1621572342]
+scale = Vector2(0.5, 1)
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="ColorRect" type="ColorRect" parent="Environment/HighPlatform2" unique_id=467697324]
+offset_left = -100.0
+offset_top = -10.0
+offset_right = 100.0
+offset_bottom = 10.0
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="Entities" type="Node2D" parent="." unique_id=733778254]
+
+[node name="FalseEnemy1" parent="Entities" unique_id=170902145 instance=ExtResource("4")]
+position = Vector2(300, 70)
+
+[node name="FalseEnemy2" parent="Entities" unique_id=535034452 instance=ExtResource("4")]
+position = Vector2(450, 70)
+
+[node name="FalseFriendOptional" type="CharacterBody2D" parent="Entities" unique_id=996886231]
+position = Vector2(460, 303)
+script = ExtResource("3")
+auto_reveal_enabled = false
+
+[node name="Sprite" type="ColorRect" parent="Entities/FalseFriendOptional" unique_id=1606152765]
+offset_left = -24.0
+offset_top = -30.0
+offset_right = 24.0
+offset_bottom = 30.0
+color = Color(1, 1, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/FalseFriendOptional" unique_id=1878575033]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="FalseFriendTrigger" type="CharacterBody2D" parent="Entities" unique_id=1983320748 groups=["tutorial_0_trigger"]]
+position = Vector2(688, 304)
+script = ExtResource("3")
+auto_reveal_range = 150.0
+
+[node name="Sprite" type="ColorRect" parent="Entities/FalseFriendTrigger" unique_id=2075872823]
+offset_left = -24.0
+offset_top = -30.0
+offset_right = 24.0
+offset_bottom = 30.0
+color = Color(1, 1, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Entities/FalseFriendTrigger" unique_id=1826883428]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="Player" parent="." unique_id=432304893 instance=ExtResource("1")]
+position = Vector2(125, 300)
+
+[node name="Goal" parent="." unique_id=670330876 instance=ExtResource("5")]
+position = Vector2(1150, 280)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=76684013]
+
+[node name="HUD" type="Control" parent="UI" unique_id=1034577140]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HPLabel" type="Label" parent="UI/HUD" unique_id=560837846]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 120.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 24
+text = "HP: 5/5"
+
+[node name="TruthsLabel" type="Label" parent="UI/HUD" unique_id=1840693787]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 60.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 24
+text = "Velos: 0 / 1"
+horizontal_alignment = 2
