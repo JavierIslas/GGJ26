@@ -131,3 +131,16 @@ func _on_intro_finished(loop_path: String) -> void:
 func stop_music() -> void:
 	ambient_layer.stop()
 	combat_layer.stop()
+
+## Reproduce música inmediatamente (sin fade, para transiciones rápidas)
+func play_music_immediate(music_name: String) -> void:
+	var music_path = "res://assets/audio/music/%s.ogg" % music_name
+
+	if not ResourceLoader.exists(music_path):
+		push_warning("Music not found: %s" % music_name)
+		return
+
+	stop_music()
+	ambient_layer.stream = load(music_path)
+	ambient_layer.volume_db = 0.0
+	ambient_layer.play()

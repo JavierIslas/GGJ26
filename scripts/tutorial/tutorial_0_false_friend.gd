@@ -9,10 +9,10 @@ class_name Tutorial0FalseFriend
 ## 3. Mata al jugador (muerte scripted → Tutorial 1)
 
 # Constantes de movimiento
-const CHASE_SPEED: float = 180.0  # Más rápido que jugador (150)
+const CHASE_SPEED: float = 280.0  # Más rápido que jugador (230) para asegurar que lo atrape
 const JUMP_FORCE: float = -450.0  # Salta más alto que jugador
 const GRAVITY: float = 980.0
-const CATCH_RANGE: float = 32.0  # Distancia para "atrapar" al jugador
+const CATCH_RANGE: float = 80.0  # Distancia para "atrapar" al jugador (aumentado para asegurar catch)
 
 # Auto-reveal settings
 @export var auto_reveal_range: float = 48.0
@@ -291,11 +291,15 @@ func _chase_behavior() -> void:
 
 	# Verificar si alcanzó al jugador
 	var distance = global_position.distance_to(player.global_position)
+	# Debug cada frame para ver qué pasa
+	if Engine.get_process_frames() % 60 == 0:  # Una vez por segundo aprox
+		print("Tutorial0FalseFriend: Chasing! Distance to player: ", distance, " CATCH_RANGE: ", CATCH_RANGE)
+
 	if distance < CATCH_RANGE:
 		_catch_player()
 
 func _catch_player() -> void:
-	print("Tutorial 0: Player caught!")
+	print("Tutorial 0: Player caught! Starting scripted death sequence...")
 
 	# Detener persecución
 	current_state = State.IDLE
@@ -306,10 +310,18 @@ func _catch_player() -> void:
 		anim_player.play("attack")
 
 	# Hacer mucho daño (matar al jugador)
-	if player and player.has_method("scripted_death"):
-		player.scripted_death()
+	print("Tutorial 0: Checking if player exists and has scripted_death method...")
+	if player and is_instance_valid(player):
+		print("Tutorial 0: Player exists, checking methods...")
+		if player.has_method("scripted_death"):
+			print("Tutorial 0: Calling player.scripted_death()")
+			player.scripted_death()
+		else:
+			print("Tutorial 0: Player does NOT have scripted_death method! Using fallback.")
+			GameManager.change_health(-999)
 	else:
-		# Fallback: Hacer 999 de daño
+		print("Tutorial 0: Player is null or invalid! Using fallback.")
 		GameManager.change_health(-999)
 
 	# El GameManager manejará la transición a Tutorial 1
+	print("Tutorial 0: _catch_player() completed")

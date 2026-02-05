@@ -10,7 +10,6 @@ func _ready() -> void:
 	print("=== TUTORIAL 1 INICIADO ===")
 	print("¡Revelación desbloqueada!")
 	print("HP del jugador: %d" % GameManager.player_hp)
-	print("Velos coleccionados: %d" % GameManager.veil_shards_collected)
 
 	# Inicializar Tutorial 1 (esto desbloquea reveal)
 	GameManager.start_tutorial_1()
@@ -26,8 +25,8 @@ func _ready() -> void:
 
 func _print_status() -> void:
 	print("--- ESTADO DEL JUGADOR ---")
-	print("HP: %d / %d" % [GameManager.player_hp, GameManager.max_player_hp])
-	print("Velos: %d / %d" % [GameManager.veil_shards_collected, GameManager.veil_shards_needed])
+	print("HP: %d / %d" % [GameManager.player_hp, GameManager.max_hp])
+	print("Verdades reveladas: %d" % GameManager.total_truths_revealed)
 	print("Reveal desbloqueado: %s" % GameManager.reveal_unlocked)
 	print("Dash desbloqueado: %s" % GameManager.dash_unlocked)
 	print("--------------------------")

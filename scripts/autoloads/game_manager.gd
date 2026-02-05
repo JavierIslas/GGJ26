@@ -80,8 +80,8 @@ func start_tutorial_1() -> void:
 func player_died_tutorial_0() -> void:
 	print("Tutorial 0: Scripted death - Transitioning to Tutorial 1")
 
-	# Detener todo
-	get_tree().paused = true
+	# NO hacer pause del árbol - detendría los tweens y timers de la cinemática
+	# El jugador ya está congelado por scripted_death()
 
 	# NO reproducir SFX de muerte normal (es narrativo)
 	# AudioManager.play_sfx("death", 0.0)  # Comentado
@@ -90,7 +90,6 @@ func player_died_tutorial_0() -> void:
 	await _tutorial_0_death_sequence()
 
 	# Cargar Tutorial 1
-	get_tree().paused = false
 	start_tutorial_1()
 	SceneTransition.change_scene("res://scenes/levels/tutorial_1.tscn")
 
@@ -161,8 +160,12 @@ func _show_centered_text(text: String) -> void:
 		get_tree().root.add_child(canvas)
 		canvas.add_child(label)
 
-		# Tamaño completo de pantalla
-		label.set_anchors_preset(Control.PRESET_FULL_RECT)
+		# Configurar para ocupar toda la pantalla y centrar el contenido
+		label.anchors_preset = Control.PRESET_FULL_RECT
+		label.offset_left = 0
+		label.offset_top = 0
+		label.offset_right = 0
+		label.offset_bottom = 0
 
 	label.text = text
 	label.modulate.a = 1.0

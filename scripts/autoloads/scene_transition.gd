@@ -78,3 +78,21 @@ func fade_out() -> void:
 	"""Solo hace fade out"""
 	animation_player.play("fade_out")
 	await animation_player.animation_finished
+
+func fade_to_black(duration: float = 0.5) -> void:
+	"""Fade a negro con duración personalizada (para Tutorial 0)"""
+	color_rect.modulate.a = 0.0
+	color_rect.color = Color.BLACK
+	var tween = create_tween()
+	tween.tween_property(color_rect, "modulate:a", 1.0, duration)
+	await tween.finished
+
+func fade_to_white(duration: float = 0.5) -> void:
+	"""Fade a blanco con duración personalizada (para Tutorial 0)"""
+	color_rect.modulate.a = 0.0
+	color_rect.color = Color.WHITE
+	var tween = create_tween()
+	tween.tween_property(color_rect, "modulate:a", 1.0, duration)
+	await tween.finished
+	# Restaurar color negro para siguientes transiciones
+	color_rect.color = Color.BLACK
