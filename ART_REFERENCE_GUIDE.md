@@ -1,20 +1,50 @@
 # VEIL - Guía de Referencia para Artista
 
-**Fecha:** 2026-01-31
+**Fecha:** 2026-02-05
 **Estilo:** Bocetos góticos a lápiz/tinta (blanco y negro + acentos de color)
 **Técnica:** Papel y lápiz → Escaneo 300dpi → Procesamiento
 **Inspiración:** Darkest Dungeon, Tim Burton, grabados góticos
+**Resolución Base:** 1080p (1920×1080) - Escala hacia abajo automático
 
 ---
 
 ## 📐 Especificaciones Técnicas
 
+### Resolución y Escalado
+
+**IMPORTANTE:** Todos los assets están diseñados para **1080p como resolución base**. El juego escala automáticamente hacia abajo (720p, 576p, 480p) sin perder proporciones.
+
+| Resolución | Jugador en Pantalla | Proporción |
+|------------|---------------------|------------|
+| 1080p (base) | ~108px | 10% de altura ✅ |
+| 720p | ~72px | 10% de altura ✅ |
+| 576p | ~58px | 10% de altura ✅ |
+| 480p | ~48px | 10% de altura ✅ |
+
+**La proporción se mantiene constante** independientemente de la resolución del jugador.
+
 ### Formato de Entrega
 - **Resolución:** 300dpi (escaneo)
 - **Formato:** PNG con transparencia (después de procesamiento)
 - **Líneas:** Negras gruesas (tinta), alto contraste
-- **Tamaño de sprites:** ~64x64px base (escalar después)
 - **Estilo:** Asimétrico, orgánico, NO pixel art perfecto
+
+### Configuración de Cámara (Estilo Darkest Dungeon)
+
+```gdscript
+zoom = Vector2(0.75, 0.75)      # Zoom alejado cinematográfico
+position_smoothing_speed = 1.8  # Movimiento lento y pesado
+drag_horizontal_enabled = true  # La cámara "se queda atrás"
+drag_horizontal_offset = 80.0   # Offset horizontal en píxeles
+drag_vertical_enabled = false   # Sin arrastre vertical
+anchor_mode = 1                 # Centro del jugador
+```
+
+**Estilo Resultante:**
+- Personajes ocupan ~10% de altura de pantalla (estilo DD)
+- Movimiento de cámara cinematográfico y pesado
+- El personaje está "inmerso" en el entorno, no en close-up
+- Mucho espacio negativo para mostrar contexto del nivel
 
 ### Pipeline
 1. Dibujar en papel (lápiz + tinta negra)
@@ -36,10 +66,12 @@
 **Cuerpo Base:**
 ```
 SILUETA:
-- Altura: ~64px (2 tiles)
+- Altura SPRITE: 144×144px (base definitiva)
+- Altura en pantalla (1080p): ~108px (10% de altura)
 - Figura femenina estilizada, delgada pero fuerte
 - Postura erguida, hombros hacia atrás (confianza)
 - Piernas largas (ágil, cazadora)
+- Hitbox real: ~72×90px dentro del sprite (área de colisión)
 
 ROSTRO:
 - Mandíbula definida (no delicada)
@@ -66,7 +98,7 @@ PALETA:
 
 **HOJA 1: IDLE & WALK (Prioridad CRÍTICA)**
 ```
-Dimensiones sugeridas: 320x64px (5 frames horizontal)
+Dimensiones sugeridas: 720×144px (5 frames horizontal)
 
 [Idle - 2 frames]
 Frame 1: Postura neutral, capa flotando suavemente
@@ -85,7 +117,7 @@ DETALLES CRÍTICOS:
 
 **HOJA 2: JUMP & FALL (Prioridad ALTA)**
 ```
-Dimensiones sugeridas: 256x64px (4 frames horizontal)
+Dimensiones sugeridas: 576×144px (4 frames horizontal)
 
 [Jump - 1 frame]
 - Impulso hacia arriba
@@ -111,7 +143,7 @@ Dimensiones sugeridas: 256x64px (4 frames horizontal)
 
 **HOJA 3: TEAR VEIL (Prioridad ALTA)**
 ```
-Dimensiones sugeridas: 384x64px (6 frames horizontal)
+Dimensiones sugeridas: 864×144px (6 frames horizontal)
 
 [Secuencia de revelación]
 Frame 1: Brazos extendidos hacia adelante (alcanzando)
@@ -129,7 +161,7 @@ DETALLES CRÍTICOS:
 
 **HOJA 4: DAMAGE & DEATH (Prioridad MEDIA)**
 ```
-Dimensiones sugeridas: 192x64px (3 frames horizontal)
+Dimensiones sugeridas: 432×144px (3 frames horizontal)
 
 [Damage - 1 frame]
 - Retroceso (knockback)
@@ -161,7 +193,8 @@ Dimensiones sugeridas: 192x64px (3 frames horizontal)
 **Descripción Visual:**
 ```
 SILUETA:
-- Altura: ~48px (1.5 tiles)
+- Altura SPRITE: 96×96px
+- Altura en pantalla (1080p): ~72px (7% de altura)
 - Forma humanoide, postura encorvada agresiva
 - Puños cerrados, hombros tensos
 - Caminata pesada (defensivo)
@@ -183,11 +216,11 @@ PALETA:
 
 **Sprites Necesarios:**
 ```
-[Idle Masked - 2 frames] (128x48px)
+[Idle Masked - 2 frames] (192×96px)
 - Respiración agresiva
 - Puños tensos
 
-[Walk Masked - 3 frames] (192x48px)
+[Walk Masked - 3 frames] (288×96px)
 - Patrulla pesada
 - Mirada fija al frente
 ```
@@ -239,7 +272,8 @@ PALETA:
 **Descripción Visual:**
 ```
 SILUETA:
-- Altura: ~56px
+- Altura SPRITE: 112×112px
+- Altura en pantalla (1080p): ~84px (8% de altura)
 - Forma humanoide amigable
 - Brazos abiertos (acogedor)
 - Postura relajada
@@ -261,7 +295,7 @@ PALETA (CONCEPTO):
 
 **Sprites Necesarios:**
 ```
-[Idle Masked - 2 frames] (128x56px)
+[Idle Masked - 2 frames] (224×112px)
 - Brazos haciendo señas
 - Balanceándose suavemente
 - Sonrisa permanente
@@ -275,8 +309,10 @@ TRANSFORMACIÓN DRAMÁTICA:
 - Cuerpo se DEFORMA (horror corporal)
 - Máscara se ROMPE (caída dramática)
 - Monstruo emerge
+- Crecimiento visible (112px → 144px de altura)
 
 FORMA MONSTRUOSA:
+- Altura SPRITE: 144×144px (transformado)
 - Garras largas, afiladas (4-5 dedos)
 - Dientes grandes, irregulares
 - Boca abierta (rugido permanente)
@@ -297,17 +333,15 @@ PALETA:
 
 **Sprites Necesarios:**
 ```
-[Transformation - 4 frames] (256x64px) - CRÍTICO
-Frame 1: Máscara agrietándose
-Frame 2: Cuerpo expandiéndose
-Frame 3: Garras emergiendo
-Frame 4: Rugido (forma final)
+[Transformation - 4 frames] (Variable) - CRÍTICO
+Frames 1-2: 224×112px (máscara agrietándose, cuerpo expandiéndose)
+Frames 3-4: 288×144px (garras emergiendo, rugido final)
 
-[Idle Revealed - 2 frames] (128x64px)
+[Idle Revealed - 2 frames] (288×144px)
 - Respiración agresiva
 - Garras listas
 
-[Chase - 3 frames] (192x64px)
+[Chase - 3 frames] (432×144px)
 - Corriendo a cuatro patas
 - Saltando
 - Garras hacia adelante
@@ -342,7 +376,7 @@ PALETA:
 
 **Sprites Necesarios:**
 ```
-[Idle Masked - 1 frame] (64x80px)
+[Idle Masked - 1 frame] (128×160px)
 - Completamente estático
 - Sin animación (es un objeto)
 ```
@@ -379,19 +413,19 @@ PALETA:
 
 **Sprites Necesarios:**
 ```
-[Awaken - 4 frames] (64x96px) - CRÍTICO
+[Awaken - 4 frames] (128×192px) - CRÍTICO
 Frame 1: Grietas aparecen
 Frame 2: Grietas expanden, luz púrpura dentro
 Frame 3: Tentáculos emergen
 Frame 4: Ojos abren (forma final)
 
-[Idle Revealed - 2 frames] (64x96px)
+[Idle Revealed - 2 frames] (128×192px)
 Frame 1: Contraído (inhala)
 Frame 2: Expandido (exhala)
 - Tentáculos ondean
 - Ojos parpadean
 
-[Attack - 2 frames] (64x96px)
+[Attack - 2 frames] (128×192px)
 Frame 1: Tensión (carga)
 Frame 2: Disparo (proyectil sale de boca)
 ```
@@ -455,9 +489,13 @@ Frame 3: Caída (garras extendidas)
 
 **Concepto:** Minimalista, blanco/negro, plataformas flotantes
 
-#### Tiles Necesarios (16x16px cada uno)
+#### Tiles Necesarios (48×48px cada uno)
 
 ```
+NOTA: Tiles base escalados 3x (antes 16×16px)
+- Tile base: 48×48px (1/3 del tamaño del jugador)
+- Proporción perfecta con sprites de 144px
+
 PLATAFORMAS:
 [1] Plataforma sólida - Centro
 [2] Plataforma sólida - Borde izquierdo
@@ -481,7 +519,7 @@ DECORACIÓN:
 - Grietas y desgaste (mundo en decadencia)
 - Alto contraste (negro sobre blanco)
 
-**Dimensiones:** Hoja de 160x32px (10 tiles horizontal)
+**Dimensiones:** Hoja de 480×48px (10 tiles horizontal)
 
 ---
 
@@ -492,7 +530,7 @@ DECORACIÓN:
 **Descripción Visual:**
 ```
 PUERTA CERRADA:
-- Marco de piedra vertical (32x64px)
+- Marco de piedra vertical (96×192px)
 - Centro bloqueado con velo/niebla
 - Contador de verdades visible arriba
 - Textura de piedra antigua
@@ -506,9 +544,9 @@ PUERTA ABIERTA:
 
 **Sprites Necesarios:**
 ```
-[Door Closed - 1 frame] (32x64px)
-[Door Opening - 3 frames] (96x64px)
-[Door Open - 1 frame] (32x64px)
+[Door Closed - 1 frame] (96×192px)
+[Door Opening - 3 frames] (288×192px)
+[Door Open - 1 frame] (96×192px)
 ```
 
 ---
@@ -520,7 +558,7 @@ PUERTA ABIERTA:
 CONCEPTO: Portal/Vórtice de luz
 
 DISEÑO:
-- Círculo de luz blanca brillante (48x48px)
+- Círculo de luz blanca brillante (144×144px)
 - Fragmentos de velo flotando hacia dentro
 - Aura blanca pulsante (código)
 - Base de piedra simple
@@ -749,16 +787,24 @@ ILUSTRACIÓN:
 
 ## 📐 Tabla de Dimensiones Rápida
 
-| Tipo | Dimensiones | Prioridad |
-|------|-------------|-----------|
-| **Player Sprites** | 64x64px (base) | CRÍTICA |
-| **Enemy Sprites** | 48-64px altura | CRÍTICA |
-| **Tileset** | 16x16px por tile | CRÍTICA |
-| **UI Icons** | 24-32px | CRÍTICA |
-| **Logo** | 400x200px | CRÍTICA |
-| **Botones** | 200x60px | CRÍTICA |
-| **Endings** | 400x300px | MEDIA |
-| **Fondos** | 640x480px | OPCIONAL |
+**Resolución Base: 1080p (1920×1080) - Zoom de cámara: 0.75**
+
+| Tipo | Dimensiones Sprite | En Pantalla (1080p) | Prioridad |
+|------|-------------------|---------------------|-----------|
+| **Player** | 144×144px | ~108px (10% altura) | CRÍTICA |
+| **False Enemy** | 96×96px | ~72px (7% altura) | CRÍTICA |
+| **False Friend (máscara)** | 112×112px | ~84px (8% altura) | CRÍTICA |
+| **False Friend (revelado)** | 144×144px | ~108px (10% altura) | CRÍTICA |
+| **True Threat** | 128×192px | ~96×144px | CRÍTICA |
+| **Jefes** | 192-256×256px | ~144-192px | MEDIA |
+| **Tileset** | 48×48px por tile | ~36px (1/3 player) | CRÍTICA |
+| **UI Icons** | 48×48px | Escala UI separada | CRÍTICA |
+| **Logo** | 600×300px | Escala UI separada | CRÍTICA |
+| **Botones** | 300×90px | Escala UI separada | CRÍTICA |
+| **Endings** | 800×600px | Escala UI separada | MEDIA |
+| **Fondos** | 1920×1080px | Fullscreen | OPCIONAL |
+
+**Sistema Modular:** Todos los sprites son múltiplos de 16, con 48px como unidad base (1 tile = 1/3 del jugador).
 
 ---
 
@@ -766,11 +812,12 @@ ILUSTRACIÓN:
 
 ### Para Dibujo en Papel
 
-1. **Usar plantilla:** Crear cuadrícula de 64x64px en papel para mantener escala
+1. **Usar plantilla:** Crear cuadrícula de 144×144px para jugador, 96×96px para enemigos normales
 2. **Líneas gruesas:** Usar marcador/rotring (mín 0.5mm) para buen escaneo
 3. **Alto contraste:** NO grises medios - solo negro puro o blanco
 4. **Asimetría:** Hacer dibujos orgánicos, NO perfectamente simétricos
 5. **Múltiples intentos:** Dibujar 2-3 versiones, escanear la mejor
+6. **Considerar zoom:** Dibujar como si el personaje se viera a distancia (10% de altura)
 
 ### Para Escaneo
 
@@ -834,9 +881,24 @@ Antes de dibujar en final:
 
 ---
 
-**Última actualización:** 2026-01-31
-**Versión:** 1.0
-**Estado:** Listo para producción de arte
+**Última actualización:** 2026-02-05
+**Versión:** 2.0
+**Estado:** Arquitectura 1080p + Cámara DD - Listo para producción
+
+---
+
+## 📋 Historial de Cambios
+
+**v2.0 (2026-02-05):**
+- Actualización completa de arquitectura de assets para 1080p
+- Nueva configuración de cámara estilo Darkest Dungeon
+- Sistema modular base 48px (1/3 del jugador)
+- Todas las dimensiones de sprites actualizadas
+- Tabla de dimensiones rápida con proporciones de pantalla
+
+**v1.0 (2026-01-31):**
+- Versión inicial del documento
+- Especificaciones base para arte del juego
 
 ---
 

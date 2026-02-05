@@ -33,7 +33,13 @@ wait_time = 0.1
 one_shot = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.75, 0.75)
 position_smoothing_enabled = true
+position_smoothing_speed = 1.8
+drag_horizontal_enabled = true
+drag_horizontal_offset = 80.0
+drag_vertical_enabled = false
+anchor_mode = 1
 script = ExtResource("4_camera")
 
 [node name="RevealSystem" type="Node2D" parent="."]
