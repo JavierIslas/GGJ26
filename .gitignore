@@ -32,3 +32,7 @@ builds/
 *.x86_64
 *.app
 *.dmg
+
+# Claude Code local settings
+.claude/settings.local.json
+.claude/OPUSsettings.local.json
