@@ -240,13 +240,14 @@
 ### 10. Code Cleanup
 
 **Tareas de mantenimiento:**
-- [ ] Remover archivos de debug
-  - `true_threat_DEBUG.gd`
-  - `DEBUG_LEVEL3_SHOOTING.md`
-  - Otros archivos *.md de troubleshooting
-- [ ] Consolidar documentación
-  - Un solo README completo
+- [x] Remover archivos de debug
+  - `DEBUG_LEVEL3_SHOOTING.md`, `CRITICAL_BUG_FIXED.md`
+  - `FALSE_ENEMY_PATROL_FIX.md`, `QUICK_FIX_LEVEL3.md`
+  - `TRUTH_COUNTING_BUG_FIXED.md`, `LEVEL_3_IMPLEMENTATION_SUMMARY.md`
+  - `POLISH_JUICE_SUMMARY.md`, `NEXT_SESSION_TUTORIAL.md`
+- [x] Consolidar documentación
   - Mover docs técnicos a carpeta `/docs`
+  - Estructura organizada: combat/, systems/, narrative/, levels/
 - [ ] Verificar TODOs en código
   - Buscar `# TODO` en todos los scripts
   - Completar o remover
