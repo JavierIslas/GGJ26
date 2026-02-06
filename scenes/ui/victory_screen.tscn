@@ -44,7 +44,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2, 1, 0.5, 1)
 theme_override_font_sizes/font_size = 64
-text = "LEVEL COMPLETE"
+text = "NIVEL COMPLETADO"
 horizontal_alignment = 1
 
 [node name="Spacer1" type="Control" parent="Control/CenterContainer/VBoxContainer"]
@@ -54,13 +54,13 @@ layout_mode = 2
 [node name="TruthsLabel" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Truths Revealed: 0 / 0"
+text = "Verdades Reveladas: 0 / 0"
 horizontal_alignment = 1
 
 [node name="PercentageLabel" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Completion: 0%"
+text = "Completado: 0%"
 horizontal_alignment = 1
 
 [node name="Spacer2" type="Control" parent="Control/CenterContainer/VBoxContainer"]
@@ -70,7 +70,7 @@ layout_mode = 2
 [node name="RankLabel" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 72
-text = "Rank: S"
+text = "Rango: S"
 horizontal_alignment = 1
 
 [node name="Spacer3" type="Control" parent="Control/CenterContainer/VBoxContainer"]
@@ -81,19 +81,19 @@ layout_mode = 2
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "Next Level"
+text = "Siguiente Nivel"
 
 [node name="RetryButton" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "Retry Level"
+text = "Reintentar Nivel"
 
 [node name="MenuButton" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "Main Menu"
+text = "Menú Principal"
 
 [node name="Spacer4" type="Control" parent="Control/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 30)

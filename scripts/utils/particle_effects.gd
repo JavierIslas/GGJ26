@@ -4,6 +4,15 @@ extends Node
 ##
 ## Uso: ParticleEffects.spawn_death_particles(position, color)
 
+# Preload de autoloads
+var _camera_shake: Node = null
+var _screen_flash: Node = null
+
+func _ready() -> void:
+	# Obtener referencias a autoloads
+	_camera_shake = get_node_or_null("/root/CameraShake")
+	_screen_flash = get_node_or_null("/root/ScreenFlash")
+
 ## Partículas de muerte/destrucción de enemigos
 static func spawn_death_particles(pos: Vector2, entity_color: Color = Color.WHITE, particle_count: int = 30) -> void:
 	var particles = CPUParticles2D.new()
@@ -193,3 +202,130 @@ static func spawn_burst(pos: Vector2, color: Color = Color.WHITE, amount: int = 
 		Engine.get_main_loop().root.add_child(particles)
 		var timer = Engine.get_main_loop().root.get_tree().create_timer(particles.lifetime + 0.1)
 		timer.timeout.connect(func(): particles.queue_free())
+
+## Partículas de rotura de máscara para Tutorial 0
+static func spawn_mask_break(pos: Vector2 = Vector2.ZERO) -> void:
+	# Crear efecto de máscara rompiéndose con múltiples tipos de partículas
+
+	# 1. Fragmentos grandes de la máscara
+	var large_fragments = CPUParticles2D.new()
+	large_fragments.global_position = pos
+	large_fragments.emitting = true
+	large_fragments.one_shot = true
+	large_fragments.amount = 12
+	large_fragments.lifetime = 1.2
+	large_fragments.explosiveness = 1.0
+
+	large_fragments.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	large_fragments.emission_sphere_radius = 10.0
+	large_fragments.direction = Vector2(0, 1)
+	large_fragments.spread = 200.0
+	large_fragments.initial_velocity_min = 100.0
+	large_fragments.initial_velocity_max = 250.0
+	large_fragments.gravity = Vector2(0, 400)
+
+	large_fragments.scale_amount_min = 4.0
+	large_fragments.scale_amount_max = 8.0
+	large_fragments.angular_velocity_min = -540.0
+	large_fragments.angular_velocity_max = 540.0
+
+	# Color blanco/gris de la máscara
+	large_fragments.color = Color(0.9, 0.9, 0.95, 1.0)
+	var lg_gradient = Gradient.new()
+	lg_gradient.add_point(0.0, Color(1.0, 1.0, 1.0, 1.0))
+	lg_gradient.add_point(0.5, Color(0.9, 0.9, 0.95, 0.8))
+	lg_gradient.add_point(1.0, Color(0.7, 0.7, 0.8, 0.0))
+	large_fragments.color_ramp = lg_gradient
+
+	# 2. Polvo fino
+	var fine_dust = CPUParticles2D.new()
+	fine_dust.global_position = pos
+	fine_dust.emitting = true
+	fine_dust.one_shot = true
+	fine_dust.amount = 40
+	fine_dust.lifetime = 0.8
+	fine_dust.explosiveness = 0.8
+
+	fine_dust.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	fine_dust.emission_sphere_radius = 8.0
+	fine_dust.direction = Vector2(0, -1)
+	fine_dust.spread = 120.0
+	fine_dust.initial_velocity_min = 30.0
+	fine_dust.initial_velocity_max = 80.0
+	fine_dust.gravity = Vector2(0, 100)
+
+	fine_dust.scale_amount_min = 1.0
+	fine_dust.scale_amount_max = 3.0
+	fine_dust.angular_velocity_min = -90.0
+	fine_dust.angular_velocity_max = 90.0
+
+	fine_dust.color = Color(0.95, 0.95, 1.0, 0.6)
+	var fd_gradient = Gradient.new()
+	fd_gradient.add_point(0.0, Color(1.0, 1.0, 1.0, 0.7))
+	fd_gradient.add_point(1.0, Color(0.8, 0.8, 0.9, 0.0))
+	fine_dust.color_ramp = fd_gradient
+
+	# 3. Chispas de energía oscura
+	var dark_sparks = CPUParticles2D.new()
+	dark_sparks.global_position = pos
+	dark_sparks.emitting = true
+	dark_sparks.one_shot = true
+	dark_sparks.amount = 20
+	dark_sparks.lifetime = 0.5
+	dark_sparks.explosiveness = 1.0
+
+	dark_sparks.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	dark_sparks.emission_sphere_radius = 5.0
+	dark_sparks.direction = Vector2(0, 0)
+	dark_sparks.spread = 360.0
+	dark_sparks.initial_velocity_min = 150.0
+	dark_sparks.initial_velocity_max = 300.0
+	dark_sparks.gravity = Vector2.ZERO
+
+	dark_sparks.scale_amount_min = 2.0
+	dark_sparks.scale_amount_max = 4.0
+
+	# Color púrpura oscuro de la corrupción
+	dark_sparks.color = Color(0.4, 0.1, 0.6, 1.0)
+	var ds_gradient = Gradient.new()
+	ds_gradient.add_point(0.0, Color(0.6, 0.2, 0.8, 1.0))
+	ds_gradient.add_point(0.5, Color(0.4, 0.1, 0.6, 0.8))
+	ds_gradient.add_point(1.0, Color(0.2, 0.0, 0.3, 0.0))
+	dark_sparks.color_ramp = ds_gradient
+
+	# Añadir todos al árbol
+	if Engine.get_main_loop() and Engine.get_main_loop().root:
+		var root = Engine.get_main_loop().root
+
+		root.add_child(large_fragments)
+		root.add_child(fine_dust)
+		root.add_child(dark_sparks)
+
+		# Auto-destruir
+		var max_lifetime = 1.3
+		var timer = root.get_tree().create_timer(max_lifetime)
+		timer.timeout.connect(func():
+			large_fragments.queue_free()
+			fine_dust.queue_free()
+			dark_sparks.queue_free()
+		)
+
+## Efecto completo de revelación de Tutorial 0 con shake y flash
+static func tutorial_0_reveal_effect(pos: Vector2) -> void:
+	# Partículas de rotura de máscara
+	spawn_mask_break(pos)
+
+	# Acceder a los autoloads usando Engine.get_main_loop()
+	var main_loop = Engine.get_main_loop()
+	if main_loop and main_loop is SceneTree:
+		var root = main_loop.root
+
+		# Camera shake
+		var camera_shake = root.get_node_or_null("CameraShake")
+		if camera_shake and camera_shake.has_method("shake"):
+			camera_shake.shake(0.8)
+
+		# Screen flash rojo
+		var screen_flash = root.get_node_or_null("ScreenFlash")
+		if screen_flash and screen_flash.has_method("flash"):
+			screen_flash.flash(Color.RED, 0.3)

@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://dbl43shx47es0" path="res://scripts/utils/camera_shake.gd" id="4_camera"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(72, 90)
+size = Vector2(28, 30)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_reveal"]
 radius = 48.0
@@ -33,7 +33,6 @@ wait_time = 0.1
 one_shot = true
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=608214514]
-zoom = Vector2(3, 3)
 position_smoothing_enabled = true
 position_smoothing_speed = 25.0
 drag_horizontal_enabled = true

@@ -26,6 +26,6 @@ offset_top = -15.0
 offset_right = 40.0
 offset_bottom = 15.0
 theme_override_font_sizes/font_size = 18
-text = "GOAL!"
+text = "¡META!"
 horizontal_alignment = 1
 vertical_alignment = 1

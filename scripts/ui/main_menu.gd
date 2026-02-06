@@ -18,9 +18,9 @@ func _ready() -> void:
 	AudioManager.play_music("res://assets/audio/music/menu_theme.ogg")
 
 func _on_play_button_pressed() -> void:
-	"""Inicia el juego desde el Tutorial"""
-	print("Starting game from tutorial...")
-	get_tree().change_scene_to_file("res://scenes/levels/tutorial.tscn")
+	"""Inicia el juego desde Tutorial 0 (secuencia completa)"""
+	print("Starting game from Tutorial 0...")
+	get_tree().change_scene_to_file("res://scenes/levels/tutorial_0.tscn")
 
 func _on_options_button_pressed() -> void:
 	"""Abre menú de opciones"""

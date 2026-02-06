@@ -89,9 +89,9 @@ func player_died_tutorial_0() -> void:
 	# Llamar a la secuencia de transición
 	await _tutorial_0_death_sequence()
 
-	# Cargar Tutorial 1
+	# Cargar Tutorial principal
 	start_tutorial_1()
-	SceneTransition.change_scene("res://scenes/levels/tutorial_1.tscn")
+	SceneTransition.change_scene("res://scenes/levels/tutorial.tscn")
 
 ## Secuencia cinemática de muerte Tutorial 0 → Tutorial 1
 func _tutorial_0_death_sequence() -> void:
@@ -109,8 +109,8 @@ func _tutorial_0_death_sequence() -> void:
 	# Esperar 1 segundo en negro
 	await get_tree().create_timer(1.0).timeout
 
-	# Texto: "But you won't be fooled again."
-	_show_centered_text("But you won't be fooled again.")
+	# Texto: "Pero no te engañarán de nuevo."
+	_show_centered_text("Pero no te engañarán de nuevo.")
 	await get_tree().create_timer(0.5).timeout  # Beat de silencio
 
 	# 🎤 EL GRITO (Awakening Scream)
@@ -133,13 +133,20 @@ func _tutorial_0_death_sequence() -> void:
 	# Esperar 1.5s más
 	await get_tree().create_timer(1.5).timeout
 
+	# Texto final: "Ya no eres víctima. Ahora eres la Cazadora."
+	_show_centered_text("Ya no eres víctima.
+Ahora eres la Cazadora.")
+	await get_tree().create_timer(2.5).timeout
+	_hide_centered_text()
+
+	# Esperar un momento antes del fade
+	await get_tree().create_timer(0.5).timeout
+
 	# Fade to white (renacimiento)
 	if SceneTransition.has_method("fade_to_white"):
 		await SceneTransition.fade_to_white(2.0)
 	else:
 		await get_tree().create_timer(2.0).timeout
-
-	_hide_centered_text()
 
 ## Helper para mostrar texto centrado en pantalla
 func _show_centered_text(text: String) -> void:

@@ -276,7 +276,7 @@ offset_top = 400.0
 offset_right = 350.0
 offset_bottom = 470.0
 theme_override_font_sizes/font_size = 16
-text = "LEVEL 2: ADVANCED THREATS
+text = "NIVEL 2: AMENAZAS AVANZADAS
 Nuevas torretas avanzadas
 ¡Ten cuidado!"
 horizontal_alignment = 1
@@ -288,7 +288,7 @@ offset_right = 950.0
 offset_bottom = 490.0
 theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 12
-text = "TRACKING TURRET
+text = "TORRETA DE RASTREO
 Rota para seguirte"
 horizontal_alignment = 1
 
@@ -299,8 +299,8 @@ offset_right = 1750.0
 offset_bottom = 340.0
 theme_override_colors/font_color = Color(0.2, 0.8, 1, 1)
 theme_override_font_sizes/font_size = 12
-text = "LASER TURRET
-Telegraph → Láser continuo"
+text = "TORRETA LÁSER
+Telegrafo → Láser continuo"
 horizontal_alignment = 1
 
 [node name="ShieldHint" type="Label" parent="Instructions"]
@@ -310,7 +310,7 @@ offset_right = 3350.0
 offset_bottom = 340.0
 theme_override_colors/font_color = Color(0.2, 0.6, 1, 1)
 theme_override_font_sizes/font_size = 12
-text = "SHIELDED TURRET
+text = "TORRETA ESCUDADA
 Requiere 2 revelaciones"
 horizontal_alignment = 1
 
@@ -321,6 +321,6 @@ offset_right = 3950.0
 offset_bottom = 500.0
 theme_override_colors/font_color = Color(0.8, 0.1, 0.8, 1)
 theme_override_font_sizes/font_size = 16
-text = "¡¡¡ BOSS ROOM !!!
+text = "¡¡¡ SALA DEL JEFE !!!
 Múltiples torretas"
 horizontal_alignment = 1

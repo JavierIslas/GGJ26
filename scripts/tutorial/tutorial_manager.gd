@@ -27,6 +27,7 @@ var section3_completed: bool = false  # Tracking para sección 3
 var section4_enemies_killed: int = 0  # Contar enemigos muertos en sección 4
 var section4_total_enemies: int = 3  # Total de enemigos en sección 4
 var section5_completed: bool = false  # Tracking para sección 5
+var section6_door_opened: bool = false  # Tracking para sección 6
 
 # Referencias a las secciones (se asignarán desde la escena)
 @export var section1_node: Node2D  # Movimiento
@@ -160,8 +161,21 @@ func _setup_section_6() -> void:
 	print("Section 6: Truth Door - Active")
 	# La Truth Door y los False Enemies están en la escena
 	# El jugador debe revelar 2 enemigos para abrir la puerta
-	# Después de abrir la puerta, llega al LevelGoal que lo lleva a Level 1
-	# No necesitamos lógica especial aquí, todo se maneja por los sistemas existentes
+
+	# Buscar la Truth Door para conectar cuando se abra
+	var truth_doors = get_tree().get_nodes_in_group("truth_door")
+	for door in truth_doors:
+		if door.has_signal("door_opened"):
+			door.door_opened.connect(_on_truth_door_opened)
+			print("  - Connected to truth door")
+
+## Callback cuando se abre la Truth Door
+func _on_truth_door_opened() -> void:
+	if not section6_door_opened:
+		section6_door_opened = true
+		print("=== Section 6 Complete: Truth Door opened! ===")
+		current_section = Section.COMPLETE
+		print("=== Tutorial Complete! ===")
 
 ## Verifica si el jugador puede avanzar de sección
 func can_advance() -> bool:
@@ -170,19 +184,19 @@ func can_advance() -> bool:
 			# Sección 1 se completa automáticamente al llegar al final
 			return true
 		Section.REVEAL:
-			# TODO: Verificar que reveló al False Enemy
-			return false
+			# Verificar que reveló al False Enemy
+			return section2_revealed
 		Section.SHARDS:
-			# TODO: Verificar que eliminó al False Friend con shard
-			return false
+			# Verificar que eliminó al False Friend con shard
+			return section3_completed
 		Section.HOWL:
-			# TODO: Verificar que usó Howl
-			return false
+			# Verificar que eliminó todos los enemigos con Howl
+			return section4_enemies_killed >= section4_total_enemies
 		Section.DASH:
-			# TODO: Verificar que usó Dash
-			return false
+			# Verificar que usó Dash (cruzó el trigger)
+			return section5_completed
 		Section.DOOR:
-			# TODO: Verificar que abrió la Truth Door
-			return false
+			# Verificar que abrió la Truth Door
+			return section6_door_opened
 		_:
 			return false

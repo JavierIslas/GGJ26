@@ -40,13 +40,13 @@ theme_override_constants/separation = 20
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.2, 0.2, 1)
 theme_override_font_sizes/font_size = 64
-text = "GAME OVER"
+text = "FIN DEL JUEGO"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "The truth was too much to bear"
+text = "La verdad fue demasiado para soportar"
 horizontal_alignment = 1
 
 [node name="Spacer1" type="Control" parent="Control/CenterContainer/VBoxContainer"]
@@ -67,13 +67,13 @@ layout_mode = 2
 custom_minimum_size = Vector2(250, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "Restart Level"
+text = "Reintentar Nivel"
 
 [node name="MainMenuButton" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(250, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "Main Menu"
+text = "Menú Principal"
 
 [connection signal="pressed" from="Control/CenterContainer/VBoxContainer/RestartButton" to="Control" method="_on_restart_button_pressed"]
 [connection signal="pressed" from="Control/CenterContainer/VBoxContainer/MainMenuButton" to="Control" method="_on_main_menu_button_pressed"]

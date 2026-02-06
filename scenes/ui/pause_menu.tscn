@@ -39,7 +39,7 @@ theme_override_constants/separation = 20
 [node name="Title" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
-text = "PAUSED"
+text = "PAUSADO"
 horizontal_alignment = 1
 
 [node name="Spacer1" type="Control" parent="Control/CenterContainer/VBoxContainer"]
@@ -50,19 +50,19 @@ layout_mode = 2
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Resume"
+text = "Continuar"
 
 [node name="RestartButton" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Restart Level"
+text = "Reintentar Nivel"
 
 [node name="MainMenuButton" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Main Menu"
+text = "Menú Principal"
 
 [connection signal="pressed" from="Control/CenterContainer/VBoxContainer/ResumeButton" to="Control" method="_on_resume_button_pressed"]
 [connection signal="pressed" from="Control/CenterContainer/VBoxContainer/RestartButton" to="Control" method="_on_restart_button_pressed"]

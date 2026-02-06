@@ -494,10 +494,10 @@ offset_top = 350.0
 offset_right = 400.0
 offset_bottom = 450.0
 theme_override_font_sizes/font_size = 18
-text = "LEVEL 3: THE FINAL REVELATION
+text = "NIVEL 3: LA REVELACIÓN FINAL
 
-All threats converge
-This is the end"
+Todas las amenazas convergen
+Este es el final"
 horizontal_alignment = 1
 
 [node name="Area1Hint" type="Label" parent="Instructions"]
@@ -507,8 +507,8 @@ offset_right = 550.0
 offset_bottom = 520.0
 theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
 theme_override_font_sizes/font_size = 12
-text = "AREA 1: FALSE SECURITY
-Easy start, stay focused"
+text = "ÁREA 1: FALSA SEGURIDAD
+Inicio fácil, mantente concentrado"
 horizontal_alignment = 1
 
 [node name="Area2Hint" type="Label" parent="Instructions"]
@@ -518,9 +518,9 @@ offset_right = 1500.0
 offset_bottom = 290.0
 theme_override_colors/font_color = Color(1, 0.6, 0.2, 1)
 theme_override_font_sizes/font_size = 12
-text = "AREA 2: DIVERGENT TRUTHS
-Upper path: ranged
-Lower path: melee"
+text = "ÁREA 2: VERDADES DIVERGENTES
+Camino superior: a distancia
+Camino inferior: cuerpo a cuerpo"
 horizontal_alignment = 1
 
 [node name="Area3Hint" type="Label" parent="Instructions"]
@@ -530,8 +530,8 @@ offset_right = 2500.0
 offset_bottom = 490.0
 theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 12
-text = "AREA 3: CROSSFIRE
-Watch your timing!"
+text = "ÁREA 3: FUEGO CRUZADO
+¡Cuida tu sincronización!"
 horizontal_alignment = 1
 
 [node name="Area4Hint" type="Label" parent="Instructions"]
@@ -541,9 +541,9 @@ offset_right = 3750.0
 offset_bottom = 320.0
 theme_override_colors/font_color = Color(0.2, 0.6, 1, 1)
 theme_override_font_sizes/font_size = 12
-text = "AREA 4: SHIELDED TRUTH
-Shield costs 2 reveals
-Choose wisely"
+text = "ÁREA 4: VERDAD ESCUDADA
+El escudo cuesta 2 revelaciones
+Elige sabiamente"
 horizontal_alignment = 1
 
 [node name="Area5Hint" type="Label" parent="Instructions"]
@@ -553,9 +553,9 @@ offset_right = 4400.0
 offset_bottom = 540.0
 theme_override_colors/font_color = Color(0.8, 0.1, 0.8, 1)
 theme_override_font_sizes/font_size = 12
-text = "AREA 5: THE ASCENT
-Vertical gauntlet
-Climb under fire"
+text = "ÁREA 5: EL ASCENSO
+Calvario vertical
+Escala bajo fuego"
 horizontal_alignment = 1
 
 [node name="Area6Hint" type="Label" parent="Instructions"]
@@ -565,9 +565,9 @@ offset_right = 5250.0
 offset_bottom = 430.0
 theme_override_colors/font_color = Color(0.3, 0.8, 0.3, 1)
 theme_override_font_sizes/font_size = 14
-text = "AREA 6: THE CALM
+text = "ÁREA 6: LA CALMA
 
-FINAL CHALLENGE AHEAD"
+DESAFÍO FINAL ADELANTE"
 horizontal_alignment = 1
 
 [node name="SecretHint1" type="Label" parent="Instructions"]
@@ -588,9 +588,9 @@ offset_right = 5300.0
 offset_bottom = 280.0
 theme_override_colors/font_color = Color(1, 0.8, 0, 1)
 theme_override_font_sizes/font_size = 12
-text = "SECRET AREA
+text = "ÁREA SECRETA
 (14 verdades)
-Extra rewards!"
+¡Recompensas extra!"
 horizontal_alignment = 1
 
 [node name="Area7Hint" type="Label" parent="Instructions"]
@@ -600,8 +600,8 @@ offset_right = 5795.0
 offset_bottom = 431.0
 theme_override_colors/font_color = Color(1, 0.2, 0.2, 1)
 theme_override_font_sizes/font_size = 16
-text = "AREA 7: THE CRUCIBLE
+text = "ÁREA 7: LA CRUCIJA
 
-!!! FINAL GAUNTLET !!!
-All skills required"
+!!! CALVARIO FINAL !!!
+Se requieren todas las habilidades"
 horizontal_alignment = 1

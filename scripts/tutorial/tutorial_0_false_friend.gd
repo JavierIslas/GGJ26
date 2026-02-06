@@ -168,13 +168,15 @@ func _cinematic_reveal_sequence() -> void:
 	_transform_to_revealed()
 	AudioManager.play_sfx("false_friend_reveal", 0.0)
 
-	# Screen shake
-	if has_node("/root/CameraShake"):
-		get_node("/root/CameraShake").shake(0.8)
-
-	# Screen flash rojo
-	if has_node("/root/ScreenFlash"):
-		get_node("/root/ScreenFlash").flash(Color.RED, 0.3)
+	# Usar efecto completo de revelación (incluye partículas, shake y flash)
+	if ClassDB.class_exists("ParticleEffects"):
+		ParticleEffects.tutorial_0_reveal_effect(global_position)
+	else:
+		# Fallback: usar shake y flash por separado
+		if has_node("/root/CameraShake"):
+			get_node("/root/CameraShake").shake(0.8)
+		if has_node("/root/ScreenFlash"):
+			get_node("/root/ScreenFlash").flash(Color.RED, 0.3)
 
 	# t=2.0s: Ataque (primer daño)
 	await get_tree().create_timer(0.5).timeout
@@ -222,12 +224,13 @@ func _shake_sprite(duration: float, intensity: float) -> void:
 	sprite.position = original_pos
 
 func _spawn_mask_break_particles() -> void:
-	# Crear partículas simples de máscara rompiéndose
-	# TODO: Usar ParticleEffects si está disponible
-	if has_node("/root/ParticleEffects"):
-		var fx = get_node("/root/ParticleEffects")
-		if fx.has_method("spawn_mask_break"):
-			fx.spawn_mask_break(global_position)
+	# Crear partículas de máscara rompiéndose usando ParticleEffects
+	# ParticleEffects es una clase estática, no necesitamos una instancia
+	if ClassDB.class_exists("ParticleEffects"):
+		ParticleEffects.spawn_mask_break(global_position)
+	else:
+		# Fallback: crear partículas simples manualmente
+		_create_fallback_particles()
 
 func _transform_to_revealed() -> void:
 	# Cambiar sprite a versión revelada
@@ -325,3 +328,35 @@ func _catch_player() -> void:
 
 	# El GameManager manejará la transición a Tutorial 1
 	print("Tutorial 0: _catch_player() completed")
+
+## Fallback para crear partículas manualmente si ParticleEffects no está disponible
+func _create_fallback_particles() -> void:
+	var particles = CPUParticles2D.new()
+	particles.global_position = global_position
+	particles.emitting = true
+	particles.one_shot = true
+	particles.amount = 20
+	particles.lifetime = 1.0
+	particles.explosiveness = 1.0
+
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 8.0
+	particles.direction = Vector2(0, 1)
+	particles.spread = 180.0
+	particles.initial_velocity_min = 80.0
+	particles.initial_velocity_max = 200.0
+	particles.gravity = Vector2(0, 250)
+	particles.scale_amount_min = 3.0
+	particles.scale_amount_max = 6.0
+	particles.angular_velocity_min = -360.0
+	particles.angular_velocity_max = 360.0
+
+	particles.color = Color(0.9, 0.9, 0.95, 1.0)
+	var gradient = Gradient.new()
+	gradient.add_point(0.0, Color(1.0, 1.0, 1.0, 1.0))
+	gradient.add_point(1.0, Color(0.7, 0.7, 0.8, 0.0))
+	particles.color_ramp = gradient
+
+	get_tree().root.add_child(particles)
+	var timer = get_tree().create_timer(particles.lifetime + 0.1)
+	timer.timeout.connect(func(): particles.queue_free())

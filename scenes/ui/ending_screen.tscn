@@ -50,7 +50,7 @@ horizontal_alignment = 1
 [node name="EndingName" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 72
-text = "ENDING NAME"
+text = "NOMBRE DEL FINAL"
 horizontal_alignment = 1
 
 [node name="Spacer1" type="Control" parent="Control/CenterContainer/VBoxContainer"]
@@ -67,7 +67,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 20
 bbcode_enabled = true
-text = "Narrative text goes here..."
+text = "El texto narrativo va aquí..."
 fit_content = true
 scroll_active = false
 
@@ -78,13 +78,13 @@ layout_mode = 2
 [node name="StatsLabel" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "Truths Revealed: 0 / 0"
+text = "Verdades Reveladas: 0 / 0"
 horizontal_alignment = 1
 
 [node name="PercentageLabel" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
-text = "Completion: 0%"
+text = "Completado: 0%"
 horizontal_alignment = 1
 
 [node name="Spacer3" type="Control" parent="Control/CenterContainer/VBoxContainer"]
@@ -95,13 +95,13 @@ layout_mode = 2
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "New Game"
+text = "Nueva Partida"
 
 [node name="MenuButton" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "Main Menu"
+text = "Menú Principal"
 
 [node name="Spacer4" type="Control" parent="Control/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 20)
